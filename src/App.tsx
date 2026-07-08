@@ -1,43 +1,71 @@
-import React, { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { Toaster } from 'react-hot-toast'
-import Lenis from '@studio-freight/lenis'
-import HomePage from './pages/HomePage'
+import React, { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { Loader2 } from 'lucide-react';
+import HomePage from './pages/HomePage';
+import AdminRoute from './components/admin/AdminRoute';
+
+// Admin bundle is code-split so public visitors never download it
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const Login = lazy(() => import('./pages/admin/Login'));
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const Settings = lazy(() => import('./pages/admin/Settings'));
+const Projects = lazy(() => import('./pages/admin/Projects'));
+const Blogs = lazy(() => import('./pages/admin/Blogs'));
+const Experiences = lazy(() => import('./pages/admin/Experiences'));
+const Inbox = lazy(() => import('./pages/admin/Inbox'));
+const HeroSettings = lazy(() => import('./pages/admin/settings/HeroSettings'));
+const AboutSettings = lazy(() => import('./pages/admin/settings/AboutSettings'));
+const SkillsSettings = lazy(() => import('./pages/admin/settings/SkillsSettings'));
+const CertificationsSettings = lazy(() => import('./pages/admin/settings/CertificationsSettings'));
+const ContactSettings = lazy(() => import('./pages/admin/settings/ContactSettings'));
+const ThemeSettings = lazy(() => import('./pages/admin/settings/ThemeSettings'));
+const SeoSettings = lazy(() => import('./pages/admin/settings/SeoSettings'));
+
+const AdminFallback = () => (
+  <div className="flex h-screen items-center justify-center bg-slate-50">
+    <Loader2 className="animate-spin text-blue-600" size={28} />
+  </div>
+);
 
 function App() {
-  // Initialize Lenis for smooth scrolling
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-    })
-
-    function raf(time: number) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
-
-    requestAnimationFrame(raf)
-
-    return () => {
-      lenis.destroy()
-    }
-  }, [])
-
   return (
     <>
       <Toaster position="top-right" />
       <BrowserRouter>
+        <Suspense fallback={<AdminFallback />}>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+        {/* Public Route */}
+        <Route path="/" element={<HomePage />} />
+
+        {/* Admin Login Route */}
+        <Route path="/admin/login" element={<Login />} />
+
+        {/* Protected Admin Routes */}
+        <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+          <Route index element={<Dashboard />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="blogs" element={<Blogs />} />
+          <Route path="experiences" element={<Experiences />} />
+          <Route path="inbox" element={<Inbox />} />
+          
+          <Route path="settings" element={<Settings />} />
+          <Route path="settings/hero" element={<HeroSettings />} />
+          <Route path="settings/about" element={<AboutSettings />} />
+          <Route path="settings/skills" element={<SkillsSettings />} />
+          <Route path="settings/certifications" element={<CertificationsSettings />} />
+          <Route path="settings/contact" element={<ContactSettings />} />
+          <Route path="settings/theme" element={<ThemeSettings />} />
+          <Route path="settings/seo" element={<SeoSettings />} />
+        </Route>
+        
+        {/* Catch all redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      </Suspense>
+    </BrowserRouter>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,13 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { HelmetProvider } from 'react-helmet-async'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import { ContentProvider } from './context/ContentProvider.jsx'
 import App from './App.tsx'
-import './styles/globals.css'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <HelmetProvider>
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <ContentProvider>
       <App />
-    </HelmetProvider>
-  </React.StrictMode>,
+    </ContentProvider>
+  </StrictMode>,
 )
