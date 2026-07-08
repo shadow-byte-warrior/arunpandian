@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { 
   Loader2, Plus, Edit2, Trash2, Search, Filter, 
-  List, Grid, RefreshCw, Download 
+  List, Grid, RefreshCw, Download, Eye, EyeOff 
 } from 'lucide-react';
 import Modal from '../../components/admin/Modal';
 import ConfirmModal from '../../components/admin/ConfirmModal';
@@ -82,6 +82,21 @@ export default function Projects() {
     } finally {
       setDeleteConfirm({ isOpen: false, id: null, title: '' });
       fetchProjects();
+    }
+  };
+
+  const handleTogglePublish = async (project) => {
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .update({ published: !project.published })
+        .eq('id', project.id);
+      
+      if (error) throw error;
+      toast.success(`Project ${project.published ? 'hidden' : 'published'} successfully`);
+      fetchProjects();
+    } catch (err) {
+      toast.error('Error updating status: ' + err.message);
     }
   };
 
@@ -281,6 +296,13 @@ export default function Projects() {
                       </td>
                       <td className="px-6 py-4 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
+                          onClick={() => handleTogglePublish(p)}
+                          className={`p-1.5 rounded-lg transition-colors ${p.published ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-400 hover:text-teal-600 hover:bg-teal-50'}`}
+                          aria-label={p.published ? "Hide" : "Publish"}
+                        >
+                          {p.published ? <Eye size={16} /> : <EyeOff size={16} />}
+                        </button>
+                        <button 
                           onClick={() => openModal(p)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" 
                           aria-label="Edit"
@@ -320,6 +342,9 @@ export default function Projects() {
                     </div>
                   )}
                   <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => handleTogglePublish(p)} className={`p-2 rounded-xl transition-colors ${p.published ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-400 hover:text-teal-600 hover:bg-teal-50'}`}>
+                      {p.published ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
                     <button onClick={() => openModal(p)} className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                       <Edit2 size={16} />
                     </button>

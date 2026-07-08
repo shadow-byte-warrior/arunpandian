@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { 
   Loader2, Plus, Edit2, Trash2, Search, Filter, 
-  List, Grid, RefreshCw, Download 
+  List, Grid, RefreshCw, Download, Eye, EyeOff 
 } from 'lucide-react';
 import Modal from '../../components/admin/Modal';
 import ConfirmModal from '../../components/admin/ConfirmModal';
@@ -79,6 +79,21 @@ export default function Experiences() {
     } finally {
       setDeleteConfirm({ isOpen: false, id: null, title: '' });
       fetchExperiences();
+    }
+  };
+
+  const handleTogglePublish = async (exp) => {
+    try {
+      const { error } = await supabase
+        .from('experiences')
+        .update({ published: !exp.published })
+        .eq('id', exp.id);
+      
+      if (error) throw error;
+      toast.success(`Experience ${exp.published ? 'hidden' : 'published'} successfully`);
+      fetchExperiences();
+    } catch (err) {
+      toast.error('Error updating status: ' + err.message);
     }
   };
 
@@ -272,6 +287,13 @@ export default function Experiences() {
                       </td>
                       <td className="px-6 py-4 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
+                          onClick={() => handleTogglePublish(exp)}
+                          className={`p-1.5 rounded-lg transition-colors ${exp.published ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-400 hover:text-teal-600 hover:bg-teal-50'}`}
+                          aria-label={exp.published ? "Hide" : "Publish"}
+                        >
+                          {exp.published ? <Eye size={16} /> : <EyeOff size={16} />}
+                        </button>
+                        <button 
                           onClick={() => openModal(exp)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" 
                           aria-label="Edit"
@@ -307,6 +329,9 @@ export default function Experiences() {
                     {exp.company.substring(0, 2).toUpperCase()}
                   </div>
                   <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => handleTogglePublish(exp)} className={`p-2 rounded-xl transition-colors ${exp.published ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-400 hover:text-teal-600 hover:bg-teal-50'}`}>
+                      {exp.published ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
                     <button onClick={() => openModal(exp)} className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                       <Edit2 size={16} />
                     </button>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { 
   Loader2, Plus, Edit2, Trash2, Search, Filter, 
-  List, Grid, RefreshCw, Download, Eye 
+  List, Grid, RefreshCw, Download, ExternalLink, Eye, EyeOff
 } from 'lucide-react';
 import Modal from '../../components/admin/Modal';
 import ConfirmModal from '../../components/admin/ConfirmModal';
@@ -82,6 +82,21 @@ export default function Blogs() {
     } finally {
       setDeleteConfirm({ isOpen: false, id: null, title: '' });
       fetchBlogs();
+    }
+  };
+
+  const handleTogglePublish = async (blog) => {
+    try {
+      const { error } = await supabase
+        .from('blogs')
+        .update({ published: !blog.published })
+        .eq('id', blog.id);
+      
+      if (error) throw error;
+      toast.success(`Post ${blog.published ? 'hidden' : 'published'} successfully`);
+      fetchBlogs();
+    } catch (err) {
+      toast.error('Error updating status: ' + err.message);
     }
   };
 
@@ -278,12 +293,19 @@ export default function Blogs() {
                         </span>
                       </td>
                       <td className="px-6 py-4 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button 
+                          onClick={() => handleTogglePublish(b)}
+                          className={`p-1.5 rounded-lg transition-colors ${b.published ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-400 hover:text-teal-600 hover:bg-teal-50'}`}
+                          aria-label={b.published ? "Hide" : "Publish"}
+                        >
+                          {b.published ? <Eye size={16} /> : <EyeOff size={16} />}
+                        </button>
                         <a 
                           href={`/blog/${b.slug}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" 
-                          title="View Live"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors inline-flex" 
+                          aria-label="View Live"
                         >
                           <Eye size={16} />
                         </a>
@@ -343,9 +365,12 @@ export default function Blogs() {
                     </div>
                     <span className="text-xs font-semibold text-slate-500">{b.author_name}</span>
                   </div>
-                  <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href={`/blog/${b.slug}`} target="_blank" rel="noreferrer" className="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
-                      <Eye size={16} />
+                  <div className="flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
+                    <button onClick={() => handleTogglePublish(b)} className={`p-2 rounded-xl transition-colors ${b.published ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-400 hover:text-teal-600 hover:bg-teal-50'}`}>
+                      {b.published ? <Eye size={16} /> : <EyeOff size={16} />}
+                    </button>
+                    <a href={`/blog/${b.slug}`} target="_blank" rel="noreferrer" className="p-2 rounded-xl text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors flex items-center justify-center">
+                      <ExternalLink size={16} />
                     </a>
                     <button onClick={() => openModal(b)} className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                       <Edit2 size={16} />
