@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { TextField, Toggle } from '../../components/admin/ui/FormInputs';
 import SaveActionPanel from '../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../components/admin/ui/SectionCard';
+import ImageUpload from '../../components/admin/ui/ImageUpload';
 import { useSiteSettings } from '../../components/admin/hooks/useSiteSettings';
 
 // Footer fields are FLAT — this is exactly the shape the public footer reads.
@@ -41,6 +42,10 @@ const generalSchema = z.object({
       title: z.string().min(1, 'Title is required'),
     }),
   }),
+  branding: z.object({
+    logoUrl: z.string().optional(),
+    faviconUrl: z.string().optional(),
+  }),
 });
 
 const emptyDefaults = {
@@ -51,6 +56,7 @@ const emptyDefaults = {
     projects: { label: '', title: '', subtitle: '' },
     blog: { label: '', title: '' },
   },
+  branding: { logoUrl: '', faviconUrl: '' },
 };
 
 export default function Settings() {
@@ -58,6 +64,7 @@ export default function Settings() {
   const { fetchSettings: fetchFooter, saveSettings: saveFooter } = useSiteSettings('footer');
   const { fetchSettings: fetchSections, saveSettings: saveSections } = useSiteSettings('sections');
   const { fetchSettings: fetchNavbar, saveSettings: saveNavbar } = useSiteSettings('navbar');
+  const { fetchSettings: fetchBranding, saveSettings: saveBranding } = useSiteSettings('branding');
   const [isSaving, setIsSaving] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
 
@@ -67,7 +74,7 @@ export default function Settings() {
   });
 
   useEffect(() => {
-    Promise.all([fetchWelcome(), fetchFooter(), fetchSections(), fetchNavbar()]).then(([welcomeData, footerData, sectionsData, navbarData]) => {
+    Promise.all([fetchWelcome(), fetchFooter(), fetchSections(), fetchNavbar(), fetchBranding()]).then(([welcomeData, footerData, sectionsData, navbarData, brandingData]) => {
       const mappedWelcome = welcomeData
         ? {
             enabled: welcomeData.enabled ?? true,
@@ -99,6 +106,7 @@ export default function Settings() {
           projects: { ...emptyDefaults.sections.projects, ...sectionsData?.projects },
           blog: { ...emptyDefaults.sections.blog, ...sectionsData?.blog },
         },
+        branding: { ...emptyDefaults.branding, ...brandingData },
       });
       setInitLoading(false);
     });
@@ -116,6 +124,7 @@ export default function Settings() {
       saveFooter(values.footer),
       saveSections(values.sections),
       saveNavbar(values.navbar),
+      saveBranding(values.branding),
     ]);
     if (results.every(Boolean)) {
       form.reset(values);
@@ -133,6 +142,23 @@ export default function Settings() {
         <h1 className="font-bold text-2xl text-slate-800">General Settings</h1>
         <p className="text-slate-500 mt-1 text-sm">Configure the welcome screen, section headers and footer.</p>
       </div>
+
+      <SectionCard title="Branding">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ImageUpload
+            label="Site Logo"
+            folder="branding"
+            url={form.watch('branding.logoUrl')}
+            onUpload={(url) => form.setValue('branding.logoUrl', url, { shouldDirty: true })}
+          />
+          <ImageUpload
+            label="Site Favicon"
+            folder="branding"
+            url={form.watch('branding.faviconUrl')}
+            onUpload={(url) => form.setValue('branding.faviconUrl', url, { shouldDirty: true })}
+          />
+        </div>
+      </SectionCard>
 
       <SectionCard title="Welcome Screen">
         <div className="space-y-6">

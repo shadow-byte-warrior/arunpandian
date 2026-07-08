@@ -2,6 +2,8 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { useContent } from './context/ContentProvider';
 import HomePage from './pages/HomePage';
 import AdminRoute from './components/admin/AdminRoute';
 
@@ -29,8 +31,17 @@ const AdminFallback = () => (
 );
 
 function App() {
+  const { settings } = useContent() as any;
+  const faviconUrl = settings?.branding?.faviconUrl;
+
   return (
     <>
+      {faviconUrl && (
+        <Helmet>
+          <link rel="icon" href={faviconUrl} />
+          <link rel="shortcut icon" href={faviconUrl} />
+        </Helmet>
+      )}
       <Toaster position="top-right" />
       <BrowserRouter>
         <Suspense fallback={<AdminFallback />}>

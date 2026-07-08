@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/admin/Modal';
 import ConfirmModal from '../../components/admin/ConfirmModal';
+import ImageUpload from '../../components/admin/ui/ImageUpload';
 import toast from 'react-hot-toast';
 
 export default function Blogs() {
@@ -30,6 +31,7 @@ export default function Blogs() {
     excerpt: '',
     read_time: '3 min read',
     author_name: 'Arun Pandian',
+    cover_image: '',
     published: false,
     featured: false,
     sort_order: 0
@@ -92,6 +94,7 @@ export default function Blogs() {
         excerpt: blog.excerpt || '',
         read_time: blog.read_time || '3 min read',
         author_name: blog.author_name || 'Arun Pandian',
+        cover_image: blog.cover_image || '',
         published: blog.published,
         featured: blog.featured,
         sort_order: blog.sort_order || 0
@@ -104,6 +107,7 @@ export default function Blogs() {
         excerpt: '',
         read_time: '3 min read',
         author_name: 'Arun Pandian',
+        cover_image: '',
         published: false,
         featured: false,
         sort_order: blogs.length > 0 ? Math.max(...blogs.map(b => b.sort_order)) + 1 : 0
@@ -254,9 +258,14 @@ export default function Blogs() {
                         <input type="checkbox" className="rounded border-slate-300 text-teal-600 focus:ring-teal-600 cursor-pointer" />
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-slate-800">{b.title}</span>
-                          <span className="text-xs text-slate-400 font-mono mt-0.5">/{b.slug}</span>
+                        <div className="flex items-center gap-3">
+                          {b.cover_image && (
+                            <img src={b.cover_image} alt={b.title} className="h-9 w-9 rounded-md object-cover shrink-0 border border-slate-200" />
+                          )}
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-slate-800">{b.title}</span>
+                            <span className="text-xs text-slate-400 font-mono mt-0.5">/{b.slug}</span>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-slate-500 font-medium">
@@ -310,7 +319,10 @@ export default function Blogs() {
             filteredBlogs.map((b) => (
               <div key={b.id} className="bg-white p-6 rounded-[1.25rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group flex flex-col">
                 <div className="flex justify-between items-start mb-5">
-                  <div className="flex flex-col">
+                  <div className="flex flex-col w-full">
+                    {b.cover_image && (
+                      <img src={b.cover_image} alt={b.title} className="w-full h-32 object-cover rounded-xl border border-slate-100 mb-4" />
+                    )}
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider mb-3 w-fit ${b.published ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>
                       {b.published && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
                       {b.published ? 'Published' : 'Draft'}
@@ -393,6 +405,15 @@ export default function Blogs() {
                 onChange={e => setFormData({...formData, excerpt: e.target.value})}
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-h-[80px]"
                 placeholder="Brief summary of the post..."
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <ImageUpload
+                label="Cover Image"
+                folder="blogs"
+                url={formData.cover_image}
+                onUpload={(url) => setFormData({ ...formData, cover_image: url })}
               />
             </div>
 

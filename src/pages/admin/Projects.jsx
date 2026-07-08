@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/admin/Modal';
 import ConfirmModal from '../../components/admin/ConfirmModal';
+import ImageUpload from '../../components/admin/ui/ImageUpload';
 import toast from 'react-hot-toast';
 
 export default function Projects() {
@@ -31,6 +32,7 @@ export default function Projects() {
     insight: '',
     live_link: '',
     github_link: '',
+    image_url: '',
     sort_order: 0,
     published: true
   });
@@ -93,6 +95,7 @@ export default function Projects() {
         insight: project.insight || '',
         live_link: project.live_link || '',
         github_link: project.github_link || '',
+        image_url: project.image_url || '',
         sort_order: project.sort_order || 0,
         published: project.published
       });
@@ -105,6 +108,7 @@ export default function Projects() {
         insight: '',
         live_link: '',
         github_link: '',
+        image_url: '',
         sort_order: projects.length > 0 ? Math.max(...projects.map(p => p.sort_order)) + 1 : 0,
         published: true
       });
@@ -256,9 +260,13 @@ export default function Projects() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
-                            {p.title.substring(0, 2).toUpperCase()}
-                          </div>
+                          {p.image_url ? (
+                            <img src={p.image_url} alt={p.title} className="h-9 w-9 rounded-full object-cover shrink-0 border border-slate-200" />
+                          ) : (
+                            <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
+                              {p.title.substring(0, 2).toUpperCase()}
+                            </div>
+                          )}
                           <span className="font-semibold text-slate-800">{p.title}</span>
                         </div>
                       </td>
@@ -304,9 +312,13 @@ export default function Projects() {
             filteredProjects.map((p) => (
               <div key={p.id} className="bg-white p-6 rounded-[1.25rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group flex flex-col">
                 <div className="flex justify-between items-start mb-5">
-                  <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-lg shrink-0">
-                    {p.title.substring(0, 2).toUpperCase()}
-                  </div>
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.title} className="h-12 w-12 rounded-2xl object-cover border border-slate-200 shrink-0" />
+                  ) : (
+                    <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-lg shrink-0">
+                      {p.title.substring(0, 2).toUpperCase()}
+                    </div>
+                  )}
                   <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => openModal(p)} className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                       <Edit2 size={16} />
@@ -373,6 +385,15 @@ export default function Projects() {
                 onChange={e => setFormData({...formData, live_link: e.target.value})}
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
                 placeholder="https://..."
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <ImageUpload
+                label="Project Image / Cover"
+                folder="projects"
+                url={formData.image_url}
+                onUpload={(url) => setFormData({ ...formData, image_url: url })}
               />
             </div>
 
