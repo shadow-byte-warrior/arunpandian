@@ -10,6 +10,10 @@ export interface ThemeState {
   typography: {
     fontFamily: string;
     headingFont: string;
+    bodySize: string;
+    headingSize: string;
+    bodyWeight: string;
+    headingWeight: string;
   };
   layout: {
     radius: string;
@@ -29,6 +33,10 @@ export const presets: Record<string, ThemeState> = {
     typography: {
       fontFamily: 'Space Grotesk, sans-serif',
       headingFont: 'Space Grotesk, sans-serif',
+      bodySize: '16px',
+      headingSize: '48px',
+      bodyWeight: '400',
+      headingWeight: '700',
     },
     layout: {
       radius: '1rem',
@@ -46,6 +54,10 @@ export const presets: Record<string, ThemeState> = {
     typography: {
       fontFamily: 'Orbitron, sans-serif',
       headingFont: 'Orbitron, sans-serif',
+      bodySize: '15px',
+      headingSize: '52px',
+      bodyWeight: '400',
+      headingWeight: '900',
     },
     layout: {
       radius: '0rem',
@@ -63,6 +75,10 @@ export const presets: Record<string, ThemeState> = {
     typography: {
       fontFamily: 'Inter, sans-serif',
       headingFont: 'Inter, sans-serif',
+      bodySize: '14px',
+      headingSize: '40px',
+      bodyWeight: '400',
+      headingWeight: '800',
     },
     layout: {
       radius: '0.375rem',
@@ -80,6 +96,10 @@ export const presets: Record<string, ThemeState> = {
     typography: {
       fontFamily: 'Inter, sans-serif',
       headingFont: 'Inter, sans-serif',
+      bodySize: '16px',
+      headingSize: '44px',
+      bodyWeight: '300',
+      headingWeight: '600',
     },
     layout: {
       radius: '0.5rem',

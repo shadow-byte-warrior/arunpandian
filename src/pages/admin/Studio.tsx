@@ -5,7 +5,7 @@ import { useSiteSettings } from '../../components/admin/hooks/useSiteSettings';
 import toast from 'react-hot-toast';
 
 export default function Studio() {
-  const { theme, updateColors, applyPreset } = useThemeStore();
+  const { theme, updateColors, updateTypography, applyPreset } = useThemeStore();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { saveSettings } = useSiteSettings('theme');
   const [isSaving, setIsSaving] = useState(false);
@@ -54,6 +54,15 @@ export default function Studio() {
     }
   };
 
+  const fontOptions = [
+    'Space Grotesk, sans-serif',
+    'Inter, sans-serif',
+    'Archivo, sans-serif',
+    'Orbitron, sans-serif',
+    'Playfair Display, serif',
+    'Roboto Mono, monospace'
+  ];
+
   return (
     <div className="flex h-full w-full bg-slate-900 overflow-hidden">
       {/* Studio Sidebar (Controls) */}
@@ -80,8 +89,101 @@ export default function Studio() {
             </div>
           </div>
 
+          {/* Typography */}
+          <div className="space-y-4 border-t border-slate-100 pt-4">
+            <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Typography</h3>
+            
+            {/* Font Family Selection */}
+            <div className="space-y-2">
+              <label className="text-xs text-slate-500 block">Body Font Family</label>
+              <select 
+                value={theme.typography.fontFamily}
+                onChange={(e) => updateTypography({ fontFamily: e.target.value })}
+                className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
+              >
+                {fontOptions.map(font => (
+                  <option key={font} value={font}>{font.split(',')[0]}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs text-slate-500 block">Heading Font Family</label>
+              <select 
+                value={theme.typography.headingFont}
+                onChange={(e) => updateTypography({ headingFont: e.target.value })}
+                className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
+              >
+                {fontOptions.map(font => (
+                  <option key={font} value={font}>{font.split(',')[0]}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Font Sizes */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-xs text-slate-500">Body Size</label>
+                <div className="flex items-center border border-slate-200 rounded px-2 py-1">
+                  <input 
+                    type="number"
+                    value={parseInt(theme.typography.bodySize) || 16}
+                    onChange={(e) => updateTypography({ bodySize: `${e.target.value}px` })}
+                    className="w-full text-sm border-0 p-0 focus:ring-0 text-slate-850"
+                  />
+                  <span className="text-xs text-slate-450 ml-1">px</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-500">Heading Size</label>
+                <div className="flex items-center border border-slate-200 rounded px-2 py-1">
+                  <input 
+                    type="number"
+                    value={parseInt(theme.typography.headingSize) || 48}
+                    onChange={(e) => updateTypography({ headingSize: `${e.target.value}px` })}
+                    className="w-full text-sm border-0 p-0 focus:ring-0 text-slate-850"
+                  />
+                  <span className="text-xs text-slate-450 ml-1">px</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Font Weights */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-xs text-slate-500">Body Weight</label>
+                <select 
+                  value={theme.typography.bodyWeight}
+                  onChange={(e) => updateTypography({ bodyWeight: e.target.value })}
+                  className="w-full text-sm border border-slate-200 rounded px-2 py-1 bg-white text-slate-850"
+                >
+                  <option value="300">Light (300)</option>
+                  <option value="400">Regular (400)</option>
+                  <option value="500">Medium (500)</option>
+                  <option value="600">Semibold (600)</option>
+                  <option value="700">Bold (700)</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-500">Heading Weight</label>
+                <select 
+                  value={theme.typography.headingWeight}
+                  onChange={(e) => updateTypography({ headingWeight: e.target.value })}
+                  className="w-full text-sm border border-slate-200 rounded px-2 py-1 bg-white text-slate-850"
+                >
+                  <option value="400">Regular (450)</option>
+                  <option value="500">Medium (500)</option>
+                  <option value="600">Semibold (600)</option>
+                  <option value="700">Bold (700)</option>
+                  <option value="800">Extra Bold (800)</option>
+                  <option value="900">Black (900)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           {/* Colors */}
-          <div className="space-y-3">
+          <div className="space-y-3 border-t border-slate-100 pt-4">
             <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Colors</h3>
             <div className="space-y-2">
               {Object.entries(theme.colors).map(([key, value]) => (

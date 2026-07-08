@@ -24,6 +24,10 @@ function normalizeTheme(raw: any, current: ThemeState): ThemeState | null {
       typography: {
         fontFamily: raw.fontFamily ? `${raw.fontFamily}, sans-serif` : current.typography.fontFamily,
         headingFont: current.typography.headingFont,
+        bodySize: current.typography.bodySize,
+        headingSize: current.typography.headingSize,
+        bodyWeight: current.typography.bodyWeight,
+        headingWeight: current.typography.headingWeight,
       },
       layout: current.layout,
     };
@@ -81,6 +85,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     root.style.setProperty('--font-primary', theme.typography.fontFamily);
     root.style.setProperty('--font-heading', theme.typography.headingFont);
+    root.style.setProperty('--font-size-base', theme.typography.bodySize);
+    root.style.setProperty('--font-size-heading', theme.typography.headingSize);
+    root.style.setProperty('--font-weight-base', theme.typography.bodyWeight);
+    root.style.setProperty('--font-weight-heading', theme.typography.headingWeight);
 
     root.style.setProperty('--radius-base', theme.layout.radius);
   }, [theme]);

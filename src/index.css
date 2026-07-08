@@ -23,6 +23,10 @@
 :root {
   --font-primary: 'Space Grotesk', system-ui, sans-serif;
   --font-heading: 'Archivo', system-ui, sans-serif;
+  --font-size-base: 16px;
+  --font-size-heading: 48px;
+  --font-weight-base: 400;
+  --font-weight-heading: 700;
 
   --color-background: #FAFAFA;
   --color-surface: #FFFFFF;
@@ -46,6 +50,8 @@ html {
 
 body {
   font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-base);
   background-color: var(--color-bg);
   color: var(--color-ink);
   overflow-x: hidden;
@@ -53,6 +59,7 @@ body {
 
 h1, h2, h3, h4, h5, h6, .font-display {
   font-family: var(--font-display);
+  font-weight: var(--font-weight-heading);
   letter-spacing: -0.02em;
 }
 
