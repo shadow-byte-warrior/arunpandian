@@ -39,47 +39,67 @@ const ProjectCard = ({ project }) => {
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       style={{ rotateX: rotX, rotateY: rotY, transformPerspective: 1000 }}
-      className="group relative flex flex-col rounded-3xl border border-line bg-surface p-7 [transform-style:preserve-3d] hover:border-ink/20 hover:shadow-[0_40px_80px_-40px_rgba(9,9,11,0.4)] transition-shadow duration-300"
+      className="group relative flex flex-col rounded-3xl border border-line bg-surface overflow-hidden [transform-style:preserve-3d] hover:border-ink/20 hover:shadow-[0_40px_80px_-40px_rgba(9,9,11,0.4)] transition-shadow duration-300"
     >
-      <div className="flex items-start justify-between gap-4" style={{ transform: 'translateZ(40px)' }}>
-        <h3 className="font-display font-bold text-xl sm:text-[1.35rem] text-ink leading-snug">{title}</h3>
-        <div className="flex items-center gap-2.5 text-ink-soft shrink-0">
-          {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="hover:text-ink transition-colors"><GithubIcon /></a>}
-          {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" aria-label="Case study" className="hover:text-ink transition-colors"><FileText size={18} /></a>}
-          {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" aria-label="Live demo" className="hover:text-accent transition-colors"><ExternalLink size={18} /></a>}
+      {project.image_url && (
+        <div className="w-full h-48 overflow-hidden bg-muted" style={{ transform: 'translateZ(10px)' }}>
+          <img 
+            src={project.image_url} 
+            alt={title} 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
         </div>
-      </div>
-
-      <div className="mt-5 space-y-3.5 flex-1" style={{ transform: 'translateZ(20px)' }}>
-        {flow.map((f) => (
-          <div key={f.key}>
-            <div className="flex items-center gap-2 mb-1">
-              <span className={`h-1.5 w-1.5 rounded-full ${f.dot}`} />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-ink-soft">{f.label}</span>
-            </div>
-            <p className={`pl-3.5 text-sm leading-relaxed border-l border-line ${f.key === 'insight' ? 'text-ink font-medium' : 'text-ink-soft'}`}>
-              {project[f.key]}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-6 pt-5 border-t border-line flex flex-wrap gap-1.5" style={{ transform: 'translateZ(20px)' }}>
-        {tags && tags.map((tag) => (
-          <span key={tag} className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-muted text-ink-soft">{tag}</span>
-        ))}
-      </div>
-
-      {(caseStudyLink || githubLink) && (
-        <a
-          href={caseStudyLink || githubLink} target="_blank" rel="noopener noreferrer"
-          className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink group-hover:text-accent transition-colors"
-          style={{ transform: 'translateZ(30px)' }}
-        >
-          Read the case study
-          <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-        </a>
       )}
+
+      <div className="p-7 flex flex-col flex-1">
+        <div className="flex items-center justify-between gap-4 mb-4" style={{ transform: 'translateZ(30px)' }}>
+          {/* Year or badge area (optional if created_at was provided, otherwise just a static badge or nothing) */}
+          <span className="text-xs font-mono font-bold text-ink-soft bg-muted px-2.5 py-1 rounded-md">
+            {new Date(project.created_at || Date.now()).getFullYear()}
+          </span>
+          <div className="flex items-center gap-2.5 text-ink-soft shrink-0">
+            {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="hover:text-ink transition-colors"><GithubIcon /></a>}
+            {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" aria-label="Case study" className="hover:text-ink transition-colors"><FileText size={18} /></a>}
+            {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" aria-label="Live demo" className="hover:text-accent transition-colors"><ExternalLink size={18} /></a>}
+          </div>
+        </div>
+
+        <h3 className="font-display font-bold text-xl sm:text-[1.35rem] text-ink leading-snug mb-4" style={{ transform: 'translateZ(40px)' }}>{title}</h3>
+
+        <div className="space-y-3.5 flex-1" style={{ transform: 'translateZ(20px)' }}>
+          {flow.map((f) => {
+            if (!project[f.key]) return null;
+            return (
+              <div key={f.key}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`h-1.5 w-1.5 rounded-full ${f.dot}`} />
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-ink-soft">{f.label}</span>
+                </div>
+                <p className={`pl-3.5 text-sm leading-relaxed border-l border-line ${f.key === 'insight' ? 'text-ink font-medium' : 'text-ink-soft'}`}>
+                  {project[f.key]}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-6 pt-5 border-t border-line flex flex-wrap gap-1.5" style={{ transform: 'translateZ(20px)' }}>
+          {tags && tags.map((tag) => (
+            <span key={tag} className="px-2.5 py-1 text-[11px] font-medium rounded-full border border-line text-ink-soft bg-surface">{tag}</span>
+          ))}
+        </div>
+
+        {(caseStudyLink || githubLink) && (
+          <a
+            href={caseStudyLink || githubLink} target="_blank" rel="noopener noreferrer"
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink group-hover:text-accent transition-colors"
+            style={{ transform: 'translateZ(30px)' }}
+          >
+            Read the case study
+            <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </a>
+        )}
+      </div>
     </motion.article>
   );
 };

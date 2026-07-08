@@ -17,16 +17,20 @@ const About = () => {
 
   const stats = about.stats || [];
   const stack = about.stack || [];
+  const hiddenFields = about.hiddenFields || [];
+  const isVisible = (field) => !hiddenFields.includes(field);
 
   return (
-    <section id="about" className="relative py-24 sm:py-32 bg-surface border-y border-line">
+    <section id="about" data-edit-id="about.section" data-edit-name="About" data-edit-kind="section" className="relative py-24 sm:py-32 bg-surface border-y border-line">
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
         {/* Header */}
         <div className="mb-12">
-          <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{about.sectionLabel}</span>
-          <h2 className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">
-            {about.sectionTitle}
-          </h2>
+          {isVisible('sectionLabel') && <span data-edit-id="about.label" data-edit-name="About · Eyebrow" data-edit-kind="text" data-edit-path="about.sectionLabel" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{about.sectionLabel}</span>}
+          {isVisible('sectionTitle') && (
+            <h2 data-edit-id="about.title" data-edit-name="About · Title" data-edit-kind="heading" data-edit-path="about.sectionTitle" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">
+              {about.sectionTitle}
+            </h2>
+          )}
         </div>
 
         {/* Bento grid */}
@@ -38,13 +42,13 @@ const About = () => {
               className="group relative h-full overflow-hidden rounded-3xl border border-line bg-ink"
             >
               <img
-                src={arunProfile}
+                src={about.profileImage || arunProfile}
                 alt={about.profileCaption || 'Arun Pandian'}
                 className="h-full w-full min-h-[260px] object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 via-ink/40 to-transparent p-5 pt-14">
-                <p className="font-display font-bold text-white text-lg leading-tight">{about.profileCaption}</p>
-                <p className="mt-0.5 text-xs font-mono text-white/70">{about.profileSubCaption}</p>
+                {isVisible('profileCaption') && <p className="font-display font-bold text-white text-lg leading-tight">{about.profileCaption}</p>}
+                {isVisible('profileSubCaption') && <p className="mt-0.5 text-xs font-mono text-white/70">{about.profileSubCaption}</p>}
               </div>
             </motion.div>
           </SliceReveal>
@@ -55,9 +59,12 @@ const About = () => {
             className="lg:col-span-4 group relative overflow-hidden rounded-3xl border border-line bg-bg p-7 sm:p-9"
           >
             <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-accent/5 blur-2xl transition-opacity duration-700 opacity-0 group-hover:opacity-100" />
-            <p className="relative text-xl sm:text-2xl text-ink leading-snug font-medium text-balance"
-               dangerouslySetInnerHTML={{ __html: about.narrative }} />
-            <p className="relative mt-5 text-ink-soft leading-relaxed">{about.narrativeExtra}</p>
+            {isVisible('narrative') && (
+              <p data-edit-id="about.narrative" data-edit-name="About · Narrative" data-edit-kind="text" data-edit-path="about.narrative"
+                 className="relative text-xl sm:text-2xl text-ink leading-snug font-medium text-balance"
+                 dangerouslySetInnerHTML={{ __html: about.narrative }} />
+            )}
+            {isVisible('narrativeExtra') && <p data-edit-id="about.narrativeExtra" data-edit-name="About · Narrative (extra)" data-edit-kind="text" data-edit-path="about.narrativeExtra" className="relative mt-5 text-ink-soft leading-relaxed">{about.narrativeExtra}</p>}
             <div className="relative mt-6 flex flex-wrap gap-2">
               {stack.map((t) => (
                 <span key={t} className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-mono text-ink-soft">
@@ -95,9 +102,9 @@ const About = () => {
             className="lg:col-span-2 rounded-3xl border border-line bg-bg p-6"
           >
             <span className="text-xs font-mono text-accent uppercase tracking-wider">Education</span>
-            <p className="mt-2 text-ink font-semibold leading-snug">{about.education?.school}</p>
-            <p className="mt-1 text-sm text-ink-soft">{about.education?.degree}</p>
-            <p className="mt-3 text-xs font-mono text-ink-soft/70">{about.education?.years}</p>
+            {isVisible('education.school') && <p className="mt-2 text-ink font-semibold leading-snug">{about.education?.school}</p>}
+            {isVisible('education.degree') && <p className="mt-1 text-sm text-ink-soft">{about.education?.degree}</p>}
+            {isVisible('education.years') && <p className="mt-3 text-xs font-mono text-ink-soft/70">{about.education?.years}</p>}
           </motion.div>
 
           {/* Goals — short & long term */}
@@ -106,12 +113,16 @@ const About = () => {
             className="lg:col-span-2 rounded-3xl border border-line bg-bg p-6"
           >
             <span className="text-xs font-mono text-accent uppercase tracking-wider">Goals</span>
-            <p className="mt-2 text-ink font-medium leading-snug">
-              <span className="text-accent">Now →</span> {about.goals?.now}
-            </p>
-            <p className="mt-3 text-ink font-medium leading-snug">
-              <span className="text-accent">Next →</span> {about.goals?.next}
-            </p>
+            {isVisible('goals.now') && (
+              <p className="mt-2 text-ink font-medium leading-snug">
+                <span className="text-accent">Now →</span> {about.goals?.now}
+              </p>
+            )}
+            {isVisible('goals.next') && (
+              <p className="mt-3 text-ink font-medium leading-snug">
+                <span className="text-accent">Next →</span> {about.goals?.next}
+              </p>
+            )}
           </motion.div>
         </div>
 

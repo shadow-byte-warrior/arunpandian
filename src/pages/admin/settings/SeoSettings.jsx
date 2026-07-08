@@ -4,9 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2 } from 'lucide-react';
 import { TextField, TextArea } from '../../../components/admin/ui/FormInputs';
+import ImageUpload from '../../../components/admin/ui/ImageUpload';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
 import { useSiteSettings } from '../../../components/admin/hooks/useSiteSettings';
+import { usePreviewSync } from '../../../components/admin/preview/usePreviewSync';
 
 const seoSchema = z.object({
   metaTitle: z.string().min(1, 'Title is required'),
@@ -30,6 +32,8 @@ export default function SeoSettings() {
       twitterHandle: ''
     }
   });
+
+  usePreviewSync(form, (v) => ({ settings: { seo: v } }));
 
   useEffect(() => {
     fetchSettings().then(data => {
@@ -85,13 +89,14 @@ export default function SeoSettings() {
 
       <SectionCard title="Social Graph & Open Graph">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField 
-            label="Open Graph Image URL (og:image)" 
-            className="md:col-span-2"
-            placeholder="https://yourdomain.com/og-image.jpg"
-            {...form.register('ogImage')} 
-            error={form.formState.errors.ogImage?.message} 
-          />
+          <div className="md:col-span-2">
+            <ImageUpload
+              label="Open Graph Image (og:image)"
+              folder="seo"
+              url={form.watch('ogImage')}
+              onUpload={(url) => form.setValue('ogImage', url, { shouldDirty: true })}
+            />
+          </div>
           <TextField 
             label="Twitter Handle" 
             placeholder="@arunpandian"

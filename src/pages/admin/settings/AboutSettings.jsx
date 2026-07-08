@@ -4,9 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, Plus, GripVertical, Trash2 } from 'lucide-react';
 import { TextField, TextArea } from '../../../components/admin/ui/FormInputs';
+import ImageUpload from '../../../components/admin/ui/ImageUpload';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
 import { useSiteSettings } from '../../../components/admin/hooks/useSiteSettings';
+import { usePreviewSync } from '../../../components/admin/preview/usePreviewSync';
 import {
   DndContext,
   closestCenter,
@@ -31,6 +33,7 @@ const aboutSchema = z.object({
   narrativeExtra: z.string().min(1, 'Extra narrative is required'),
   profileCaption: z.string().min(1, 'Profile caption is required'),
   profileSubCaption: z.string().min(1, 'Profile sub-caption is required'),
+  profileImage: z.string().optional(),
   education: z.object({
     school: z.string().min(1, 'School is required'),
     degree: z.string().min(1, 'Degree is required'),
@@ -43,7 +46,8 @@ const aboutSchema = z.object({
   stats: z.array(z.object({
     value: z.string().min(1, 'Value is required'),
     label: z.string().min(1, 'Label is required')
-  }))
+  })),
+  hiddenFields: z.array(z.string()).default([]),
 });
 
 function SortableItem(props) {
@@ -81,12 +85,15 @@ export default function AboutSettings() {
     resolver: zodResolver(aboutSchema),
     defaultValues: {
       sectionLabel: '', sectionTitle: '', narrative: '', narrativeExtra: '',
-      profileCaption: '', profileSubCaption: '',
+      profileCaption: '', profileSubCaption: '', profileImage: '',
       education: { school: '', degree: '', years: '' },
       goals: { now: '', next: '' },
-      stats: []
+      stats: [],
+      hiddenFields: []
     }
   });
+
+  usePreviewSync(form, (v) => ({ settings: { about: v } }), '#about');
 
   const { fields: statsFields, append: appendStat, remove: removeStat, move: moveStat } = useFieldArray({
     control: form.control,
@@ -131,6 +138,19 @@ export default function AboutSettings() {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="animate-spin text-blue-600" size={24} /></div>;
   }
 
+  const toggleVisibility = (fieldName) => {
+    const currentHidden = form.getValues('hiddenFields') || [];
+    if (currentHidden.includes(fieldName)) {
+      form.setValue('hiddenFields', currentHidden.filter(f => f !== fieldName), { shouldDirty: true });
+    } else {
+      form.setValue('hiddenFields', [...currentHidden, fieldName], { shouldDirty: true });
+    }
+  };
+
+  const isVisible = (fieldName) => {
+    return !(form.watch('hiddenFields') || []).includes(fieldName);
+  };
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-4xl space-y-8 pb-32">
       <div>
@@ -140,35 +160,41 @@ export default function AboutSettings() {
 
       <SectionCard title="Section Headers">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} />
-          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} />
+          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} siteVisible={isVisible('sectionLabel')} onToggleVisible={() => toggleVisibility('sectionLabel')} />
+          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} siteVisible={isVisible('sectionTitle')} onToggleVisible={() => toggleVisibility('sectionTitle')} />
         </div>
       </SectionCard>
 
       <SectionCard title="The Narrative">
         <div className="space-y-6">
-          <TextArea label="Primary Narrative" rows={4} {...form.register('narrative')} error={form.formState.errors.narrative?.message} />
-          <TextArea label="Secondary Narrative (Extra)" rows={3} {...form.register('narrativeExtra')} error={form.formState.errors.narrativeExtra?.message} />
+          <ImageUpload
+            label="Profile Image"
+            folder="about"
+            url={form.watch('profileImage')}
+            onUpload={(url) => form.setValue('profileImage', url, { shouldDirty: true })}
+          />
+          <TextArea label="Primary Narrative" rows={4} {...form.register('narrative')} error={form.formState.errors.narrative?.message} siteVisible={isVisible('narrative')} onToggleVisible={() => toggleVisibility('narrative')} />
+          <TextArea label="Secondary Narrative (Extra)" rows={3} {...form.register('narrativeExtra')} error={form.formState.errors.narrativeExtra?.message} siteVisible={isVisible('narrativeExtra')} onToggleVisible={() => toggleVisibility('narrativeExtra')} />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
-            <TextField label="Profile Caption (Name)" {...form.register('profileCaption')} error={form.formState.errors.profileCaption?.message} />
-            <TextField label="Profile Sub-caption (Location/Role)" {...form.register('profileSubCaption')} error={form.formState.errors.profileSubCaption?.message} />
+            <TextField label="Profile Caption (Name)" {...form.register('profileCaption')} error={form.formState.errors.profileCaption?.message} siteVisible={isVisible('profileCaption')} onToggleVisible={() => toggleVisibility('profileCaption')} />
+            <TextField label="Profile Sub-caption (Location/Role)" {...form.register('profileSubCaption')} error={form.formState.errors.profileSubCaption?.message} siteVisible={isVisible('profileSubCaption')} onToggleVisible={() => toggleVisibility('profileSubCaption')} />
           </div>
         </div>
       </SectionCard>
 
       <SectionCard title="Goals">
         <div className="space-y-6">
-          <TextArea label="Current Goal (Now)" rows={2} {...form.register('goals.now')} error={form.formState.errors.goals?.now?.message} />
-          <TextArea label="Future Goal (Next)" rows={2} {...form.register('goals.next')} error={form.formState.errors.goals?.next?.message} />
+          <TextArea label="Current Goal (Now)" rows={2} {...form.register('goals.now')} error={form.formState.errors.goals?.now?.message} siteVisible={isVisible('goals.now')} onToggleVisible={() => toggleVisibility('goals.now')} />
+          <TextArea label="Future Goal (Next)" rows={2} {...form.register('goals.next')} error={form.formState.errors.goals?.next?.message} siteVisible={isVisible('goals.next')} onToggleVisible={() => toggleVisibility('goals.next')} />
         </div>
       </SectionCard>
 
       <SectionCard title="Education">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="School / University" className="md:col-span-2" {...form.register('education.school')} error={form.formState.errors.education?.school?.message} />
-          <TextField label="Degree" {...form.register('education.degree')} error={form.formState.errors.education?.degree?.message} />
-          <TextField label="Years (e.g. 2022 - 2026)" {...form.register('education.years')} error={form.formState.errors.education?.years?.message} />
+          <TextField label="School / University" className="md:col-span-2" {...form.register('education.school')} error={form.formState.errors.education?.school?.message} siteVisible={isVisible('education.school')} onToggleVisible={() => toggleVisibility('education.school')} />
+          <TextField label="Degree" {...form.register('education.degree')} error={form.formState.errors.education?.degree?.message} siteVisible={isVisible('education.degree')} onToggleVisible={() => toggleVisibility('education.degree')} />
+          <TextField label="Years (e.g. 2022 - 2026)" {...form.register('education.years')} error={form.formState.errors.education?.years?.message} siteVisible={isVisible('education.years')} onToggleVisible={() => toggleVisibility('education.years')} />
         </div>
       </SectionCard>
 

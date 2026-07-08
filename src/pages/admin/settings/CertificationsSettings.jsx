@@ -4,9 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, Plus, GripVertical, Trash2 } from 'lucide-react';
 import { TextField } from '../../../components/admin/ui/FormInputs';
+import ImageUpload from '../../../components/admin/ui/ImageUpload';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
 import { useSiteSettings } from '../../../components/admin/hooks/useSiteSettings';
+import { usePreviewSync } from '../../../components/admin/preview/usePreviewSync';
 import {
   DndContext,
   closestCenter,
@@ -32,7 +34,8 @@ const certSchema = z.object({
     credentialId: z.string(),
     credentialUrl: z.string(),
     image: z.string()
-  }))
+  })),
+  hiddenFields: z.array(z.string()).default([]),
 });
 
 function SortableItem(props) {
@@ -68,9 +71,25 @@ export default function CertificationsSettings() {
   const form = useForm({
     resolver: zodResolver(certSchema),
     defaultValues: {
-      certifications: []
+      certifications: [],
+      hiddenFields: []
     }
   });
+
+  usePreviewSync(form, (v) => ({ settings: { certifications: v } }), '#skills');
+
+  const toggleVisibility = (fieldName) => {
+    const currentHidden = form.getValues('hiddenFields') || [];
+    if (currentHidden.includes(fieldName)) {
+      form.setValue('hiddenFields', currentHidden.filter(f => f !== fieldName), { shouldDirty: true });
+    } else {
+      form.setValue('hiddenFields', [...currentHidden, fieldName], { shouldDirty: true });
+    }
+  };
+
+  const isVisible = (fieldName) => {
+    return !(form.watch('hiddenFields') || []).includes(fieldName);
+  };
 
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
@@ -80,15 +99,18 @@ export default function CertificationsSettings() {
   useEffect(() => {
     fetchSettings().then(data => {
       if (data) {
-        form.reset({ certifications: Array.isArray(data) ? data : [] });
+        if (Array.isArray(data)) {
+          form.reset({ certifications: data, hiddenFields: [] });
+        } else {
+          form.reset({ certifications: data.certifications || [], hiddenFields: data.hiddenFields || [] });
+        }
       }
     });
   }, []);
 
   const onSubmit = async (values) => {
     setIsSaving(true);
-    // values.certifications is the array we want to save
-    const success = await saveSettings(values.certifications);
+    const success = await saveSettings(values);
     if (success) {
       form.reset(values);
     }
@@ -136,33 +158,41 @@ export default function CertificationsSettings() {
                         className="md:col-span-2"
                         {...form.register(`certifications.${index}.name`)} 
                         error={form.formState.errors.certifications?.[index]?.name?.message} 
+                        siteVisible={isVisible(`certifications.${index}.name`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.name`)}
                       />
                       <TextField 
                         label="Issuer"
                         {...form.register(`certifications.${index}.issuer`)} 
                         error={form.formState.errors.certifications?.[index]?.issuer?.message} 
+                        siteVisible={isVisible(`certifications.${index}.issuer`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.issuer`)}
                       />
                       <TextField 
                         label="Issue Date"
                         {...form.register(`certifications.${index}.issueDate`)} 
                         error={form.formState.errors.certifications?.[index]?.issueDate?.message} 
+                        siteVisible={isVisible(`certifications.${index}.issueDate`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.issueDate`)}
                       />
                       <TextField 
                         label="Credential ID"
                         {...form.register(`certifications.${index}.credentialId`)} 
                         error={form.formState.errors.certifications?.[index]?.credentialId?.message} 
+                        siteVisible={isVisible(`certifications.${index}.credentialId`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.credentialId`)}
                       />
                       <TextField 
                         label="Credential URL"
                         {...form.register(`certifications.${index}.credentialUrl`)} 
                         error={form.formState.errors.certifications?.[index]?.credentialUrl?.message} 
+                        siteVisible={isVisible(`certifications.${index}.credentialUrl`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.credentialUrl`)}
                       />
-                      <TextField 
-                        label="Certificate Image URL"
-                        className="md:col-span-2"
-                        {...form.register(`certifications.${index}.image`)} 
-                        error={form.formState.errors.certifications?.[index]?.image?.message} 
-                      />
+                      <div className="md:col-span-2">
+                        <ImageUpload
+                          label="Certificate Image or PDF"
+                          folder="certifications"
+                          accept="image/*,application/pdf"
+                          url={form.watch(`certifications.${index}.image`)}
+                          onUpload={(url) => form.setValue(`certifications.${index}.image`, url, { shouldDirty: true })}
+                        />
+                      </div>
                     </div>
                     <button type="button" onClick={() => remove(index)} className="mt-8 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                       <Trash2 size={18} />

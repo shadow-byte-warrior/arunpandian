@@ -8,7 +8,9 @@ const ease = [0.16, 1, 0.3, 1];
 
 const ContactForm = () => {
   const { settings, submitContact } = useContent();
-  const contact = settings.contact;
+  const contact = settings.contact || {};
+  const hiddenFields = contact.hiddenFields || [];
+  const isVisible = (field) => !hiddenFields.includes(field);
 
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState({ submitting: false, success: null, message: '' });
@@ -33,27 +35,32 @@ const ContactForm = () => {
     <section id="contact" className="py-24 sm:py-32 bg-bg">
       <div className="max-w-6xl mx-auto px-5 sm:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          {/* Left invitation */}
           <motion.div
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.7, ease }}
           >
-            <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{contact.sectionLabel}</span>
-            <h2 className="mt-3 font-display font-extrabold text-4xl sm:text-6xl text-ink tracking-tight leading-[0.95]"
-                dangerouslySetInnerHTML={{ __html: contact.sectionTitle?.replace('\n', '<br />') }} />
-            <p className="mt-6 text-lg text-ink-soft max-w-md leading-relaxed">
-              {contact.subtitle}
-            </p>
-            <a
-              href={`mailto:${contact.email}`}
-              className="group mt-8 inline-flex items-center gap-2 font-display font-bold text-xl sm:text-2xl text-ink hover:text-accent transition-colors"
-            >
-              {contact.email}
-              <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </a>
+            {isVisible('sectionLabel') && <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{contact.sectionLabel}</span>}
+            {isVisible('sectionTitle') && (
+              <h2 className="mt-3 font-display font-extrabold text-4xl sm:text-6xl text-ink tracking-tight leading-[0.95]"
+                  dangerouslySetInnerHTML={{ __html: contact.sectionTitle?.replace('\n', '<br />') }} />
+            )}
+            {isVisible('subtitle') && (
+              <p className="mt-6 text-lg text-ink-soft max-w-md leading-relaxed">
+                {contact.subtitle}
+              </p>
+            )}
+            {isVisible('email') && (
+              <a
+                href={`mailto:${contact.email}`}
+                className="group mt-8 inline-flex items-center gap-2 font-display font-bold text-xl sm:text-2xl text-ink hover:text-accent transition-colors"
+              >
+                {contact.email}
+                <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              </a>
+            )}
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-ink-soft">
-              {contact.phone && <a href={`tel:${contact.phone.replace(/\s/g, '')}`} className="hover:text-ink transition-colors">{contact.phone}</a>}
-              {contact.location && <span>{contact.location}</span>}
+              {isVisible('phone') && contact.phone && <a href={`tel:${contact.phone.replace(/\s/g, '')}`} className="hover:text-ink transition-colors">{contact.phone}</a>}
+              {isVisible('location') && contact.location && <span>{contact.location}</span>}
             </div>
           </motion.div>
 

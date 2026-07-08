@@ -231,6 +231,21 @@ const fallbackExperiences = [
   },
 ];
 
+// ─── Deep merge (draft preview overrides win over fetched content) ──
+function isPlainObject(x) {
+  return x && typeof x === 'object' && !Array.isArray(x);
+}
+function deepMerge(base, over) {
+  if (!isPlainObject(base) || !isPlainObject(over)) return over === undefined ? base : over;
+  const out = { ...base };
+  for (const key of Object.keys(over)) {
+    out[key] = isPlainObject(base[key]) && isPlainObject(over[key])
+      ? deepMerge(base[key], over[key])
+      : over[key];
+  }
+  return out;
+}
+
 // ─── Context ────────────────────────────────────────────────
 
 const ContentContext = createContext(null);
@@ -253,7 +268,11 @@ function mapProject(row) {
     tags: row.tags || [],
     githubLink: row.github_link,
     liveLink: row.live_link,
+    demoLink: row.live_link,
     imageUrl: row.image_url,
+    // ProjectCard reads the raw column names — keep both shapes wired
+    image_url: row.image_url,
+    created_at: row.created_at,
   };
 }
 
@@ -267,6 +286,8 @@ function mapBlog(row) {
     tags: row.tags || [],
     readTime: row.read_time,
     coverImage: row.cover_image,
+    // BlogCard reads the raw column name — keep both shapes wired
+    cover_image: row.cover_image,
     authorName: row.author_name,
     authorAvatar: row.author_avatar,
     publishedAt: row.published_at,
@@ -293,6 +314,26 @@ export function ContentProvider({ children }) {
   const [experiences, setExperiences] = useState(fallbackExperiences);
   const [loading, setLoading] = useState(true);
 
+  // ── Live draft preview: when this app runs inside the admin's preview iframe,
+  //    the admin pushes unsaved form drafts here so the site re-renders instantly.
+  const [previewOverride, setPreviewOverride] = useState(null);
+
+  useEffect(() => {
+    const inIframe = typeof window !== 'undefined' && window.parent && window.parent !== window;
+    if (!inIframe) return;
+
+    const handleMessage = (event) => {
+      if (event.data?.type === 'PREVIEW_OVERRIDE') {
+        setPreviewOverride(event.data.payload || null);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    // Tell the parent we're mounted and ready to receive the current draft.
+    window.parent.postMessage({ type: 'PREVIEW_READY' }, '*');
+
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   useEffect(() => {
     if (!supabase) {
       console.warn('Supabase client not available — using fallback data.');
@@ -314,28 +355,32 @@ export function ContentProvider({ children }) {
       }
     };
 
+    // Public site only shows published rows — drafts stay admin-only
     const fetchProjects = async () => {
       const { data: rows, error } = await supabase
         .from('projects')
         .select('*')
+        .eq('published', true)
         .order('sort_order', { ascending: true });
-      if (!error && rows && rows.length > 0) setProjects(rows.map(mapProject));
+      if (!error && rows) setProjects(rows.length > 0 ? rows.map(mapProject) : []);
     };
 
     const fetchBlogs = async () => {
       const { data: rows, error } = await supabase
         .from('blogs')
         .select('*')
+        .eq('published', true)
         .order('sort_order', { ascending: true });
-      if (!error && rows && rows.length > 0) setBlogs(rows.map(mapBlog));
+      if (!error && rows) setBlogs(rows.length > 0 ? rows.map(mapBlog) : []);
     };
 
     const fetchExperiences = async () => {
       const { data: rows, error } = await supabase
         .from('experiences')
         .select('*')
+        .eq('published', true)
         .order('sort_order', { ascending: true });
-      if (!error && rows && rows.length > 0) setExperiences(rows.map(mapExperience));
+      if (!error && rows) setExperiences(rows.length > 0 ? rows.map(mapExperience) : []);
     };
 
     const fetchAll = async () => {
@@ -381,13 +426,22 @@ export function ContentProvider({ children }) {
     return { message: 'Message sent successfully!' };
   };
 
+  // Apply live draft overrides (if any) on top of the fetched/fallback content.
+  const mergedSettings = previewOverride?.settings
+    ? deepMerge(settings, previewOverride.settings)
+    : settings;
+  const mergedProjects = previewOverride?.projects ?? projects;
+  const mergedBlogs = previewOverride?.blogs ?? blogs;
+  const mergedExperiences = previewOverride?.experiences ?? experiences;
+
   const value = {
-    settings,
-    projects,
-    blogs,
-    experiences,
+    settings: mergedSettings,
+    projects: mergedProjects,
+    blogs: mergedBlogs,
+    experiences: mergedExperiences,
     loading,
     submitContact,
+    isPreview: !!previewOverride,
   };
 
   return (

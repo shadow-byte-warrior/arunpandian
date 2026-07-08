@@ -14,15 +14,26 @@ const BlogCard = ({ blog }) => {
     <motion.article
       whileHover={{ y: -6 }}
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className="group flex flex-col justify-between h-full rounded-3xl border border-line bg-surface p-6 hover:border-ink/20 hover:shadow-[0_30px_70px_-40px_rgba(9,9,11,0.4)] transition-all duration-300"
+      className="group flex flex-col justify-between h-full rounded-3xl border border-line bg-surface overflow-hidden hover:border-ink/20 hover:shadow-[0_30px_70px_-40px_rgba(9,9,11,0.4)] transition-all duration-300"
     >
       <div>
-        <div className="flex items-center gap-4 text-xs text-ink-soft font-mono mb-4">
-          <span className="flex items-center gap-1.5"><Calendar size={12} />{formattedDate}</span>
-          <span className="flex items-center gap-1.5"><Clock size={12} />{readTime}</span>
-        </div>
+        {blog.cover_image && (
+          <div className="w-full h-48 overflow-hidden bg-muted">
+            <img 
+              src={blog.cover_image} 
+              alt={title} 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+        )}
 
-        <h3 className="font-display font-bold text-lg text-ink leading-snug group-hover:text-accent transition-colors">{title}</h3>
+        <div className="p-6">
+          <div className="flex items-center gap-4 text-xs text-ink-soft font-mono mb-4">
+            <span className="flex items-center gap-1.5"><Calendar size={12} />{formattedDate}</span>
+            <span className="flex items-center gap-1.5"><Clock size={12} />{readTime}</span>
+          </div>
+
+          <h3 className="font-display font-bold text-lg text-ink leading-snug group-hover:text-accent transition-colors">{title}</h3>
         <p className="mt-2.5 text-sm text-ink-soft leading-relaxed">{excerpt}</p>
 
         <AnimatePresence initial={false}>
@@ -66,6 +77,7 @@ const BlogCard = ({ blog }) => {
         >
           {isExpanded ? <>Collapse <ChevronUp size={14} /></> : <>Read post <ChevronDown size={14} /></>}
         </button>
+      </div>
       </div>
     </motion.article>
   );

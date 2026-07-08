@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Loader2, Plus, GripVertical, Trash2, Upload } from 'lucide-react';
-import { supabase } from '../../../lib/supabaseClient';
-import toast from 'react-hot-toast';
+import { Loader2, Plus, GripVertical, Trash2 } from 'lucide-react';
 import { TextField, TextArea, EyeToggle } from '../../../components/admin/ui/FormInputs';
+import ImageUpload from '../../../components/admin/ui/ImageUpload';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
 import { useSiteSettings } from '../../../components/admin/hooks/useSiteSettings';
+import { usePreviewSync } from '../../../components/admin/preview/usePreviewSync';
 import {
   DndContext,
   closestCenter,
@@ -32,6 +32,7 @@ const heroSchema = z.object({
   badge: z.string().min(1, 'Badge is required'),
   headlineAccent: z.string().min(1, 'Accent is required'),
   subtitle: z.string().min(1, 'Subtitle is required'),
+  profileImage: z.string().optional(),
   primaryCta: z.object({
     label: z.string().min(1, 'Label is required'),
     href: z.string().min(1, 'Link is required'),
@@ -51,20 +52,7 @@ const heroSchema = z.object({
     value: z.string().min(1, 'Value is required'),
     label: z.string().min(1, 'Label is required')
   })),
-  // Per-element public visibility: true = hidden from visitors
-  hidden: z.object({
-    badge: z.boolean(),
-    subtitle: z.boolean(),
-    headlineAccent: z.boolean(),
-    name: z.boolean(),
-    role: z.boolean(),
-    primaryCta: z.boolean(),
-    secondaryCta: z.boolean(),
-    videoCaption: z.boolean(),
-    videoSubCaption: z.boolean(),
-    story: z.boolean(),
-    credentials: z.boolean(),
-  }).partial().optional(),
+  hiddenFields: z.array(z.string()).default([]),
 });
 
 function SortableItem(props) {
@@ -97,53 +85,36 @@ export default function HeroSettings() {
   const { fetchSettings, saveSettings, loading: initLoading } = useSiteSettings('hero');
   const [isSaving, setIsSaving] = useState(false);
   const [initialData, setInitialData] = useState(null);
-  const [uploading, setUploading] = useState(false);
-
-  const handleVideoUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `hero_video_${Date.now()}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('assets')
-        .upload(fileName, file);
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('assets')
-        .getPublicUrl(fileName);
-
-      form.setValue('videoSrc', publicUrl, { shouldDirty: true });
-      toast.success('Video uploaded successfully!');
-    } catch (err) {
-      console.error('Upload error:', err);
-      toast.error(err.message || 'Failed to upload video');
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const form = useForm({
     resolver: zodResolver(heroSchema),
     defaultValues: {
-      name: '', role: '', badge: '', headlineAccent: '', subtitle: '',
+      name: '', role: '', badge: '', headlineAccent: '', subtitle: '', profileImage: '',
       primaryCta: { label: '', href: '' }, secondaryCta: { label: '', href: '' },
       videoSrc: '', videoCaption: '', videoSubCaption: '',
       story: [], credentials: [],
-      hidden: {}
+      hiddenFields: []
     }
   });
 
-  // Eye-toggle wiring: flips hidden.<key>, marks the form dirty so Save picks it up
+  usePreviewSync(form, (v) => ({ settings: { hero: v } }), '#hero');
+
+  const toggleVisibility = (fieldName) => {
+    const currentHidden = form.getValues('hiddenFields') || [];
+    if (currentHidden.includes(fieldName)) {
+      form.setValue('hiddenFields', currentHidden.filter(f => f !== fieldName), { shouldDirty: true });
+    } else {
+      form.setValue('hiddenFields', [...currentHidden, fieldName], { shouldDirty: true });
+    }
+  };
+
+  const isVisible = (fieldName) => {
+    return !(form.watch('hiddenFields') || []).includes(fieldName);
+  };
+
   const eyeProps = (key) => ({
-    siteVisible: !form.watch(`hidden.${key}`),
-    onToggleVisible: () =>
-      form.setValue(`hidden.${key}`, !form.getValues(`hidden.${key}`), { shouldDirty: true }),
+    siteVisible: isVisible(key),
+    onToggleVisible: () => toggleVisibility(key),
   });
 
   const { fields: storyFields, append: appendStory, remove: removeStory, move: moveStory } = useFieldArray({
@@ -167,7 +138,6 @@ export default function HeroSettings() {
 
   const onSubmit = async (values) => {
     setIsSaving(true);
-    // Keep headline array as is from initialData for now since it's just strings
     const finalData = { ...initialData, ...values };
     const success = await saveSettings(finalData);
     if (success) {
@@ -205,6 +175,14 @@ export default function HeroSettings() {
 
       <SectionCard title="General Information" description="Use the eye on each field to show or hide that element on the live site.">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-2">
+            <ImageUpload
+              label="Hero Profile Image"
+              folder="hero"
+              url={form.watch('profileImage')}
+              onUpload={(url) => form.setValue('profileImage', url, { shouldDirty: true })}
+            />
+          </div>
           <TextField label="Name" {...eyeProps('name')} {...form.register('name')} error={form.formState.errors.name?.message} />
           <TextField label="Role" {...eyeProps('role')} {...form.register('role')} error={form.formState.errors.role?.message} />
           <TextField label="Badge Text" className="md:col-span-2" {...eyeProps('badge')} {...form.register('badge')} error={form.formState.errors.badge?.message} />
@@ -218,7 +196,7 @@ export default function HeroSettings() {
           <div className="space-y-4 p-4 rounded-xl border border-slate-100 bg-slate-50">
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-semibold text-sm text-slate-700">Primary CTA</h3>
-              <EyeToggle visible={!form.watch('hidden.primaryCta')} onToggle={eyeProps('primaryCta').onToggleVisible} label="Primary CTA" />
+              <EyeToggle visible={isVisible('primaryCta')} onToggle={() => toggleVisibility('primaryCta')} label="Primary CTA" />
             </div>
             <TextField label="Label" {...form.register('primaryCta.label')} error={form.formState.errors.primaryCta?.label?.message} />
             <TextField label="URL / Link" {...form.register('primaryCta.href')} error={form.formState.errors.primaryCta?.href?.message} />
@@ -226,7 +204,7 @@ export default function HeroSettings() {
           <div className="space-y-4 p-4 rounded-xl border border-slate-100 bg-slate-50">
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-semibold text-sm text-slate-700">Secondary CTA</h3>
-              <EyeToggle visible={!form.watch('hidden.secondaryCta')} onToggle={eyeProps('secondaryCta').onToggleVisible} label="Secondary CTA" />
+              <EyeToggle visible={isVisible('secondaryCta')} onToggle={() => toggleVisibility('secondaryCta')} label="Secondary CTA" />
             </div>
             <TextField label="Label" {...form.register('secondaryCta.label')} error={form.formState.errors.secondaryCta?.label?.message} />
             <TextField label="URL / Link" {...form.register('secondaryCta.href')} error={form.formState.errors.secondaryCta?.href?.message} />
@@ -237,30 +215,13 @@ export default function HeroSettings() {
       <SectionCard title="Hero Media (Video)">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2 space-y-2.5">
-            <TextField label="Video URL" {...form.register('videoSrc')} error={form.formState.errors.videoSrc?.message} />
-            <div className="flex items-center gap-4">
-              <label className={`flex items-center gap-2 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold rounded-xl cursor-pointer transition-colors ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                {uploading ? (
-                  <>
-                    <Loader2 size={14} className="animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload size={14} />
-                    Upload Video File
-                  </>
-                )}
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={handleVideoUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
-              </label>
-              <span className="text-xs text-slate-500 font-medium">Supports .mp4, .webm, etc. Max 50MB. Uploads to Supabase.</span>
-            </div>
+            <ImageUpload
+              label="Hero Video or Image"
+              folder="hero"
+              accept="image/*,video/*"
+              url={form.watch('videoSrc')}
+              onUpload={(url) => form.setValue('videoSrc', url, { shouldDirty: true })}
+            />
           </div>
           <TextField label="Video Caption" {...eyeProps('videoCaption')} {...form.register('videoCaption')} error={form.formState.errors.videoCaption?.message} />
           <TextField label="Video Sub-caption" {...eyeProps('videoSubCaption')} {...form.register('videoSubCaption')} error={form.formState.errors.videoSubCaption?.message} />
@@ -268,7 +229,7 @@ export default function HeroSettings() {
       </SectionCard>
 
       <SectionCard title="Hero Story Cards" action={<>
-          <EyeToggle visible={!form.watch('hidden.story')} onToggle={eyeProps('story').onToggleVisible} label="story strip" />
+          <EyeToggle visible={isVisible('story')} onToggle={() => toggleVisibility('story')} label="story strip" />
           <button type="button" onClick={() => appendStory({ k: '', label: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
             <Plus size={16} /> Add Card
           </button></>}>
@@ -304,7 +265,7 @@ export default function HeroSettings() {
       </SectionCard>
 
       <SectionCard title="Stats / Credentials" action={<>
-          <EyeToggle visible={!form.watch('hidden.credentials')} onToggle={eyeProps('credentials').onToggleVisible} label="credentials strip" />
+          <EyeToggle visible={isVisible('credentials')} onToggle={() => toggleVisibility('credentials')} label="credentials strip" />
           <button type="button" onClick={() => appendCred({ value: '', label: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
             <Plus size={16} /> Add Stat
           </button></>}>

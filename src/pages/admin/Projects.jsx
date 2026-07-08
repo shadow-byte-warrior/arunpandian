@@ -25,17 +25,20 @@ export default function Projects() {
   const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, id: null, title: '' });
 
   // Form state
-  const [formData, setFormData] = useState({
+  const emptyProject = {
     title: '',
     problem: '',
+    data: '',
     process: '',
     insight: '',
+    tags: '',
     live_link: '',
     github_link: '',
     image_url: '',
     sort_order: 0,
     published: true
-  });
+  };
+  const [formData, setFormData] = useState(emptyProject);
 
   useEffect(() => {
     fetchProjects();
@@ -106,8 +109,10 @@ export default function Projects() {
       setFormData({
         title: project.title || '',
         problem: project.problem || '',
+        data: project.data || '',
         process: project.process || '',
         insight: project.insight || '',
+        tags: Array.isArray(project.tags) ? project.tags.join(', ') : (project.tags || ''),
         live_link: project.live_link || '',
         github_link: project.github_link || '',
         image_url: project.image_url || '',
@@ -117,15 +122,8 @@ export default function Projects() {
     } else {
       setEditingProject(null);
       setFormData({
-        title: '',
-        problem: '',
-        process: '',
-        insight: '',
-        live_link: '',
-        github_link: '',
-        image_url: '',
+        ...emptyProject,
         sort_order: projects.length > 0 ? Math.max(...projects.map(p => p.sort_order)) + 1 : 0,
-        published: true
       });
     }
     setIsModalOpen(true);
@@ -134,13 +132,19 @@ export default function Projects() {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    
+
+    // Tags are edited as a comma-separated string; store as an array
+    const payload = {
+      ...formData,
+      tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
+    };
+
     try {
       if (editingProject) {
         // Update
         const { error } = await supabase
           .from('projects')
-          .update(formData)
+          .update(payload)
           .eq('id', editingProject.id);
         if (error) throw error;
         toast.success('Project updated successfully');
@@ -148,7 +152,7 @@ export default function Projects() {
         // Insert
         const { error } = await supabase
           .from('projects')
-          .insert([formData]);
+          .insert([payload]);
         if (error) throw error;
         toast.success('Project created successfully');
       }
@@ -402,6 +406,47 @@ export default function Projects() {
               />
             </div>
 
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Data Used</label>
+              <textarea
+                value={formData.data}
+                onChange={e => setFormData({...formData, data: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-h-[60px]"
+                placeholder="What dataset or data sources did this project use?"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Process</label>
+              <textarea
+                value={formData.process}
+                onChange={e => setFormData({...formData, process: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-h-[80px]"
+                placeholder="How did you approach and build it?"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Insight / Result</label>
+              <textarea
+                value={formData.insight}
+                onChange={e => setFormData({...formData, insight: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-h-[60px]"
+                placeholder="The key finding or outcome..."
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Tags (Comma separated)</label>
+              <input
+                type="text"
+                value={formData.tags}
+                onChange={e => setFormData({...formData, tags: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
+                placeholder="Excel, Power Query, DAX"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5">Live Link URL</label>
               <input
@@ -412,7 +457,18 @@ export default function Projects() {
                 placeholder="https://..."
               />
             </div>
-            
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">GitHub URL</label>
+              <input
+                type="url"
+                value={formData.github_link}
+                onChange={e => setFormData({...formData, github_link: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
+                placeholder="https://github.com/..."
+              />
+            </div>
+
             <div className="md:col-span-2">
               <ImageUpload
                 label="Project Image / Cover"

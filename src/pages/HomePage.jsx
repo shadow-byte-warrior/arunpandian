@@ -15,11 +15,20 @@ import Logo from '../components/Logo';
 import { ArrowUp, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useContent } from '../context/ContentProvider';
+import CanvasRuntime from '../editor/CanvasRuntime';
+import StyleOverrides from '../editor/StyleOverrides';
 
 export default function HomePage() {
   const { settings, projects, blogs } = useContent();
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [intro, setIntro] = useState(true);
+
+  // When rendered inside the admin live-preview iframe, skip the intro animation
+  // so edits are visible immediately.
+  const isPreview =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('preview') === '1';
+
+  const [intro, setIntro] = useState(!isPreview);
 
   // Admin can disable the welcome intro entirely
   const welcomeEnabled = settings?.welcome?.enabled !== false;
@@ -126,8 +135,11 @@ export default function HomePage() {
 
   return (
     <div className="grain bg-bg text-ink min-h-screen relative">
+      <StyleOverrides />
+      {isPreview && <CanvasRuntime />}
+
       <AnimatePresence>
-        {intro && welcomeEnabled && <Welcome key="welcome" onDone={() => setIntro(false)} />}
+        {intro && welcomeEnabled && !isPreview && <Welcome key="welcome" onDone={() => setIntro(false)} />}
       </AnimatePresence>
 
       <Navbar />
@@ -143,10 +155,10 @@ export default function HomePage() {
           <Parallax speed={26} className="mb-14">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{projectsSection.label}</span>
-                <h2 className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{projectsSection.title}</h2>
+                <span data-edit-id="projects.label" data-edit-name="Projects · Eyebrow" data-edit-kind="text" data-edit-path="sections.projects.label" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{projectsSection.label}</span>
+                <h2 data-edit-id="projects.title" data-edit-name="Projects · Title" data-edit-kind="heading" data-edit-path="sections.projects.title" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{projectsSection.title}</h2>
               </div>
-              <p className="text-sm text-ink-soft max-w-xs">{projectsSection.subtitle}</p>
+              <p data-edit-id="projects.subtitle" data-edit-name="Projects · Subtitle" data-edit-kind="text" data-edit-path="sections.projects.subtitle" className="text-sm text-ink-soft max-w-xs">{projectsSection.subtitle}</p>
             </div>
           </Parallax>
 
@@ -164,8 +176,8 @@ export default function HomePage() {
       <section id="blog" className="py-24 sm:py-32 bg-surface border-y border-line">
         <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <Parallax speed={26} className="mb-14">
-            <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{blogSection.label}</span>
-            <h2 className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{blogSection.title}</h2>
+            <span data-edit-id="blog.label" data-edit-name="Writing · Eyebrow" data-edit-kind="text" data-edit-path="sections.blog.label" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{blogSection.label}</span>
+            <h2 data-edit-id="blog.title" data-edit-name="Writing · Title" data-edit-kind="heading" data-edit-path="sections.blog.title" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{blogSection.title}</h2>
           </Parallax>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -186,8 +198,8 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div>
               <Logo size={40} className="text-white mb-5" title="AP monogram" />
-              <h3 className="font-display font-extrabold text-4xl sm:text-6xl tracking-tight">{footerData.name}</h3>
-              <p className="mt-3 text-white/60 max-w-sm">{footerData.tagline}</p>
+              <h3 data-edit-id="footer.name" data-edit-name="Footer · Name" data-edit-kind="heading" data-edit-path="footer.name" className="font-display font-extrabold text-4xl sm:text-6xl tracking-tight">{footerData.name}</h3>
+              <p data-edit-id="footer.tagline" data-edit-name="Footer · Tagline" data-edit-kind="text" data-edit-path="footer.tagline" className="mt-3 text-white/60 max-w-sm">{footerData.tagline}</p>
             </div>
             <div className="flex gap-6 text-sm text-white/70">
               <a href={footerData.github} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>

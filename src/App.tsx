@@ -21,7 +21,8 @@ const AboutSettings = lazy(() => import('./pages/admin/settings/AboutSettings'))
 const SkillsSettings = lazy(() => import('./pages/admin/settings/SkillsSettings'));
 const CertificationsSettings = lazy(() => import('./pages/admin/settings/CertificationsSettings'));
 const ContactSettings = lazy(() => import('./pages/admin/settings/ContactSettings'));
-const ThemeSettings = lazy(() => import('./pages/admin/settings/ThemeSettings'));
+const Studio = lazy(() => import('./pages/admin/Studio'));
+const Canvas = lazy(() => import('./pages/admin/Canvas'));
 const SeoSettings = lazy(() => import('./pages/admin/settings/SeoSettings'));
 
 const AdminFallback = () => (
@@ -32,7 +33,9 @@ const AdminFallback = () => (
 
 function App() {
   const { settings } = useContent() as any;
-  const faviconUrl = settings?.branding?.faviconUrl;
+  // Favicon uses the uploaded favicon, else the site logo, so the tab icon
+  // always matches the brand logo shown in the navbar.
+  const faviconUrl = settings?.branding?.faviconUrl || settings?.branding?.logoUrl;
 
   return (
     <>
@@ -40,6 +43,7 @@ function App() {
         <Helmet>
           <link rel="icon" href={faviconUrl} />
           <link rel="shortcut icon" href={faviconUrl} />
+          <link rel="apple-touch-icon" href={faviconUrl} />
         </Helmet>
       )}
       <Toaster position="top-right" />
@@ -66,7 +70,8 @@ function App() {
           <Route path="settings/skills" element={<SkillsSettings />} />
           <Route path="settings/certifications" element={<CertificationsSettings />} />
           <Route path="settings/contact" element={<ContactSettings />} />
-          <Route path="settings/theme" element={<ThemeSettings />} />
+          <Route path="studio" element={<Studio />} />
+          <Route path="canvas" element={<Canvas />} />
           <Route path="settings/seo" element={<SeoSettings />} />
         </Route>
         

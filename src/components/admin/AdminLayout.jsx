@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import {
@@ -18,9 +18,16 @@ import {
   Award,
   AtSign,
   Palette,
-  Search
+  Search,
+  PanelLeftClose,
+  PanelLeft,
+  Eye,
+  EyeOff,
+  MousePointerClick,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PreviewProvider, usePreview } from './preview/PreviewContext';
+import PreviewPanel from './preview/PreviewPanel';
 
 const navGroups = [
   {
@@ -51,7 +58,8 @@ const navGroups = [
   {
     label: 'System',
     items: [
-      { name: 'Theme', path: '/admin/settings/theme', icon: Palette },
+      { name: 'Visual Editor', path: '/admin/canvas', icon: MousePointerClick },
+      { name: 'Theme Studio', path: '/admin/studio', icon: Palette },
       { name: 'SEO', path: '/admin/settings/seo', icon: Search },
       { name: 'Settings', path: '/admin/settings', icon: Settings },
     ],
@@ -60,11 +68,36 @@ const navGroups = [
 
 const navItems = navGroups.flatMap((g) => g.items);
 
+// Routes that get the split editor + live preview experience.
+const PREVIEW_PREFIXES = [
+  '/admin/settings',
+  '/admin/projects',
+  '/admin/experiences',
+  '/admin/blogs',
+];
+
 export default function AdminLayout() {
+  return (
+    <PreviewProvider>
+      <AdminShell />
+    </PreviewProvider>
+  );
+}
+
+function AdminShell() {
   const [userEmail, setUserEmail] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [navCollapsed, setNavCollapsed] = useState(
+    () => typeof window !== 'undefined' && window.localStorage.getItem('admin-nav-collapsed') === '1'
+  );
   const location = useLocation();
   const navigate = useNavigate();
+  const { editorOpen, setEditorOpen, previewOpen, setPreviewOpen } = usePreview();
+
+  const isFullBleed =
+    location.pathname === '/admin/studio' || location.pathname === '/admin/canvas';
+  const supportsPreview =
+    !isFullBleed && PREVIEW_PREFIXES.some((p) => location.pathname.startsWith(p));
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -78,6 +111,56 @@ export default function AdminLayout() {
   };
 
   const closeSidebar = () => setSidebarOpen(false);
+  const showPreview = supportsPreview && previewOpen;
+  const showEditor = !showPreview || editorOpen;
+
+  // ── Resizable editor / preview split ──
+  const splitRef = useRef(null);
+  const [isWide, setIsWide] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+  );
+  const [editorWidth, setEditorWidth] = useState(() => {
+    const saved = typeof window !== 'undefined' && window.localStorage.getItem('admin-editor-width');
+    return saved ? Number(saved) : 560;
+  });
+  const [dragging, setDragging] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const onChange = () => setIsWide(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem('admin-editor-width', String(Math.round(editorWidth)));
+  }, [editorWidth]);
+
+  useEffect(() => {
+    window.localStorage.setItem('admin-nav-collapsed', navCollapsed ? '1' : '0');
+  }, [navCollapsed]);
+
+  const startDrag = (e) => {
+    e.preventDefault();
+    setDragging(true);
+    const onMove = (ev) => {
+      const rect = splitRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const min = 340;
+      const max = rect.width - 380;
+      const next = Math.max(min, Math.min(max, ev.clientX - rect.left));
+      setEditorWidth(next);
+    };
+    const onUp = () => {
+      setDragging(false);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  };
+
+  const resizable = showPreview && showEditor && isWide;
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
@@ -98,7 +181,7 @@ export default function AdminLayout() {
       <motion.aside
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform duration-300 lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        } ${navCollapsed ? 'lg:hidden' : ''}`}
       >
         <div className="flex h-16 items-center justify-between px-6 border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
@@ -164,7 +247,7 @@ export default function AdminLayout() {
             <LogOut size={16} />
             Sign Out
           </button>
-          
+
           <Link
             to="/"
             className="flex w-full items-center justify-center gap-2 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors"
@@ -185,17 +268,99 @@ export default function AdminLayout() {
           >
             <Menu size={20} />
           </button>
+          <button
+            onClick={() => setNavCollapsed((v) => !v)}
+            className="mr-4 hidden items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors lg:inline-flex"
+            title={navCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+          >
+            {navCollapsed ? <PanelLeft size={15} /> : <PanelLeftClose size={15} />}
+            {navCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+          </button>
           <h2 className="text-xl font-bold text-slate-800">
-            {navItems.find(i => i.path === location.pathname)?.name || 'Dashboard'}
+            {navItems.find((i) => i.path === location.pathname)?.name || 'Dashboard'}
           </h2>
+
+          {/* Preview controls */}
+          {supportsPreview && (
+            <div className="ml-auto hidden md:flex items-center gap-2">
+              {previewOpen && (
+                <button
+                  onClick={() => setEditorOpen((v) => !v)}
+                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  title={editorOpen ? 'Hide editor' : 'Show editor'}
+                >
+                  {editorOpen ? <PanelLeftClose size={15} /> : <PanelLeft size={15} />}
+                  {editorOpen ? 'Hide editor' : 'Show editor'}
+                </button>
+              )}
+              <button
+                onClick={() => setPreviewOpen((v) => !v)}
+                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+                  previewOpen
+                    ? 'border-blue-200 bg-blue-50 text-blue-700'
+                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+                title={previewOpen ? 'Hide preview' : 'Show preview'}
+              >
+                {previewOpen ? <Eye size={15} /> : <EyeOff size={15} />}
+                {previewOpen ? 'Preview on' : 'Preview off'}
+              </button>
+            </div>
+          )}
         </header>
 
         {/* Scrollable Page Content */}
-        <div className="flex-1 overflow-auto p-6 lg:p-8">
-          <div className="mx-auto max-w-6xl">
-            <Outlet />
+        {isFullBleed ? (
+          <div className="flex-1 overflow-hidden p-0">
+            <div className="h-full w-full">
+              <Outlet />
+            </div>
           </div>
-        </div>
+        ) : supportsPreview ? (
+          <div ref={splitRef} className="relative flex min-h-0 flex-1 overflow-hidden">
+            {showEditor && (
+              <div
+                style={resizable ? { width: editorWidth } : undefined}
+                className={`h-full overflow-auto bg-white p-6 lg:p-8 ${
+                  showPreview ? 'w-full md:shrink-0' : 'flex-1'
+                }`}
+              >
+                <div className={showPreview ? '' : 'mx-auto max-w-6xl'}>
+                  <Outlet />
+                </div>
+              </div>
+            )}
+
+            {/* Draggable divider */}
+            {resizable && (
+              <div
+                onMouseDown={startDrag}
+                onDoubleClick={() => setEditorWidth(560)}
+                title="Drag to resize · double-click to reset"
+                className={`group hidden w-1.5 shrink-0 cursor-col-resize items-center justify-center md:flex ${
+                  dragging ? 'bg-blue-400' : 'bg-slate-200 hover:bg-blue-400'
+                } transition-colors`}
+              >
+                <div className={`h-10 w-1 rounded-full ${dragging ? 'bg-white' : 'bg-slate-400 group-hover:bg-white'}`} />
+              </div>
+            )}
+
+            {showPreview && (
+              <div className={`hidden min-w-0 flex-1 md:block ${dragging ? 'pointer-events-none' : ''}`}>
+                <PreviewPanel />
+              </div>
+            )}
+
+            {/* Overlay keeps mouse events flowing while dragging over the iframe */}
+            {dragging && <div className="fixed inset-0 z-[60] cursor-col-resize" />}
+          </div>
+        ) : (
+          <div className="flex-1 overflow-auto p-6 lg:p-8">
+            <div className="mx-auto max-w-6xl">
+              <Outlet />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

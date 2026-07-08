@@ -5,11 +5,15 @@ import './index.css'
 import { ContentProvider } from './context/ContentProvider.jsx'
 import App from './App.tsx'
 
+import { ThemeProvider } from './theme/ThemeProvider.tsx'
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HelmetProvider>
       <ContentProvider>
-        <App />
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
       </ContentProvider>
     </HelmetProvider>
   </StrictMode>,

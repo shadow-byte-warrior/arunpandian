@@ -7,6 +7,7 @@ import { TextField } from '../../../components/admin/ui/FormInputs';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
 import { useSiteSettings } from '../../../components/admin/hooks/useSiteSettings';
+import { usePreviewSync } from '../../../components/admin/preview/usePreviewSync';
 import {
   DndContext,
   closestCenter,
@@ -32,7 +33,8 @@ const skillsSchema = z.object({
     icon: z.string().min(1, 'Icon name is required'),
     items: z.string().min(1, 'At least one skill is required') // We'll edit items as a comma-separated string for simplicity
   })),
-  ticker: z.string().min(1, 'Ticker items are required')
+  ticker: z.string().min(1, 'Ticker items are required'),
+  hiddenFields: z.array(z.string()).default([]),
 });
 
 function SortableItem(props) {
@@ -71,9 +73,39 @@ export default function SkillsSettings() {
     defaultValues: {
       sectionLabel: '', sectionTitle: '',
       categories: [],
-      ticker: ''
+      ticker: '',
+      hiddenFields: []
     }
   });
+
+  // Skills form edits arrays as comma-separated strings; convert back so the
+  // public Skills section renders the live draft correctly.
+  const toList = (val) =>
+    Array.isArray(val)
+      ? val
+      : String(val || '').split(',').map((i) => i.trim()).filter(Boolean);
+  usePreviewSync(form, (v) => ({
+    settings: {
+      skills: {
+        ...v,
+        categories: (v.categories || []).map((c) => ({ ...c, items: toList(c.items) })),
+        ticker: toList(v.ticker),
+      },
+    },
+  }), '#skills');
+
+  const toggleVisibility = (fieldName) => {
+    const currentHidden = form.getValues('hiddenFields') || [];
+    if (currentHidden.includes(fieldName)) {
+      form.setValue('hiddenFields', currentHidden.filter(f => f !== fieldName), { shouldDirty: true });
+    } else {
+      form.setValue('hiddenFields', [...currentHidden, fieldName], { shouldDirty: true });
+    }
+  };
+
+  const isVisible = (fieldName) => {
+    return !(form.watch('hiddenFields') || []).includes(fieldName);
+  };
 
   const { fields: catFields, append: appendCat, remove: removeCat, move: moveCat } = useFieldArray({
     control: form.control,
@@ -140,8 +172,8 @@ export default function SkillsSettings() {
 
       <SectionCard title="Section Headers">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} />
-          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} />
+          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} siteVisible={isVisible('sectionLabel')} onToggleVisible={() => toggleVisibility('sectionLabel')} />
+          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} siteVisible={isVisible('sectionTitle')} onToggleVisible={() => toggleVisibility('sectionTitle')} />
         </div>
       </SectionCard>
 
@@ -161,12 +193,14 @@ export default function SkillsSettings() {
                         placeholder="e.g. Languages & Querying" 
                         {...form.register(`categories.${index}.title`)} 
                         error={form.formState.errors.categories?.[index]?.title?.message} 
+                        siteVisible={isVisible(`categories.${index}.title`)} onToggleVisible={() => toggleVisibility(`categories.${index}.title`)}
                       />
                       <TextField 
                         label="Lucide Icon Name"
                         placeholder="e.g. Database" 
                         {...form.register(`categories.${index}.icon`)} 
                         error={form.formState.errors.categories?.[index]?.icon?.message} 
+                        siteVisible={isVisible(`categories.${index}.icon`)} onToggleVisible={() => toggleVisibility(`categories.${index}.icon`)}
                       />
                       <TextField 
                         label="Skills (Comma separated)"
@@ -174,6 +208,7 @@ export default function SkillsSettings() {
                         placeholder="SQL, Python, R" 
                         {...form.register(`categories.${index}.items`)} 
                         error={form.formState.errors.categories?.[index]?.items?.message} 
+                        siteVisible={isVisible(`categories.${index}.items`)} onToggleVisible={() => toggleVisibility(`categories.${index}.items`)}
                       />
                     </div>
                     <button type="button" onClick={() => removeCat(index)} className="mt-8 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -194,6 +229,7 @@ export default function SkillsSettings() {
           placeholder="SQL, Python, React, Next.js"
           {...form.register('ticker')} 
           error={form.formState.errors.ticker?.message} 
+          siteVisible={isVisible('ticker')} onToggleVisible={() => toggleVisibility('ticker')}
         />
       </SectionCard>
 

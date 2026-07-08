@@ -8,6 +8,7 @@ import SaveActionPanel from '../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../components/admin/ui/SectionCard';
 import ImageUpload from '../../components/admin/ui/ImageUpload';
 import { useSiteSettings } from '../../components/admin/hooks/useSiteSettings';
+import { usePreviewSync } from '../../components/admin/preview/usePreviewSync';
 
 // Footer fields are FLAT — this is exactly the shape the public footer reads.
 const generalSchema = z.object({
@@ -72,6 +73,16 @@ export default function Settings() {
     resolver: zodResolver(generalSchema),
     defaultValues: emptyDefaults,
   });
+
+  usePreviewSync(form, (v) => ({
+    settings: {
+      welcome: { ...v.welcome, quotes: v.welcome?.quote ? [v.welcome.quote] : [] },
+      footer: v.footer,
+      navbar: v.navbar,
+      sections: v.sections,
+      branding: v.branding,
+    },
+  }));
 
   useEffect(() => {
     Promise.all([fetchWelcome(), fetchFooter(), fetchSections(), fetchNavbar(), fetchBranding()]).then(([welcomeData, footerData, sectionsData, navbarData, brandingData]) => {

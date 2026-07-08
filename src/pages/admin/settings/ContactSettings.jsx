@@ -7,14 +7,15 @@ import { TextField, TextArea } from '../../../components/admin/ui/FormInputs';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
 import { useSiteSettings } from '../../../components/admin/hooks/useSiteSettings';
+import { usePreviewSync } from '../../../components/admin/preview/usePreviewSync';
 
 const contactSchema = z.object({
   sectionLabel: z.string().min(1, 'Label is required'),
   sectionTitle: z.string().min(1, 'Title is required'),
   subtitle: z.string().min(1, 'Subtitle is required'),
   email: z.string().email('Invalid email address'),
-  phone: z.string().min(1, 'Phone is required'),
   location: z.string().min(1, 'Location is required'),
+  hiddenFields: z.array(z.string()).default([]),
 });
 
 export default function ContactSettings() {
@@ -26,9 +27,25 @@ export default function ContactSettings() {
     resolver: zodResolver(contactSchema),
     defaultValues: {
       sectionLabel: '', sectionTitle: '', subtitle: '',
-      email: '', phone: '', location: ''
+      email: '', phone: '', location: '',
+      hiddenFields: []
     }
   });
+
+  usePreviewSync(form, (v) => ({ settings: { contact: v } }), '#contact');
+
+  const toggleVisibility = (fieldName) => {
+    const currentHidden = form.getValues('hiddenFields') || [];
+    if (currentHidden.includes(fieldName)) {
+      form.setValue('hiddenFields', currentHidden.filter(f => f !== fieldName), { shouldDirty: true });
+    } else {
+      form.setValue('hiddenFields', [...currentHidden, fieldName], { shouldDirty: true });
+    }
+  };
+
+  const isVisible = (fieldName) => {
+    return !(form.watch('hiddenFields') || []).includes(fieldName);
+  };
 
   useEffect(() => {
     fetchSettings().then(data => {
@@ -62,17 +79,17 @@ export default function ContactSettings() {
 
       <SectionCard title="Section Headers">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} />
-          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} />
-          <TextArea label="Subtitle" rows={2} className="md:col-span-2" {...form.register('subtitle')} error={form.formState.errors.subtitle?.message} />
+          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} siteVisible={isVisible('sectionLabel')} onToggleVisible={() => toggleVisibility('sectionLabel')} />
+          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} siteVisible={isVisible('sectionTitle')} onToggleVisible={() => toggleVisibility('sectionTitle')} />
+          <TextArea label="Subtitle" rows={2} className="md:col-span-2" {...form.register('subtitle')} error={form.formState.errors.subtitle?.message} siteVisible={isVisible('subtitle')} onToggleVisible={() => toggleVisibility('subtitle')} />
         </div>
       </SectionCard>
 
       <SectionCard title="Contact Details">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="Email Address" type="email" {...form.register('email')} error={form.formState.errors.email?.message} />
-          <TextField label="Phone Number" {...form.register('phone')} error={form.formState.errors.phone?.message} />
-          <TextField label="Location" className="md:col-span-2" {...form.register('location')} error={form.formState.errors.location?.message} />
+          <TextField label="Email Address" type="email" {...form.register('email')} error={form.formState.errors.email?.message} siteVisible={isVisible('email')} onToggleVisible={() => toggleVisibility('email')} />
+          <TextField label="Phone Number" {...form.register('phone')} error={form.formState.errors.phone?.message} siteVisible={isVisible('phone')} onToggleVisible={() => toggleVisibility('phone')} />
+          <TextField label="Location" className="md:col-span-2" {...form.register('location')} error={form.formState.errors.location?.message} siteVisible={isVisible('location')} onToggleVisible={() => toggleVisibility('location')} />
         </div>
       </SectionCard>
 

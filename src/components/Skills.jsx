@@ -1,7 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Database, Sigma, BarChart3, Wrench } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Database, Sigma, BarChart3, Wrench, X, ExternalLink } from 'lucide-react';
 import { useContent } from '../context/ContentProvider';
+
+const isPdf = (url) => /\.pdf(\?|#|$)/i.test(url || '');
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -13,15 +15,33 @@ const Skills = () => {
   const skills = settings.skills;
 
   const categories = skills.categories || [];
-  const certifications = skills.certifications || [];
+  // Certifications live under their own `certifications` settings key (rich
+  // objects with issuer/date/image). Fall back to the legacy string list in
+  // `skills.certifications`, normalising strings to objects so cards render.
+  const rawCerts = settings.certifications?.certifications ?? skills.certifications ?? [];
+  const certifications = rawCerts.map((c) => (typeof c === 'string' ? { name: c } : c));
   const ticker = skills.ticker || [];
+
+  const hiddenFields = skills.hiddenFields || [];
+  const isVisible = (field) => !hiddenFields.includes(field);
+
+  // Certificate lightbox
+  const [activeCert, setActiveCert] = useState(null);
+  const media = activeCert ? (activeCert.image || activeCert.credentialUrl) : null;
+
+  useEffect(() => {
+    if (!activeCert) return;
+    const onKey = (e) => { if (e.key === 'Escape') setActiveCert(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [activeCert]);
 
   return (
     <section id="skills" className="py-24 sm:py-32 bg-bg">
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
         <div className="mb-14">
-          <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{skills.sectionLabel}</span>
-          <h2 className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{skills.sectionTitle}</h2>
+          {isVisible('sectionLabel') && <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{skills.sectionLabel}</span>}
+          {isVisible('sectionTitle') && <h2 className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{skills.sectionTitle}</h2>}
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -36,34 +56,57 @@ const Skills = () => {
                 className="group rounded-2xl border border-line bg-surface p-6 hover:shadow-[0_20px_50px_-25px_rgba(9,9,11,0.3)] hover:border-ink/20 transition-all duration-300"
               >
                 <div className="h-11 w-11 grid place-items-center rounded-xl bg-muted text-ink group-hover:bg-ink group-hover:text-white transition-colors">
-                  <Icon size={20} />
+                  {isVisible(`categories.${i}.icon`) && <Icon size={20} />}
                 </div>
-                <h3 className="mt-5 font-display font-bold text-lg text-ink">{cat.title}</h3>
-                <ul className="mt-4 space-y-2.5">
-                  {(cat.items || []).map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-ink-soft">
-                      <span className="mt-1.5 h-1 w-1 rounded-full bg-accent shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                {isVisible(`categories.${i}.title`) && <h3 className="mt-5 font-display font-bold text-lg text-ink">{cat.title}</h3>}
+                {isVisible(`categories.${i}.items`) && (
+                  <ul className="mt-4 space-y-2.5">
+                    {(cat.items || []).map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm text-ink-soft">
+                        <span className="mt-1.5 h-1 w-1 rounded-full bg-accent shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </motion.div>
             );
           })}
         </div>
 
-        {/* Certifications */}
-        <div className="mt-12 rounded-2xl border border-line bg-surface p-6 sm:p-7">
-          <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">Certifications</span>
-          <div className="mt-4 flex flex-wrap gap-2.5">
-            {certifications.map((c) => (
-              <span key={c} className="px-3.5 py-1.5 rounded-full border border-line bg-bg text-sm text-ink-soft">{c}</span>
+        {/* Certifications - Now rendering as complex objects with images */}
+        {certifications.length > 0 && (
+        <div className="mt-12">
+          <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">Certifications & Credentials</span>
+          <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {certifications.map((c, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setActiveCert(c)}
+                className="group flex w-full items-start gap-4 p-5 rounded-2xl border border-line bg-surface text-left hover:shadow-lg hover:border-ink/20 transition-all duration-300 cursor-pointer"
+              >
+                {c.image ? (
+                  <img src={c.image} alt={c.name} className="h-12 w-12 rounded-lg object-cover shrink-0" />
+                ) : (
+                  <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-ink-soft shrink-0 font-bold text-lg">
+                    {c.name ? c.name.substring(0, 1) : 'C'}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h4 className="font-bold text-ink text-sm sm:text-base group-hover:text-accent transition-colors line-clamp-2">{c.name}</h4>
+                  <p className="text-xs text-ink-soft mt-1">{c.issuer} {c.issueDate && `• ${c.issueDate}`}</p>
+                  {c.credentialId && <p className="text-[10px] text-ink-soft mt-1 font-mono">ID: {c.credentialId}</p>}
+                </div>
+              </button>
             ))}
           </div>
         </div>
+        )}
       </div>
 
       {/* Marquee ticker */}
+      {isVisible('ticker') && ticker.length > 0 && (
       <div className="mt-16 relative overflow-hidden border-y border-line py-5 [mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent)]">
         <div className="flex whitespace-nowrap animate-marquee">
           {[...ticker, ...ticker].map((t, i) => (
@@ -73,6 +116,62 @@ const Skills = () => {
           ))}
         </div>
       </div>
+      )}
+
+      {/* Certificate lightbox — click a card to view the image / PDF */}
+      <AnimatePresence>
+        {activeCert && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setActiveCert(null)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/70 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.96, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.96, opacity: 0, y: 10 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative flex w-full max-w-3xl max-h-[90vh] flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl"
+            >
+              <div className="flex items-center justify-between gap-4 border-b border-line p-4">
+                <div className="min-w-0">
+                  <h4 className="font-display font-bold text-ink truncate">{activeCert.name}</h4>
+                  <p className="text-xs text-ink-soft">{activeCert.issuer}{activeCert.issueDate && ` • ${activeCert.issueDate}`}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  {media && (
+                    <a
+                      href={media} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-ink-soft hover:text-ink hover:border-ink/30 transition-colors"
+                    >
+                      <ExternalLink size={13} /> Open
+                    </a>
+                  )}
+                  <button
+                    type="button" onClick={() => setActiveCert(null)} aria-label="Close"
+                    className="grid h-8 w-8 place-items-center rounded-lg text-ink-soft hover:bg-muted hover:text-ink transition-colors"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid min-h-[300px] flex-1 place-items-center overflow-auto bg-bg p-2">
+                {media ? (
+                  isPdf(media) ? (
+                    <iframe src={media} title={activeCert.name} className="h-[75vh] w-full border-0 bg-white" />
+                  ) : (
+                    <img src={media} alt={activeCert.name} className="max-h-[78vh] w-auto object-contain" />
+                  )
+                ) : (
+                  <p className="p-8 text-sm text-ink-soft">No certificate file attached yet.</p>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

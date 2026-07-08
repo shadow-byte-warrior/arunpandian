@@ -35,10 +35,11 @@ const Hero = () => {
   const ticker = hero.ticker || [];
   const socials = hero.socials || {};
   // Per-element visibility controlled from the admin panel (eye toggles)
-  const hidden = hero.hidden || {};
+  const hiddenFields = hero.hiddenFields || [];
+  const isVisible = (field) => !hiddenFields.includes(field);
 
   return (
-    <section id="hero" className="relative min-h-dvh flex flex-col justify-center overflow-hidden pt-28 pb-12">
+    <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-dvh flex flex-col justify-center overflow-hidden pt-28 pb-12">
       {/* Soft radial wash */}
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(120%_90%_at_85%_10%,#eef3ff_0%,transparent_55%)]" />
       {/* Full-bleed background grid — graph-paper lines fading toward the bottom */}
@@ -59,9 +60,9 @@ const Hero = () => {
         {/* ---------- Left: the banner copy ---------- */}
         <div className="lg:col-span-7">
           {/* Availability eyebrow */}
-          {!hidden.badge && (
+          {isVisible('badge') && (
             <motion.div custom={0} variants={rise} initial="hidden" animate="show">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-line bg-surface/70 backdrop-blur text-xs sm:text-sm font-medium text-ink-soft">
+              <div data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-line bg-surface/70 backdrop-blur text-xs sm:text-sm font-medium text-ink-soft">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75 animate-ping" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -72,19 +73,20 @@ const Hero = () => {
           )}
 
           {/* Banner headline — oversized Swiss-modern type */}
-          <h1 className="mt-6 font-display font-extrabold text-ink leading-[0.92] tracking-tight text-[clamp(2.75rem,7vw,5.5rem)]">
+          <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="mt-6 font-display font-extrabold text-ink leading-[0.92] tracking-tight text-[clamp(2.75rem,7vw,5.5rem)]">
             {(hero.headline || []).map((line, i) => (
               <motion.span key={i} custom={i + 1} variants={rise} initial="hidden" animate="show" className="block">{line}</motion.span>
             ))}
-            {!hidden.headlineAccent && (
+            {isVisible('headlineAccent') && (
               <motion.span custom={(hero.headline || []).length + 1} variants={rise} initial="hidden" animate="show" className="block">
-                <span className="italic font-medium text-accent">{hero.headlineAccent}</span>
+                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="italic font-medium text-accent">{hero.headlineAccent}</span>
               </motion.span>
             )}
           </h1>
 
-          {!hidden.subtitle && (
+          {isVisible('subtitle') && (
             <motion.p
+              data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle"
               custom={4} variants={rise} initial="hidden" animate="show"
               className="mt-6 max-w-lg text-base sm:text-lg text-ink-soft leading-relaxed"
               dangerouslySetInnerHTML={{ __html: hero.subtitle }}
@@ -92,7 +94,7 @@ const Hero = () => {
           )}
 
           {/* STAR storyline strip — the value prop, told as a pipeline */}
-          {!hidden.story && story.length > 0 && (
+          {isVisible('story') && story.length > 0 && (
           <motion.div
             custom={5} variants={rise} initial="hidden" animate="show"
             className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-3"
@@ -114,18 +116,20 @@ const Hero = () => {
             custom={6} variants={rise} initial="hidden" animate="show"
             className="mt-9 flex flex-wrap items-center gap-4"
           >
-            {!hidden.primaryCta && (
+            {isVisible('primaryCta') && (
               <MagneticButton
                 href={hero.primaryCta?.href || '#projects'}
+                data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label"
                 className="group gap-2 rounded-full bg-ink text-white px-8 py-4 text-base font-semibold shadow-[0_10px_30px_-10px_rgba(9,9,11,0.5)] hover:bg-accent transition-colors duration-300"
               >
                 {hero.primaryCta?.label || 'View selected work'}
                 <ArrowDownRight size={19} className="group-hover:translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
               </MagneticButton>
             )}
-            {!hidden.secondaryCta && (
+            {isVisible('secondaryCta') && (
               <MagneticButton
                 href={hero.secondaryCta?.href || '/resume.pdf'} download strength={0.25}
+                data-edit-id="hero.secondaryCta" data-edit-name="Hero · Secondary button" data-edit-kind="button" data-edit-path="hero.secondaryCta.label"
                 className="gap-2 rounded-full border border-ink/15 bg-surface/70 backdrop-blur px-8 py-4 text-base font-semibold text-ink hover:border-ink/40 transition-colors duration-300"
               >
                 {hero.secondaryCta?.label || 'Download résumé'}
@@ -139,7 +143,7 @@ const Hero = () => {
             custom={7} variants={rise} initial="hidden" animate="show"
             className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5"
           >
-            {!hidden.credentials && credentials.length > 0 && (
+            {isVisible('credentials') && credentials.length > 0 && (
               <>
                 <div className="flex items-center gap-6 sm:gap-8">
                   {credentials.map((c) => (
@@ -183,21 +187,21 @@ const Hero = () => {
                   aria-label="Data analytics motion graphic"
                 />
                 {/* caption chip */}
-                {!(hidden.videoCaption && hidden.videoSubCaption) && (
+                {(isVisible('videoCaption') || isVisible('videoSubCaption')) && (
                   <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between rounded-xl bg-surface/85 backdrop-blur px-4 py-2.5 border border-line">
-                    {!hidden.videoCaption && <span className="font-display font-semibold text-ink text-sm">{hero.videoCaption || 'Data · in motion'}</span>}
-                    {!hidden.videoSubCaption && <span className="text-xs text-ink-soft font-mono">{hero.videoSubCaption || 'SQL · Python · BI'}</span>}
+                    {isVisible('videoCaption') && <span className="font-display font-semibold text-ink text-sm">{hero.videoCaption || 'Data · in motion'}</span>}
+                    {isVisible('videoSubCaption') && <span className="text-xs text-ink-soft font-mono">{hero.videoSubCaption || 'SQL · Python · BI'}</span>}
                   </div>
                 )}
               </div>
 
               {/* Profile accent chip — Arun, clearly, anchored to the banner visual */}
-              {!(hidden.name && hidden.role) && (
+              {(isVisible('name') || isVisible('role')) && (
                 <div className="absolute -top-5 -left-5 sm:-left-8 flex items-center gap-3 rounded-2xl bg-surface/90 backdrop-blur border border-line shadow-[0_20px_45px_-20px_rgba(9,9,11,0.5)] pl-2 pr-4 py-2">
                   <div className="relative shrink-0">
-                    <div className="absolute -inset-[3px] rounded-full bg-[conic-gradient(from_0deg,#2563EB,#6366F1,#a5b4fc,#2563EB)]" />
+                    <div className="absolute -inset-[3px] rounded-full" style={{ background: 'conic-gradient(from 0deg, var(--color-primary), #6366F1, #a5b4fc, var(--color-primary))' }} />
                     <img
-                      src={arunProfile}
+                      src={hero.profileImage || arunProfile}
                       alt={hero.name || 'Arun Pandian'}
                       className="relative h-14 w-14 rounded-full object-cover border-2 border-surface"
                       style={{ objectPosition: '50% 22%' }}
@@ -205,8 +209,8 @@ const Hero = () => {
                     <span className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-emerald-500 border-2 border-surface" />
                   </div>
                   <div className="leading-tight">
-                    {!hidden.name && <p className="font-display font-bold text-ink text-sm">{hero.name || 'Arun Pandian'}</p>}
-                    {!hidden.role && <p className="text-[11px] text-ink-soft font-mono">{hero.role || 'Data Analyst'}</p>}
+                    {isVisible('name') && <p className="font-display font-bold text-ink text-sm">{hero.name || 'Arun Pandian'}</p>}
+                    {isVisible('role') && <p className="text-[11px] text-ink-soft font-mono">{hero.role || 'Data Analyst'}</p>}
                   </div>
                 </div>
               )}

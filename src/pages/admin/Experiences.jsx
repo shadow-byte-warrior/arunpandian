@@ -416,6 +416,16 @@ export default function Experiences() {
               </select>
             </div>
 
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Impact / Description</label>
+              <textarea
+                value={formData.impact}
+                onChange={e => setFormData({...formData, impact: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-h-[100px]"
+                placeholder="What did you build or improve in this role?"
+              />
+            </div>
+
             <div className="md:col-span-2 flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 mt-2">
               <input
                 type="checkbox"

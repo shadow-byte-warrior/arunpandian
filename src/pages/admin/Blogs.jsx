@@ -29,6 +29,8 @@ export default function Blogs() {
     title: '',
     slug: '',
     excerpt: '',
+    content: '',
+    tags: '',
     read_time: '3 min read',
     author_name: 'Arun Pandian',
     cover_image: '',
@@ -107,6 +109,8 @@ export default function Blogs() {
         title: blog.title || '',
         slug: blog.slug || '',
         excerpt: blog.excerpt || '',
+        content: blog.content || '',
+        tags: Array.isArray(blog.tags) ? blog.tags.join(', ') : (blog.tags || ''),
         read_time: blog.read_time || '3 min read',
         author_name: blog.author_name || 'Arun Pandian',
         cover_image: blog.cover_image || '',
@@ -120,6 +124,8 @@ export default function Blogs() {
         title: '',
         slug: '',
         excerpt: '',
+        content: '',
+        tags: '',
         read_time: '3 min read',
         author_name: 'Arun Pandian',
         cover_image: '',
@@ -134,13 +140,19 @@ export default function Blogs() {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    
+
+    // Tags are edited as a comma-separated string; store as an array
+    const payload = {
+      ...formData,
+      tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
+    };
+
     try {
       if (editingBlog) {
         // Update
         const { error } = await supabase
           .from('blogs')
-          .update(formData)
+          .update(payload)
           .eq('id', editingBlog.id);
         if (error) throw error;
         toast.success('Blog post updated successfully');
@@ -148,7 +160,7 @@ export default function Blogs() {
         // Insert
         const { error } = await supabase
           .from('blogs')
-          .insert([formData]);
+          .insert([payload]);
         if (error) throw error;
         toast.success('Blog post created successfully');
       }
@@ -430,6 +442,38 @@ export default function Blogs() {
                 onChange={e => setFormData({...formData, excerpt: e.target.value})}
                 className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-h-[80px]"
                 placeholder="Brief summary of the post..."
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Content (Markdown supported)</label>
+              <textarea
+                value={formData.content}
+                onChange={e => setFormData({...formData, content: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-mono focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none min-h-[180px]"
+                placeholder={"### Heading\nWrite the full post here..."}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Tags (Comma separated)</label>
+              <input
+                type="text"
+                value={formData.tags}
+                onChange={e => setFormData({...formData, tags: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
+                placeholder="Excel, Dashboards"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Read Time</label>
+              <input
+                type="text"
+                value={formData.read_time}
+                onChange={e => setFormData({...formData, read_time: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
+                placeholder="4 min read"
               />
             </div>
 
