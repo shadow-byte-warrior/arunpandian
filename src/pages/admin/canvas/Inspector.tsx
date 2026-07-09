@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEditorStore } from '../../../editor/editorStore';
-import { Type, LayoutGrid, Paintbrush, MousePointerClick, FileText, Sparkles, RotateCcw } from 'lucide-react';
+import { Type, LayoutGrid, Paintbrush, MousePointerClick, FileText, Sparkles, RotateCcw, Trash2, Plus } from 'lucide-react';
 import { FONTS, FONT_CATEGORIES } from '../../../editor/fonts';
 
 type Tab = 'content' | 'type' | 'layout' | 'style' | 'effects';
@@ -118,12 +118,7 @@ export default function Inspector() {
   const [tab, setTab] = useState<Tab>('content');
 
   if (!selected) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center p-6 text-center text-sm text-slate-400">
-        <Sparkles size={22} className="mb-2 text-slate-300" />
-        Select an element on the canvas to edit it.
-      </div>
-    );
+    return <NoSelectionPanel />;
   }
 
   const id = selected.id;
@@ -137,20 +132,33 @@ export default function Inspector() {
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="border-b border-slate-200 px-4 py-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-1.5">
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-slate-800">{selected.name}</div>
             <div className="truncate text-[11px] text-slate-400">
               {selected.kind}{selected.path ? ` · ${selected.path}` : ''}
             </div>
           </div>
-          <button
-            onClick={() => clearElementStyles(id)}
-            title="Reset this element's style overrides"
-            className="flex items-center gap-1 rounded-md border border-slate-200 px-2 py-1 text-[11px] text-slate-500 hover:bg-slate-50"
-          >
-            <RotateCcw size={12} /> Reset
-          </button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {id.startsWith('custom_el_') && (
+              <button
+                onClick={() => {
+                  useEditorStore.getState().deleteCustomElement(id);
+                }}
+                title="Delete this custom element"
+                className="flex items-center gap-1 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[11px] text-red-600 hover:bg-red-100 transition-colors"
+              >
+                Delete
+              </button>
+            )}
+            <button
+              onClick={() => clearElementStyles(id)}
+              title="Reset this element's style overrides"
+              className="flex items-center gap-1 rounded-md border border-slate-200 px-2 py-1 text-[11px] text-slate-500 hover:bg-slate-50 transition-colors"
+            >
+              <RotateCcw size={12} /> Reset
+            </button>
+          </div>
         </div>
       </div>
 
@@ -187,12 +195,46 @@ export default function Inspector() {
                   className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-xs outline-none focus:border-blue-500"
                 />
               ) : (
-                <textarea
-                  rows={4}
-                  value={String(contentValue)}
-                  onChange={(e) => setContent(selected.path!, e.target.value)}
-                  className="w-full resize-y rounded-md border border-slate-200 px-2 py-1.5 text-xs outline-none focus:border-blue-500"
-                />
+                <>
+                  <textarea
+                    rows={4}
+                    value={String(contentValue)}
+                    onChange={(e) => setContent(selected.path!, e.target.value)}
+                    className="w-full resize-y rounded-md border border-slate-200 px-2 py-1.5 text-xs outline-none focus:border-blue-500"
+                  />
+                  {(() => {
+                    const p = selected.path;
+                    let linkPath = null;
+                    if (p === 'navbar.ctaLabel') linkPath = 'navbar.ctaHref';
+                    else if (p === 'hero.primaryCta.label') linkPath = 'hero.primaryCta.href';
+                    else if (p === 'hero.secondaryCta.label') linkPath = 'hero.secondaryCta.href';
+                    else if (p.startsWith('navbar.links.') && p.endsWith('.name')) linkPath = p.replace('.name', '.href');
+                    else if (p.startsWith('custom_elements.') && p.endsWith('.value')) {
+                      const elId = p.split('.')[1];
+                      const customEl = content.custom_elements?.[elId];
+                      if (customEl && (customEl.kind === 'button' || customEl.kind === 'link')) {
+                        linkPath = `custom_elements.${elId}.href`;
+                      }
+                    }
+
+                    if (linkPath) {
+                      const linkVal = (linkPath.split('.').reduce((acc, k) => (acc == null ? undefined : acc[k]), content)) ?? '';
+                      return (
+                        <div className="mt-3 pt-3 border-t border-slate-100 space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 uppercase block">Link Destination (URL)</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. #contact or https://github.com"
+                            value={String(linkVal)}
+                            onChange={(e) => setContent(linkPath, e.target.value)}
+                            className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-xs outline-none focus:border-blue-500"
+                          />
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </>
               )
             ) : (
               <p className="text-xs text-slate-400">
@@ -271,6 +313,145 @@ export default function Inspector() {
           </Group>
         )}
       </div>
+    </div>
+  );
+}
+
+function NoSelectionPanel() {
+  const content = useEditorStore((s) => s.content);
+  const addCustomElement = useEditorStore((s) => s.addCustomElement);
+  const deleteCustomElement = useEditorStore((s) => s.deleteCustomElement);
+
+  const [section, setSection] = useState('hero');
+  const [kind, setKind] = useState<'text' | 'heading' | 'button' | 'link' | 'image'>('text');
+  const [name, setName] = useState('');
+  const [value, setValue] = useState('');
+  const [href, setHref] = useState('');
+
+  const customEls = Object.values(content.custom_elements || {});
+
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!value.trim()) return;
+    const elName = name.trim() || `Custom ${kind.toUpperCase()}`;
+    addCustomElement(section, kind, elName, value, href);
+    setName('');
+    setValue('');
+    setHref('');
+  };
+
+  return (
+    <div className="flex h-full flex-col overflow-y-auto p-4 space-y-6">
+      <div className="text-center py-4 border-b border-slate-100">
+        <Sparkles size={24} className="mx-auto mb-2 text-blue-500 animate-pulse" />
+        <h3 className="text-sm font-semibold text-slate-800">Visual Builder</h3>
+        <p className="text-xs text-slate-400 mt-1">Select an element on canvas to edit its styles, or create a new element below.</p>
+      </div>
+
+      {/* Creator Form */}
+      <form onSubmit={handleAdd} className="space-y-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Create New Element</h4>
+        
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase">Target Section</label>
+          <select
+            value={section}
+            onChange={(e) => setSection(e.target.value)}
+            className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500"
+          >
+            <option value="hero">Hero Section</option>
+            <option value="about">About Section</option>
+            <option value="skills">Toolkit Section</option>
+            <option value="timeline">Experience Section</option>
+            <option value="footer">Footer</option>
+            <option value="custom_section">Brand New Section</option>
+          </select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase">Element Type</label>
+          <select
+            value={kind}
+            onChange={(e) => setKind(e.target.value as any)}
+            className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500"
+          >
+            <option value="text">Paragraph / Text</option>
+            <option value="heading">Heading / Title</option>
+            <option value="button">Button Link</option>
+            <option value="link">Inline Link</option>
+            <option value="image">Image Element</option>
+          </select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase">Admin Element Label</label>
+          <input
+            type="text"
+            placeholder="e.g. Hero Sub-headline"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase">
+            {kind === 'image' ? 'Image URL' : 'Content Text'}
+          </label>
+          <textarea
+            rows={2}
+            placeholder={kind === 'image' ? 'https://example.com/image.jpg' : 'Write text here...'}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500 resize-none"
+          />
+        </div>
+
+        {(kind === 'button' || kind === 'link') && (
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-500 uppercase">Target Link (URL)</label>
+            <input
+              type="text"
+              placeholder="e.g. #contact or https://github.com"
+              value={href}
+              onChange={(e) => setHref(e.target.value)}
+              className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500"
+            />
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={!value.trim()}
+          className="w-full flex items-center justify-center gap-1 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-50"
+        >
+          <Plus size={14} /> Add Element
+        </button>
+      </form>
+
+      {/* List of Custom Elements */}
+      {customEls.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="text-xs font-bold text-slate-750 uppercase tracking-wider">Dynamic Elements ({customEls.length})</h4>
+          <div className="space-y-2">
+            {customEls.map((el: any) => (
+              <div key={el.id} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-150 bg-white hover:border-slate-300 transition-all shadow-sm">
+                <div className="min-w-0 pr-2">
+                  <div className="text-xs font-bold text-slate-800 truncate">{el.name}</div>
+                  <div className="text-[10px] text-slate-400 capitalize">{el.kind} · {el.section}</div>
+                </div>
+                <button
+                  onClick={() => deleteCustomElement(el.id)}
+                  title="Delete dynamic element"
+                  className="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

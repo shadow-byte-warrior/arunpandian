@@ -66,6 +66,8 @@ interface EditorState {
   setStyle: (id: string, prop: string, value: string | null) => void;
   clearElementStyles: (id: string) => void;
   setContent: (path: string, value: any) => void;
+  addCustomElement: (section: string, kind: EditKind, name: string, value: string, href?: string) => void;
+  deleteCustomElement: (id: string) => void;
 
   // History
   undo: () => void;
@@ -156,6 +158,32 @@ export const useEditorStore = create<EditorState>()(
               ? deepSet(snap.content[key] || {}, rest.join('.'), value)
               : value;
             return { ...snap, content: { ...snap.content, [key]: keyObj } };
+          }),
+
+        addCustomElement: (section, kind, name, value, href) =>
+          commit((snap) => {
+            const id = `custom_el_${Date.now()}`;
+            const customList = { ...(snap.content.custom_elements || {}) };
+            customList[id] = {
+              id,
+              section,
+              kind,
+              name,
+              value,
+              href: href || '',
+              path: `custom_elements.${id}.value`,
+              order: Object.keys(customList).length + 1,
+            };
+            return { ...snap, content: { ...snap.content, custom_elements: customList } };
+          }),
+
+        deleteCustomElement: (id) =>
+          commit((snap) => {
+            const customList = { ...(snap.content.custom_elements || {}) };
+            delete customList[id];
+            const overrides = { ...snap.overrides };
+            delete overrides[id];
+            return { ...snap, content: { ...snap.content, custom_elements: customList }, overrides };
           }),
 
         undo: () => {

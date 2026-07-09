@@ -162,6 +162,27 @@ const Hero = () => {
               {socials.email && <a href={`mailto:${socials.email}`} aria-label="Email" className="hover:text-danger transition-colors"><Mail size={20} /></a>}
             </div>
           </motion.div>
+
+          {/* Dynamic Custom Elements in Hero */}
+          {settings?.custom_elements && Object.values(settings.custom_elements)
+            .filter((e) => e.section === 'hero')
+            .sort((a, b) => (a.order || 0) - (b.order || 0))
+            .map((el) => {
+              const commonProps = {
+                key: el.id,
+                'data-edit-id': el.id,
+                'data-edit-name': el.name,
+                'data-edit-kind': el.kind,
+                'data-edit-path': el.path,
+                className: `custom-element custom-element-${el.kind} my-4 transition-all duration-300 inline-block w-full`,
+              };
+              if (el.kind === 'heading') return <h3 {...commonProps} className={`${commonProps.className} font-display font-bold text-xl sm:text-2xl text-ink`}>{el.value}</h3>;
+              if (el.kind === 'text') return <p {...commonProps} className={`${commonProps.className} text-sm sm:text-base text-ink-soft`}>{el.value}</p>;
+              if (el.kind === 'button') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-ink text-white font-semibold hover:bg-accent text-xs sm:text-sm">{el.value}</a></div>;
+              if (el.kind === 'link') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="text-xs sm:text-sm font-semibold text-accent hover:underline">{el.value}</a></div>;
+              if (el.kind === 'image') return <img key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
+              return null;
+            })}
         </div>
 
         {/* ---------- Right: the tech-animation video (framed) with profile chip ---------- */}
@@ -181,6 +202,7 @@ const Hero = () => {
               {/* video card */}
               <div className="relative rounded-[1.75rem] border border-line bg-surface p-2 shadow-[0_40px_90px_-30px_rgba(9,9,11,0.4)]">
                 <video
+                  data-edit-id="hero.videoSrc" data-edit-name="Hero · Video" data-edit-kind="image" data-edit-path="hero.videoSrc"
                   className="w-full rounded-[1.35rem] aspect-square object-cover bg-ink"
                   src={hero.videoSrc || '/hero-animation.mp4'}
                   autoPlay muted loop playsInline preload="auto"
@@ -189,8 +211,8 @@ const Hero = () => {
                 {/* caption chip */}
                 {(isVisible('videoCaption') || isVisible('videoSubCaption')) && (
                   <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between rounded-xl bg-surface/85 backdrop-blur px-4 py-2.5 border border-line">
-                    {isVisible('videoCaption') && <span className="font-display font-semibold text-ink text-sm">{hero.videoCaption || 'Data · in motion'}</span>}
-                    {isVisible('videoSubCaption') && <span className="text-xs text-ink-soft font-mono">{hero.videoSubCaption || 'SQL · Python · BI'}</span>}
+                    {isVisible('videoCaption') && <span data-edit-id="hero.videoCaption" data-edit-name="Hero · Video caption" data-edit-kind="text" data-edit-path="hero.videoCaption" className="font-display font-semibold text-ink text-sm">{hero.videoCaption || 'Data · in motion'}</span>}
+                    {isVisible('videoSubCaption') && <span data-edit-id="hero.videoSubCaption" data-edit-name="Hero · Video subcaption" data-edit-kind="text" data-edit-path="hero.videoSubCaption" className="text-xs text-ink-soft font-mono">{hero.videoSubCaption || 'SQL · Python · BI'}</span>}
                   </div>
                 )}
               </div>
@@ -201,6 +223,7 @@ const Hero = () => {
                   <div className="relative shrink-0">
                     <div className="absolute -inset-[3px] rounded-full" style={{ background: 'conic-gradient(from 0deg, var(--color-primary), #6366F1, #a5b4fc, var(--color-primary))' }} />
                     <img
+                      data-edit-id="hero.profileImage" data-edit-name="Hero · Profile image" data-edit-kind="image" data-edit-path="hero.profileImage"
                       src={hero.profileImage || arunProfile}
                       alt={hero.name || 'Arun Pandian'}
                       className="relative h-14 w-14 rounded-full object-cover border-2 border-surface"
@@ -209,8 +232,8 @@ const Hero = () => {
                     <span className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-emerald-500 border-2 border-surface" />
                   </div>
                   <div className="leading-tight">
-                    {isVisible('name') && <p className="font-display font-bold text-ink text-sm">{hero.name || 'Arun Pandian'}</p>}
-                    {isVisible('role') && <p className="text-[11px] text-ink-soft font-mono">{hero.role || 'Data Analyst'}</p>}
+                    {isVisible('name') && <p data-edit-id="hero.profileName" data-edit-name="Hero · Profile name" data-edit-kind="text" data-edit-path="hero.name" className="font-display font-bold text-ink text-sm">{hero.name || 'Arun Pandian'}</p>}
+                    {isVisible('role') && <p data-edit-id="hero.profileRole" data-edit-name="Hero · Profile role" data-edit-kind="text" data-edit-path="hero.role" className="text-[11px] text-ink-soft font-mono">{hero.role || 'Data Analyst'}</p>}
                   </div>
                 </div>
               )}

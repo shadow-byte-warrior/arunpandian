@@ -69,40 +69,95 @@ export default function HomePage() {
     });
   };
 
+
+  // ─── Custom Cursor State ───
+  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+  const [hovered, setHovered] = useState(false);
+  const layout = settings?.theme?.layout || {};
+  const cursorStyle = layout.cursorStyle || 'default';
+
+  useEffect(() => {
+    if (cursorStyle === 'default' || cursorStyle === 'none' || isPreview || typeof window === 'undefined') return;
+    const updateCursor = (e) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+    const onMouseOver = (e) => {
+      if (e.target.closest('a, button, [role="button"], [data-edit-id]')) {
+        setHovered(true);
+      } else {
+        setHovered(false);
+      }
+    };
+    window.addEventListener('mousemove', updateCursor);
+    window.addEventListener('mouseover', onMouseOver);
+    return () => {
+      window.removeEventListener('mousemove', updateCursor);
+      window.removeEventListener('mouseover', onMouseOver);
+    };
+  }, [cursorStyle, isPreview]);
+
   // ── Theme: apply admin-configured tokens as CSS variables (live) ──
   const theme = settings?.theme;
   useEffect(() => {
     if (!theme) return;
     const root = document.documentElement;
+    const colors = theme.colors || {};
+    const themeLayout = theme.layout || {};
+
     const vars = {
-      '--color-accent': theme.accentColor,
-      '--color-ink': theme.inkColor,
-      '--color-bg': theme.bgColor,
-      '--color-surface': theme.surfaceColor,
+      '--color-primary': colors.primary || theme.accentColor || '#2563EB',
+      '--color-background': colors.background || theme.bgColor || '#FAFAFA',
+      '--color-surface': colors.surface || theme.surfaceColor || '#FFFFFF',
+      '--color-text': colors.text || theme.inkColor || '#09090B',
+      '--color-muted': colors.muted || '#71717A',
+      '--color-border': colors.border || '#E4E4E7',
+      '--color-accent': colors.accent || colors.primary || theme.accentColor || '#2563EB',
+      '--color-ink': colors.text || theme.inkColor || '#09090B',
+      '--color-bg': colors.background || theme.bgColor || '#FAFAFA',
+      '--radius-base': themeLayout.radius || theme.radius || '1rem',
+      '--border-custom': themeLayout.borderStyle || 'none',
     };
+
     for (const [k, v] of Object.entries(vars)) {
       if (v) root.style.setProperty(k, v);
     }
-    // Font: Space Grotesk & Archivo ship with the site; load others on demand
-    if (theme.fontFamily) {
-      if (!['Space Grotesk', 'Archivo'].includes(theme.fontFamily)) {
-        const id = 'theme-font-link';
-        let link = document.getElementById(id);
-        const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(theme.fontFamily)}:wght@300;400;500;600;700&display=swap`;
-        if (!link) {
-          link = document.createElement('link');
-          link.id = id;
-          link.rel = 'stylesheet';
-          document.head.appendChild(link);
-        }
-        if (link.href !== href) link.href = href;
+
+    // Dynamic Google Fonts Loader (Body and Heading fonts)
+    const loadFont = (fontName, elementId, cssVarName1, cssVarName2, fallbackStack) => {
+      if (!fontName) return;
+      const cleanFont = fontName.split(',')[0].replace(/['"]/g, '').trim();
+      const id = `theme-font-${elementId}`;
+      let link = document.getElementById(id);
+      const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(cleanFont)}:wght@300;400;500;600;700;800;900&display=swap`;
+      if (!link) {
+        link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
       }
-      root.style.setProperty('--font-sans', `'${theme.fontFamily}', system-ui, sans-serif`);
+      if (link.href !== href) link.href = href;
+      root.style.setProperty(cssVarName1, `'${cleanFont}', ${fallbackStack}`);
+      root.style.setProperty(cssVarName2, `'${cleanFont}', ${fallbackStack}`);
+    };
+
+    if (theme.fontFamily) {
+      loadFont(theme.fontFamily, 'body', '--font-sans', '--font-primary', 'system-ui, sans-serif');
     }
+    if (theme.headingFont) {
+      loadFont(theme.headingFont, 'heading', '--font-display', '--font-heading', 'system-ui, sans-serif');
+    } else if (theme.fontFamily) {
+      const cleanBody = theme.fontFamily.split(',')[0].replace(/['"]/g, '').trim();
+      root.style.setProperty('--font-display', `'${cleanBody}', system-ui, sans-serif`);
+      root.style.setProperty('--font-heading', `'${cleanBody}', system-ui, sans-serif`);
+    }
+
     return () => {
-      // Restore stylesheet defaults when leaving the public page (e.g. into /admin)
       Object.keys(vars).forEach((k) => root.style.removeProperty(k));
       root.style.removeProperty('--font-sans');
+      root.style.removeProperty('--font-primary');
+      root.style.removeProperty('--font-display');
+      root.style.removeProperty('--font-heading');
+      root.style.removeProperty('--border-custom');
     };
   }, [theme]);
 
@@ -133,10 +188,32 @@ export default function HomePage() {
   const projectsSection = settings?.sections?.projects || {};
   const blogSection = settings?.sections?.blog || {};
 
+  const animationStyle = theme?.layout?.animationStyle || 'default';
+
   return (
-    <div className="grain bg-bg text-ink min-h-screen relative">
+    <div className={`grain bg-bg text-ink min-h-screen relative awwwards-preset-${animationStyle}`}>
+      {/* Custom Styles Injector for Awwwards animations */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .custom-element { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .awwwards-preset-joyrush .custom-element-button { background-color: var(--color-primary); color: #2C0E1E; border: 3px solid #2C0E1E; box-shadow: 4px 4px 0px #2C0E1E; border-radius: 9999px; }
+        .awwwards-preset-joyrush .custom-element-button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #2C0E1E; }
+        .awwwards-preset-k95 { font-family: var(--font-primary); }
+        .awwwards-preset-k95 .custom-element-button { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); border-radius: 0px; text-transform: uppercase; letter-spacing: 0.1em; }
+        .awwwards-preset-k95 .custom-element-button:hover { background: var(--color-text); color: var(--color-background); }
+        .awwwards-preset-juliencalot { background-image: radial-gradient(circle at 10% 20%, rgba(255, 42, 84, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%); }
+        .awwwards-preset-depoluxe { text-transform: uppercase; }
+        .awwwards-preset-depoluxe .custom-element-button { border: 1px solid var(--color-primary); color: var(--color-primary); background: transparent; border-radius: 0px; font-weight: 800; letter-spacing: 0.2em; }
+        .awwwards-preset-depoluxe .custom-element-button:hover { background: var(--color-primary); color: var(--color-background); }
+        .awwwards-preset-monolog { letter-spacing: 0.05em; line-height: 1.8; }
+        .awwwards-preset-monolog .custom-element-button { border-bottom: 1px solid var(--color-primary); border-radius: 0px; background: transparent; color: var(--color-text); padding: 4px 0px; }
+        .awwwards-preset-radian { background-color: #000; color: #fff; }
+        .awwwards-preset-radian .custom-element-button { background: var(--color-primary); color: #000; border-radius: 4px; font-weight: 900; }
+        .awwwards-preset-radian .custom-element-button:hover { box-shadow: 0 0 15px var(--color-primary); }
+      ` }} />
+
       <StyleOverrides />
       {isPreview && <CanvasRuntime />}
+
 
       <AnimatePresence>
         {intro && welcomeEnabled && !isPreview && <Welcome key="welcome" onDone={() => setIntro(false)} />}
@@ -224,6 +301,18 @@ export default function HomePage() {
         </div>
       </footer>
 
+      {/* Dynamic Custom Section */}
+      {settings?.custom_elements && Object.values(settings.custom_elements).some((e) => e.section === 'custom_section') && (
+        <section id="custom-section" className="py-24 sm:py-32 bg-bg border-b border-line">
+          <div className="max-w-7xl mx-auto px-5 sm:px-8">
+            <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">06 — Custom Section</span>
+            <div className="mt-8 space-y-6">
+              {renderCustomElements('custom_section', settings.custom_elements)}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Scroll to Top button */}
       <AnimatePresence>
         {showScrollTop && (
@@ -239,6 +328,124 @@ export default function HomePage() {
           </motion.button>
         )}
       </AnimatePresence>
+
+      {/* Custom Awwwards Cursors */}
+      {cursorStyle !== 'default' && cursorStyle !== 'none' && !isPreview && (
+        <div
+          className="fixed pointer-events-none z-[9999] rounded-full transition-transform duration-100 ease-out"
+          style={{
+            left: `${cursorPos.x}px`,
+            top: `${cursorPos.y}px`,
+            transform: `translate(-50%, -50%) scale(${hovered ? 1.4 : 1})`,
+            ...getCursorStyles(cursorStyle)
+          }}
+        />
+      )}
     </div>
   );
 }
+
+// ─── Visual Editor Dynamic Custom Element Renderer ───
+export function renderCustomElements(sectionName, elementsDict) {
+  if (!elementsDict) return null;
+  const els = Object.values(elementsDict)
+    .filter((e) => e.section === sectionName)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  return els.map((el) => {
+    const commonProps = {
+      key: el.id,
+      'data-edit-id': el.id,
+      'data-edit-name': el.name,
+      'data-edit-kind': el.kind,
+      'data-edit-path': el.path,
+      className: `custom-element custom-element-${el.kind} my-4 transition-all duration-300 inline-block w-full`,
+    };
+
+    switch (el.kind) {
+      case 'heading':
+        return (
+          <h3 {...commonProps} className={`${commonProps.className} font-display font-bold text-2xl sm:text-4xl text-ink leading-tight`}>
+            {el.value}
+          </h3>
+        );
+      case 'text':
+        return (
+          <p {...commonProps} className={`${commonProps.className} text-base text-ink-soft leading-relaxed`}>
+            {el.value}
+          </p>
+        );
+      case 'button':
+        return (
+          <div key={el.id} className="my-4">
+            <a
+              href={el.href || '#'}
+              {...commonProps}
+              className={`custom-element-button inline-flex items-center justify-center px-6 py-3 rounded-full bg-ink text-white font-semibold hover:bg-accent text-sm transition-all duration-300`}
+            >
+              {el.value}
+            </a>
+          </div>
+        );
+      case 'link':
+        return (
+          <div key={el.id} className="my-4">
+            <a
+              href={el.href || '#'}
+              {...commonProps}
+              className={`text-sm font-semibold text-accent hover:underline inline-flex items-center gap-1`}
+            >
+              {el.value}
+            </a>
+          </div>
+        );
+      case 'image':
+        return (
+          <img
+            src={el.value}
+            alt={el.name}
+            {...commonProps}
+            className={`${commonProps.className} max-w-md h-auto rounded-lg border border-line object-cover shadow-md`}
+          />
+        );
+      default:
+        return null;
+    }
+  });
+}
+
+function getCursorStyles(style) {
+  switch (style) {
+    case 'dot':
+      return {
+        width: '8px',
+        height: '8px',
+        backgroundColor: 'var(--color-primary)',
+        boxShadow: '0 0 8px var(--color-primary)',
+      };
+    case 'bubble':
+      return {
+        width: '32px',
+        height: '32px',
+        border: '2px solid var(--color-primary)',
+        backgroundColor: 'rgba(255, 92, 138, 0.08)',
+      };
+    case 'invert':
+      return {
+        width: '24px',
+        height: '24px',
+        backgroundColor: '#ffffff',
+        mixBlendMode: 'difference',
+      };
+    case 'crosshair':
+      return {
+        width: '16px',
+        height: '16px',
+        border: '1.5px solid var(--color-primary)',
+        borderRadius: '0px',
+      };
+    default:
+      return {};
+  }
+}
+

@@ -53,12 +53,16 @@ const Navbar = () => {
           </a>
 
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => {
+            {navLinks.map((link, idx) => {
               const isActive = activeSection === link.href.substring(1);
               return (
                 <a
                   key={link.name}
                   href={link.href}
+                  data-edit-id={`navbar.links.${idx}`}
+                  data-edit-name={`Navbar · Link ${idx + 1}`}
+                  data-edit-kind="link"
+                  data-edit-path={`navbar.links.${idx}.name`}
                   className={`relative px-3.5 py-2 text-sm font-medium rounded-full transition-colors ${isActive ? 'text-ink' : 'text-ink-soft hover:text-ink'}`}
                 >
                   {link.name}
@@ -87,8 +91,12 @@ const Navbar = () => {
           initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
           className="md:hidden mx-5 mt-2 rounded-2xl bg-surface/95 backdrop-blur-xl border border-line shadow-xl p-3"
         >
-          {navLinks.map((link) => (
+          {navLinks.map((link, idx) => (
             <a key={link.name} href={link.href} onClick={() => setIsOpen(false)}
+              data-edit-id={`navbar.links.mobile.${idx}`}
+              data-edit-name={`Navbar · Link ${idx + 1} (Mobile)`}
+              data-edit-kind="link"
+              data-edit-path={`navbar.links.${idx}.name`}
               className="block px-4 py-2.5 rounded-xl text-ink-soft hover:text-ink hover:bg-muted font-medium">
               {link.name}
             </a>

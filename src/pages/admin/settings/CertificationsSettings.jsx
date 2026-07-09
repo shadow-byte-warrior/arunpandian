@@ -186,9 +186,9 @@ export default function CertificationsSettings() {
                       />
                       <div className="md:col-span-2">
                         <ImageUpload
-                          label="Certificate Image or PDF"
+                          label="Certificate File (image, PDF, DOC — any format)"
                           folder="certifications"
-                          accept="image/*,application/pdf"
+                          accept="image/*,application/pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.rtf,.odt,.pages"
                           url={form.watch(`certifications.${index}.image`)}
                           onUpload={(url) => form.setValue(`certifications.${index}.image`, url, { shouldDirty: true })}
                         />

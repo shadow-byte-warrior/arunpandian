@@ -60,7 +60,21 @@ export default function Studio() {
     'Archivo, sans-serif',
     'Orbitron, sans-serif',
     'Playfair Display, serif',
-    'Roboto Mono, monospace'
+    'Roboto Mono, monospace',
+    'Syne, sans-serif',
+    'Unbounded, sans-serif',
+    'Fredoka, sans-serif',
+    'Sora, sans-serif',
+    'Instrument Serif, serif',
+    'Cormorant Garamond, serif',
+    'Outfit, sans-serif',
+    'Anton, sans-serif',
+    'Satoshi, sans-serif',
+    'Plus Jakarta Sans, sans-serif',
+    'Fraunces, serif',
+    'Cinzel, serif',
+    'Space Mono, monospace',
+    'JetBrains Mono, monospace'
   ];
 
   return (

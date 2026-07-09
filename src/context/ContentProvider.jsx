@@ -349,7 +349,9 @@ export function ContentProvider({ children }) {
       if (!error && rows && rows.length > 0) {
         const merged = { ...fallbackSettings };
         for (const row of rows) {
-          merged[row.key] = { ...fallbackSettings[row.key], ...row.value };
+          merged[row.key] = row.value && typeof row.value === 'object' && !Array.isArray(row.value)
+            ? { ...(fallbackSettings[row.key] || {}), ...row.value }
+            : row.value;
         }
         setSettings(merged);
       }

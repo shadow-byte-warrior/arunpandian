@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, Sigma, BarChart3, Wrench, X, ExternalLink } from 'lucide-react';
+import {
+  Database, Sigma, BarChart3, Wrench, X, ExternalLink,
+  FileText, FileSpreadsheet, Presentation, File as FileIcon,
+} from 'lucide-react';
 import { useContent } from '../context/ContentProvider';
+import { getFileKind, isPdf, isImage, isOfficeDoc, officeViewerUrl } from '../utils/fileType';
 
-const isPdf = (url) => /\.pdf(\?|#|$)/i.test(url || '');
+// Icon shown on a certificate card when the attachment isn't a previewable image.
+const CERT_FILE_ICON = {
+  pdf: FileText, doc: FileText, sheet: FileSpreadsheet,
+  slides: Presentation, text: FileText,
+};
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -86,8 +94,17 @@ const Skills = () => {
                 onClick={() => setActiveCert(c)}
                 className="group flex w-full items-start gap-4 p-5 rounded-2xl border border-line bg-surface text-left hover:shadow-lg hover:border-ink/20 transition-all duration-300 cursor-pointer"
               >
-                {c.image ? (
+                {c.image && isImage(c.image) ? (
                   <img src={c.image} alt={c.name} className="h-12 w-12 rounded-lg object-cover shrink-0" />
+                ) : c.image ? (
+                  (() => {
+                    const FileKindIcon = CERT_FILE_ICON[getFileKind(c.image)] || FileIcon;
+                    return (
+                      <div className="h-12 w-12 rounded-lg bg-accent-soft flex items-center justify-center text-accent shrink-0">
+                        <FileKindIcon size={22} strokeWidth={1.75} />
+                      </div>
+                    );
+                  })()
                 ) : (
                   <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-ink-soft shrink-0 font-bold text-lg">
                     {c.name ? c.name.substring(0, 1) : 'C'}
@@ -103,7 +120,29 @@ const Skills = () => {
           </div>
         </div>
         )}
+
+        {/* Dynamic Custom Elements in Skills */}
+        {settings?.custom_elements && Object.values(settings.custom_elements)
+          .filter((e) => e.section === 'skills')
+          .sort((a, b) => (a.order || 0) - (b.order || 0))
+          .map((el) => {
+            const commonProps = {
+              key: el.id,
+              'data-edit-id': el.id,
+              'data-edit-name': el.name,
+              'data-edit-kind': el.kind,
+              'data-edit-path': el.path,
+              className: `custom-element custom-element-${el.kind} my-4 transition-all duration-300 inline-block w-full`,
+            };
+            if (el.kind === 'heading') return <h3 {...commonProps} className={`${commonProps.className} font-display font-bold text-xl sm:text-2xl text-ink`}>{el.value}</h3>;
+            if (el.kind === 'text') return <p {...commonProps} className={`${commonProps.className} text-sm sm:text-base text-ink-soft`}>{el.value}</p>;
+            if (el.kind === 'button') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-ink text-white font-semibold hover:bg-accent text-xs sm:text-sm">{el.value}</a></div>;
+            if (el.kind === 'link') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="text-xs sm:text-sm font-semibold text-accent hover:underline">{el.value}</a></div>;
+            if (el.kind === 'image') return <img key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
+            return null;
+          })}
       </div>
+
 
       {/* Marquee ticker */}
       {isVisible('ticker') && ticker.length > 0 && (
@@ -159,10 +198,29 @@ const Skills = () => {
 
               <div className="grid min-h-[300px] flex-1 place-items-center overflow-auto bg-bg p-2">
                 {media ? (
-                  isPdf(media) ? (
-                    <iframe src={media} title={activeCert.name} className="h-[75vh] w-full border-0 bg-white" />
-                  ) : (
+                  isImage(media) ? (
                     <img src={media} alt={activeCert.name} className="max-h-[78vh] w-auto object-contain" />
+                  ) : isPdf(media) ? (
+                    <iframe src={media} title={activeCert.name} className="h-[75vh] w-full border-0 bg-white" />
+                  ) : isOfficeDoc(media) ? (
+                    <iframe
+                      src={officeViewerUrl(media)}
+                      title={activeCert.name}
+                      className="h-[75vh] w-full border-0 bg-white"
+                    />
+                  ) : (
+                    <div className="grid place-items-center gap-4 p-10 text-center">
+                      <FileIcon size={48} strokeWidth={1.5} className="text-accent" />
+                      <p className="text-sm text-ink-soft">
+                        This file type can't be previewed in the browser.
+                      </p>
+                      <a
+                        href={media} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+                      >
+                        <ExternalLink size={15} /> Open / Download
+                      </a>
+                    </div>
                   )
                 ) : (
                   <p className="p-8 text-sm text-ink-soft">No certificate file attached yet.</p>

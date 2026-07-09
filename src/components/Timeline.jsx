@@ -6,14 +6,14 @@ import { useContent } from '../context/ContentProvider';
 const ease = [0.16, 1, 0.3, 1];
 
 const Timeline = () => {
-  const { experiences } = useContent();
+  const { experiences, settings } = useContent();
 
   return (
     <section id="timeline" className="py-24 sm:py-32 bg-surface border-y border-line">
       <div className="max-w-5xl mx-auto px-5 sm:px-8">
         <div className="mb-14">
-          <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">03 — Experience</span>
-          <h2 className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">Where I've made an impact</h2>
+          <span data-edit-id="timeline.label" data-edit-name="Experience · Eyebrow" data-edit-kind="text" data-edit-path="sections.experience.label" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{settings?.sections?.experience?.label || '03 — Experience'}</span>
+          <h2 data-edit-id="timeline.title" data-edit-name="Experience · Title" data-edit-kind="heading" data-edit-path="sections.experience.title" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{settings?.sections?.experience?.title || "Where I've made an impact"}</h2>
         </div>
 
         <div className="relative">
@@ -42,6 +42,27 @@ const Timeline = () => {
                 </div>
               </motion.div>
             ))}
+
+            {/* Dynamic Custom Elements in Timeline */}
+            {settings?.custom_elements && Object.values(settings.custom_elements)
+              .filter((e) => e.section === 'timeline')
+              .sort((a, b) => (a.order || 0) - (b.order || 0))
+              .map((el) => {
+                const commonProps = {
+                  key: el.id,
+                  'data-edit-id': el.id,
+                  'data-edit-name': el.name,
+                  'data-edit-kind': el.kind,
+                  'data-edit-path': el.path,
+                  className: `custom-element custom-element-${el.kind} my-4 transition-all duration-300 inline-block w-full`,
+                };
+                if (el.kind === 'heading') return <h3 {...commonProps} className={`${commonProps.className} font-display font-bold text-xl sm:text-2xl text-ink`}>{el.value}</h3>;
+                if (el.kind === 'text') return <p {...commonProps} className={`${commonProps.className} text-sm sm:text-base text-ink-soft`}>{el.value}</p>;
+                if (el.kind === 'button') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-ink text-white font-semibold hover:bg-accent text-xs sm:text-sm">{el.value}</a></div>;
+                if (el.kind === 'link') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="text-xs sm:text-sm font-semibold text-accent hover:underline">{el.value}</a></div>;
+                if (el.kind === 'image') return <img key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
+                return null;
+              })}
           </div>
         </div>
       </div>

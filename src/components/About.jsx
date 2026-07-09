@@ -42,13 +42,14 @@ const About = () => {
               className="group relative h-full overflow-hidden rounded-3xl border border-line bg-ink"
             >
               <img
+                data-edit-id="about.profileImage" data-edit-name="About · Profile image" data-edit-kind="image" data-edit-path="about.profileImage"
                 src={about.profileImage || arunProfile}
                 alt={about.profileCaption || 'Arun Pandian'}
                 className="h-full w-full min-h-[260px] object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 via-ink/40 to-transparent p-5 pt-14">
-                {isVisible('profileCaption') && <p className="font-display font-bold text-white text-lg leading-tight">{about.profileCaption}</p>}
-                {isVisible('profileSubCaption') && <p className="mt-0.5 text-xs font-mono text-white/70">{about.profileSubCaption}</p>}
+                {isVisible('profileCaption') && <p data-edit-id="about.profileCaption" data-edit-name="About · Profile caption" data-edit-kind="text" data-edit-path="about.profileCaption" className="font-display font-bold text-white text-lg leading-tight">{about.profileCaption}</p>}
+                {isVisible('profileSubCaption') && <p data-edit-id="about.profileSubCaption" data-edit-name="About · Profile subcaption" data-edit-kind="text" data-edit-path="about.profileSubCaption" className="mt-0.5 text-xs font-mono text-white/70">{about.profileSubCaption}</p>}
               </div>
             </motion.div>
           </SliceReveal>
@@ -72,6 +73,27 @@ const About = () => {
                 </span>
               ))}
             </div>
+
+            {/* Dynamic Custom Elements in About */}
+            {settings?.custom_elements && Object.values(settings.custom_elements)
+              .filter((e) => e.section === 'about')
+              .sort((a, b) => (a.order || 0) - (b.order || 0))
+              .map((el) => {
+                const commonProps = {
+                  key: el.id,
+                  'data-edit-id': el.id,
+                  'data-edit-name': el.name,
+                  'data-edit-kind': el.kind,
+                  'data-edit-path': el.path,
+                  className: `custom-element custom-element-${el.kind} my-4 transition-all duration-300 inline-block w-full`,
+                };
+                if (el.kind === 'heading') return <h4 {...commonProps} className={`${commonProps.className} font-display font-bold text-lg sm:text-xl text-ink`}>{el.value}</h4>;
+                if (el.kind === 'text') return <p {...commonProps} className={`${commonProps.className} text-sm text-ink-soft`}>{el.value}</p>;
+                if (el.kind === 'button') return <div key={el.id} className="my-2"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-4 py-2 rounded-full bg-ink text-white font-semibold hover:bg-accent text-xs">{el.value}</a></div>;
+                if (el.kind === 'link') return <div key={el.id} className="my-2"><a href={el.href || '#'} {...commonProps} className="text-xs font-semibold text-accent hover:underline">{el.value}</a></div>;
+                if (el.kind === 'image') return <img key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
+                return null;
+              })}
           </motion.div>
 
           {/* SQL terminal card */}

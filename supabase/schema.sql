@@ -186,7 +186,17 @@ CREATE TRIGGER set_updated_at_blogs
 -- 7. STORAGE POLICIES
 -- ============================================================
 -- Enable RLS and setup policies for the 'assets' storage bucket.
--- Assumes the 'assets' bucket exists (which is created during init).
+
+-- Ensure the 'assets' bucket exists, is public, and accepts ANY file type.
+-- allowed_mime_types = NULL means no MIME allowlist (images, PDF, DOC, PPT,
+-- XLS, etc. are all permitted). file_size_limit is 50MB (52428800 bytes),
+-- matching the upload widget's hint.
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('assets', 'assets', true, 52428800, NULL)
+ON CONFLICT (id) DO UPDATE
+  SET public = true,
+      file_size_limit = 52428800,
+      allowed_mime_types = NULL;
 
 DROP POLICY IF EXISTS "Public Read Access" ON storage.objects;
 DROP POLICY IF EXISTS "Authenticated Insert Access" ON storage.objects;
