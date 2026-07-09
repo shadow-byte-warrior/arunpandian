@@ -415,6 +415,7 @@ export default function Inspector() {
 
 function NoSelectionPanel() {
   const content = useEditorStore((s) => s.content);
+  const setContent = useEditorStore((s) => s.setContent);
   const addCustomElement = useEditorStore((s) => s.addCustomElement);
   const deleteCustomElement = useEditorStore((s) => s.deleteCustomElement);
 
@@ -441,7 +442,56 @@ function NoSelectionPanel() {
       <div className="text-center py-4 border-b border-slate-100">
         <Sparkles size={24} className="mx-auto mb-2 text-blue-500 animate-pulse" />
         <h3 className="text-sm font-semibold text-slate-800">Visual Builder</h3>
-        <p className="text-xs text-slate-400 mt-1">Select an element on canvas to edit its styles, or create a new element below.</p>
+        <p className="text-xs text-slate-400 mt-1">Select an element on canvas to edit its styles, or configure branding and custom elements below.</p>
+      </div>
+
+      {/* Navbar & Branding Settings */}
+      <div className="space-y-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Navbar & Branding</h4>
+        
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase">Favicon Image URL</label>
+          <input
+            type="text"
+            placeholder="Favicon URL (e.g. /favicon.svg)"
+            value={content.branding?.faviconUrl || ''}
+            onChange={(e) => setContent('branding.faviconUrl', e.target.value)}
+            className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase">Logo Image URL</label>
+          <input
+            type="text"
+            placeholder="Logo URL (e.g. /logo.svg)"
+            value={content.branding?.logoUrl || ''}
+            onChange={(e) => setContent('branding.logoUrl', e.target.value)}
+            className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase">Navbar Button Text</label>
+          <input
+            type="text"
+            placeholder="e.g. Resume"
+            value={content.navbar?.ctaLabel || ''}
+            onChange={(e) => setContent('navbar.ctaLabel', e.target.value)}
+            className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-500 uppercase">Navbar Button Link (URL)</label>
+          <input
+            type="text"
+            placeholder="e.g. /resume.pdf"
+            value={content.navbar?.ctaHref || ''}
+            onChange={(e) => setContent('navbar.ctaHref', e.target.value)}
+            className="w-full text-xs border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-700 outline-none focus:border-blue-500"
+          />
+        </div>
       </div>
 
       {/* Creator Form */}
