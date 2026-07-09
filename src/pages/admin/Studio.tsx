@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useThemeStore } from '../../theme/store';
-import { presets } from '../../theme/presets';
+import { presets, SITE_FONTS, EFFECT_STYLES, CURSOR_STYLES } from '../../theme/presets';
 import { useSiteSettings } from '../../components/admin/hooks/useSiteSettings';
 import toast from 'react-hot-toast';
 
 export default function Studio() {
-  const { theme, updateColors, updateTypography, applyPreset } = useThemeStore();
+  const { theme, updateColors, updateTypography, updateLayout, applyPreset } = useThemeStore();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { saveSettings } = useSiteSettings('theme');
   const [isSaving, setIsSaving] = useState(false);
@@ -54,28 +54,28 @@ export default function Studio() {
     }
   };
 
-  const fontOptions = [
-    'Space Grotesk, sans-serif',
-    'Inter, sans-serif',
-    'Archivo, sans-serif',
-    'Orbitron, sans-serif',
-    'Playfair Display, serif',
-    'Roboto Mono, monospace',
-    'Syne, sans-serif',
-    'Unbounded, sans-serif',
-    'Fredoka, sans-serif',
-    'Sora, sans-serif',
-    'Instrument Serif, serif',
-    'Cormorant Garamond, serif',
-    'Outfit, sans-serif',
-    'Anton, sans-serif',
-    'Satoshi, sans-serif',
-    'Plus Jakarta Sans, sans-serif',
-    'Fraunces, serif',
-    'Cinzel, serif',
-    'Space Mono, monospace',
-    'JetBrains Mono, monospace'
-  ];
+  // Fonts grouped by the reference website they were collected from.
+  const FontSelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
+    >
+      {/* Keep the current value selectable even if it isn't in the catalog */}
+      {!SITE_FONTS.some((g) => g.fonts.some((f) => f.stack === value)) && value && (
+        <option value={value}>{value.split(',')[0]}</option>
+      )}
+      {SITE_FONTS.map((group) => (
+        <optgroup key={group.site} label={group.site}>
+          {group.fonts.map((f) => (
+            <option key={`${group.site}-${f.name}`} value={f.stack}>
+              {f.name} · {f.role}
+            </option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
+  );
 
   return (
     <div className="flex h-full w-full bg-slate-900 overflow-hidden">
@@ -107,31 +107,15 @@ export default function Studio() {
           <div className="space-y-4 border-t border-slate-100 pt-4">
             <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Typography</h3>
             
-            {/* Font Family Selection */}
+            {/* Font Family Selection — grouped by source website */}
             <div className="space-y-2">
-              <label className="text-xs text-slate-500 block">Body Font Family</label>
-              <select 
-                value={theme.typography.fontFamily}
-                onChange={(e) => updateTypography({ fontFamily: e.target.value })}
-                className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
-              >
-                {fontOptions.map(font => (
-                  <option key={font} value={font}>{font.split(',')[0]}</option>
-                ))}
-              </select>
+              <label className="text-xs text-slate-500 block">Body Font Family <span className="text-slate-400">(by website)</span></label>
+              <FontSelect value={theme.typography.fontFamily} onChange={(v) => updateTypography({ fontFamily: v })} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs text-slate-500 block">Heading Font Family</label>
-              <select 
-                value={theme.typography.headingFont}
-                onChange={(e) => updateTypography({ headingFont: e.target.value })}
-                className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
-              >
-                {fontOptions.map(font => (
-                  <option key={font} value={font}>{font.split(',')[0]}</option>
-                ))}
-              </select>
+              <label className="text-xs text-slate-500 block">Heading Font Family <span className="text-slate-400">(by website)</span></label>
+              <FontSelect value={theme.typography.headingFont} onChange={(v) => updateTypography({ headingFont: v })} />
             </div>
 
             {/* Font Sizes */}
@@ -192,6 +176,50 @@ export default function Studio() {
                   <option value="800">Extra Bold (800)</option>
                   <option value="900">Black (900)</option>
                 </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Effects — site-wide animation packages & cursors from the reference websites */}
+          <div className="space-y-3 border-t border-slate-100 pt-4">
+            <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Effects</h3>
+
+            <div className="space-y-2">
+              <label className="text-xs text-slate-500 block">Animation package <span className="text-slate-400">(by website)</span></label>
+              <select
+                value={theme.layout?.animationStyle || 'default'}
+                onChange={(e) => updateLayout({ animationStyle: e.target.value as any })}
+                className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
+              >
+                {EFFECT_STYLES.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs text-slate-500 block">Custom cursor <span className="text-slate-400">(by website)</span></label>
+              <select
+                value={theme.layout?.cursorStyle || 'default'}
+                onChange={(e) => updateLayout({ cursorStyle: e.target.value as any })}
+                className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
+              >
+                {CURSOR_STYLES.map((c) => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-slate-400">Cursor renders on the live site (hidden inside the editor preview).</p>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-slate-500 block">Corner radius</label>
+              <div className="flex items-center border border-slate-200 rounded px-2 py-1">
+                <input
+                  type="text"
+                  value={theme.layout?.radius || '1rem'}
+                  onChange={(e) => updateLayout({ radius: e.target.value })}
+                  className="w-full text-sm border-0 p-0 focus:ring-0 text-slate-850"
+                />
               </div>
             </div>
           </div>

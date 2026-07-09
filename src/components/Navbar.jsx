@@ -50,7 +50,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
         <div className={`flex items-center justify-between rounded-2xl transition-all duration-500 ${scrolled ? 'bg-surface/80 backdrop-blur-xl border border-line shadow-[0_8px_30px_-12px_rgba(9,9,11,0.15)] px-5 py-2.5' : 'bg-transparent px-1'}`}>
           <a href="#hero" className="flex items-center gap-2.5 group" aria-label={`${brandName} — home`}>
-            <Logo size={30} className="text-[#1E293B] transition-transform duration-300 group-hover:-translate-y-0.5" title={`${brandName} logo`} />
+            <Logo size={30} className="text-ink transition-transform duration-300 group-hover:-translate-y-0.5" title={`${brandName} logo`} />
             <span data-edit-id="nav.brand" data-edit-name="Navbar · Brand name" data-edit-kind="text" data-edit-path="hero.name" className="font-display font-bold tracking-tight text-ink">{brandName}</span>
           </a>
 
@@ -78,7 +78,7 @@ const Navbar = () => {
                 </a>
               );
             })}
-            <a href={ctaHref} download data-edit-id="nav.cta" data-edit-name="Navbar · CTA button" data-edit-kind="button" data-edit-path="navbar.ctaLabel" className="ml-2 px-4 py-2 rounded-full bg-ink text-white text-sm font-semibold hover:bg-accent transition-colors">
+            <a href={ctaHref} download data-edit-id="nav.cta" data-edit-name="Navbar · CTA button" data-edit-kind="button" data-edit-path="navbar.ctaLabel" className="ml-2 px-4 py-2 rounded-full bg-ink text-bg text-sm font-semibold hover:bg-accent hover:text-ink transition-colors">
               {ctaLabel}
             </a>
           </div>
@@ -107,7 +107,7 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
-          <a href={ctaHref} download className="block mt-1 text-center px-4 py-2.5 rounded-xl bg-ink text-white font-semibold">
+          <a href={ctaHref} download className="block mt-1 text-center px-4 py-2.5 rounded-xl bg-ink text-bg font-semibold">
             {ctaLabel}
           </a>
         </motion.div>

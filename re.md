@@ -183,6 +183,38 @@ interface CustomElement {
 
 ---
 
+## Implemented — 2026-07-09 (code shipped, not just planned)
+
+### 1. Theme adaptability & collision fixes
+- **Hero / navbar collision fixed** — `Hero.jsx` top padding raised (`pt-36 sm:pt-40`) so oversized preset headlines (Anton 72px, Cinzel, Playfair) no longer clip under the fixed navbar.
+- **Dark-preset contrast fixed** — every `bg-ink text-white` pairing (primary CTA, navbar CTA, story-chip numbers, footer, scroll-top button, custom-element buttons) now uses `text-bg`, so buttons stay readable on Radian/Depo Luxe/Calot/Cyber/Metropolitan dark themes (no more white-on-white pills).
+- **Hero radial wash** no longer hard-codes light blue `#eef3ff`; it derives from `--color-accent` via `color-mix`, adapting to all 10 presets.
+- Navbar logo color now follows `text-ink` instead of a hard-coded hex.
+
+### 2. Font families collected per website (`presets.ts` → `SITE_FONTS`)
+Studio's Body/Heading font dropdowns are now grouped by source site: drinkjoyrush.com (Fredoka, Sora, Baloo 2), k95.it (Space Mono, Archivo), juliencalot.com (Anton, Fraunces, Space Grotesk), depoluxe.xyz (Cinzel, Cormorant Garamond, EB Garamond), bymonolog.com (Instrument Serif, Cormorant Garamond, Archivo), hildenkaira.fi (Playfair Display, Outfit, DM Sans), rideradian.com (Anton, Plus Jakarta Sans, JetBrains Mono), plus Awwwards extras (Syne, Unbounded, Inter…). Each option shows its role (heading/body).
+
+### 3. Studio "Effects" section (`Studio.tsx`)
+New sidebar group with: **Animation package** select (all 11 site effect packages, labeled by website — marquee/letter-roll/preloader/roman index/word rotator/letter-stagger/chapter nav/scanlines), **Custom cursor** select (dot — k95, bubble — Joy Rush, invert — Calot, crosshair — Depo Luxe), and **Corner radius** field. All wired through `updateLayout` → live in the preview iframe.
+
+### 4. New site replicas added (`Modifiers.jsx`, `HomePage.jsx`, `Hero.jsx`)
+- **LetterStagger** (hildenkaira.fi) — hero headline characters spring in one by one, like H&K's letter-image logo assembly. Active on the `hildenkaira` package.
+- **Roman-numeral work index** (depoluxe.xyz) — project cards get I / II / III … numerals with a hairline rule on the `depoluxe` package (`toRoman` helper).
+- **Giant footer wordmark** (bymonolog.com) — footer name scales to `clamp(3rem,12vw,10rem)` on the `monolog` package.
+- **Scanlines overlay** for the Retro Cyber package.
+- Already present and kept: TopMarquee (Joy Rush), 000% PreloaderCounter (Calot), GrainOverlay, RadianScrollNav (01/06 chapter nav), LetterRoll nav hover (K95), WordRotator (Monolog), custom cursors.
+
+### 5. Element "Effects" tab is now real (`Inspector.tsx` + `editorStore.ts`)
+`overridesToCss` now supports `hover:`-prefixed properties (compiled to `:hover` rules) and auto-injects `EFFECT_KEYFRAMES`. The Effects tab offers:
+
+- **Loop animation** (labeled by source site): Float / Bounce (drinkjoyrush.com), Spin slow (k95.it), Pulse (rideradian.com), Glitch (Retro Cyber), Wiggle (juliencalot.com).
+- **Hover effects**: scale %, lift px, text color, background, and glow presets (Neon — rideradian, Sticker offset — drinkjoyrush, Hairline ring — k95); a smooth transition is applied automatically.
+- **Filters & blend**: blur, mix-blend-mode, transition speed.
+
+These work identically in the live canvas and on the published site (both render through `overridesToCss`).
+
+---
+
 ## IP note
 Presets replicate each reference site's **mechanics and aesthetic direction** (layout systems, animation choreography, typography pairing in equivalent Google Fonts, palettes). They must not embed the sites' photography, video, logos, copy, or exported code. All ten presets ship with your own content from `resumeData`/Supabase.
 

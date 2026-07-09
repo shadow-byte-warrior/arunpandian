@@ -229,15 +229,40 @@ export const useEditorStore = create<EditorState>()(
   )
 );
 
+// ── Element effect keyframes (named after their source websites) ──
+// vs-float / vs-bounce  → drinkjoyrush.com floating cans & clouds
+// vs-spin               → k95.it orbiting thumbnails
+// vs-pulse              → rideradian.com glow pulse
+// vs-glitch             → retro-cyber jitter
+// vs-wiggle             → juliencalot.com playful tilt
+export const EFFECT_KEYFRAMES = `
+@keyframes vs-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes vs-bounce { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.02); } }
+@keyframes vs-spin { to { transform: rotate(360deg); } }
+@keyframes vs-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes vs-glitch { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-2px,1px); } 40% { transform: translate(2px,-1px); } 60% { transform: translate(-1px,-2px); } 80% { transform: translate(1px,2px); } }
+@keyframes vs-wiggle { 0%,100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+`;
+
 // Build a CSS string that applies the given overrides via [data-edit-id] selectors.
+// Props prefixed with "hover:" compile into a :hover rule (used by the Effects tab).
 export function overridesToCss(overrides: OverrideMap): string {
-  return Object.entries(overrides)
+  let usesEffects = false;
+  const rules = Object.entries(overrides)
     .map(([id, style]) => {
-      const body = Object.entries(style)
-        .map(([prop, val]) => `${prop}: ${val} !important;`)
-        .join(' ');
+      const base: string[] = [];
+      const hover: string[] = [];
+      for (const [prop, val] of Object.entries(style)) {
+        if (String(val).includes('vs-')) usesEffects = true;
+        if (prop.startsWith('hover:')) hover.push(`${prop.slice(6)}: ${val} !important;`);
+        else base.push(`${prop}: ${val} !important;`);
+      }
       const safe = id.replace(/"/g, '\\"');
-      return `[data-edit-id="${safe}"] { ${body} }`;
+      let rule = base.length ? `[data-edit-id="${safe}"] { ${base.join(' ')} }` : '';
+      if (hover.length) rule += `\n[data-edit-id="${safe}"]:hover { ${hover.join(' ')} }`;
+      return rule;
     })
+    .filter(Boolean)
     .join('\n');
+  return (usesEffects ? EFFECT_KEYFRAMES : '') + rules;
 }

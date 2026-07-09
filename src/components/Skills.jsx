@@ -48,8 +48,8 @@ const Skills = () => {
     <section id="skills" className="py-24 sm:py-32 bg-bg">
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
         <div className="mb-14">
-          {isVisible('sectionLabel') && <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{skills.sectionLabel}</span>}
-          {isVisible('sectionTitle') && <h2 className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{skills.sectionTitle}</h2>}
+          {isVisible('sectionLabel') && <span data-edit-id="skills.sectionLabel" data-edit-name="Toolkit · Eyebrow" data-edit-kind="text" data-edit-path="skills.sectionLabel" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{skills.sectionLabel}</span>}
+          {isVisible('sectionTitle') && <h2 data-edit-id="skills.sectionTitle" data-edit-name="Toolkit · Title" data-edit-kind="heading" data-edit-path="skills.sectionTitle" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{skills.sectionTitle}</h2>}
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">

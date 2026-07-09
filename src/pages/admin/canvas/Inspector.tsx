@@ -32,6 +32,22 @@ function getContentAt(content: any, path: string) {
   return path.split('.').reduce((acc, k) => (acc == null ? undefined : acc[k]), content);
 }
 
+// ── Element loop animations — named after the reference websites they replicate ──
+const ELEMENT_ANIMATIONS: { label: string; value: string }[] = [
+  { label: 'None', value: '' },
+  { label: 'Float — drinkjoyrush.com', value: 'vs-float 4s ease-in-out infinite' },
+  { label: 'Bounce — drinkjoyrush.com', value: 'vs-bounce 2.4s ease-in-out infinite' },
+  { label: 'Spin slow — k95.it', value: 'vs-spin 12s linear infinite' },
+  { label: 'Pulse — rideradian.com', value: 'vs-pulse 2s ease-in-out infinite' },
+  { label: 'Glitch — Retro Cyber', value: 'vs-glitch 1.6s steps(2) infinite' },
+  { label: 'Wiggle — juliencalot.com', value: 'vs-wiggle 1.2s ease-in-out infinite' },
+];
+
+function hoverScalePct(v?: string): string {
+  const m = String(v || '').match(/scale\(([\d.]+)\)/);
+  return m ? String(Math.round(parseFloat(m[1]) * 100)) : '';
+}
+
 // ── Module-scope control rows (stable identity → inputs keep focus) ──
 const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div className="flex items-center justify-between gap-3 py-1.5">
@@ -304,14 +320,94 @@ export default function Inspector() {
           </>
         )}
 
-        {tab === 'effects' && (
-          <Group title="Interaction states">
-            <p className="text-xs leading-relaxed text-slate-400">
-              Hover / active / focus styling and scroll + hover animations are on the roadmap.
-              Base styles set here apply to the default state.
-            </p>
-          </Group>
-        )}
+        {tab === 'effects' && (() => {
+          const ov = overrides[id] || {};
+          // Make hover effects animate smoothly the moment any hover prop is set.
+          const ensureTransition = () => {
+            if (!(overrides[id] || {})['transition']) {
+              setStyle(id, 'transition', 'all 0.3s cubic-bezier(0.16,1,0.3,1)');
+            }
+          };
+          return (
+            <>
+              <Group title="Loop animation">
+                <Row label="Animation">
+                  <select
+                    value={ov['animation'] ?? ''}
+                    onChange={(e) => set('animation')(e.target.value || null)}
+                    className="w-44 rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700 outline-none focus:border-blue-500"
+                  >
+                    {ELEMENT_ANIMATIONS.map((a) => (
+                      <option key={a.label} value={a.value}>{a.label}</option>
+                    ))}
+                  </select>
+                </Row>
+              </Group>
+              <Group title="Hover effects">
+                <NumRow
+                  label="Scale %"
+                  unit="%"
+                  value={hoverScalePct(ov['hover:transform'])}
+                  onSet={(v) => {
+                    const pct = v === null ? NaN : parseFloat(v);
+                    set('hover:transform')(Number.isFinite(pct) ? `scale(${(pct / 100).toFixed(2)})` : null);
+                    ensureTransition();
+                  }}
+                />
+                <NumRow
+                  label="Lift"
+                  value={numStr(String(ov['hover:translate'] ?? '').replace(/0\s+-?/, ''))}
+                  onSet={(v) => {
+                    set('hover:translate')(v === null ? null : `0 -${parseFloat(v)}px`);
+                    ensureTransition();
+                  }}
+                />
+                <ColorRow
+                  label="Text color"
+                  value={ov['hover:color'] ?? ''}
+                  onSet={(v) => { set('hover:color')(v); ensureTransition(); }}
+                />
+                <ColorRow
+                  label="Background"
+                  value={ov['hover:background-color'] ?? ''}
+                  onSet={(v) => { set('hover:background-color')(v); ensureTransition(); }}
+                />
+                <Row label="Glow">
+                  <select
+                    value={ov['hover:box-shadow'] ?? ''}
+                    onChange={(e) => { set('hover:box-shadow')(e.target.value || null); ensureTransition(); }}
+                    className="w-44 rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700 outline-none focus:border-blue-500"
+                  >
+                    <option value="">None</option>
+                    <option value="0 0 15px var(--color-primary)">Neon glow — rideradian.com</option>
+                    <option value="4px 4px 0px var(--color-text)">Sticker offset — drinkjoyrush.com</option>
+                    <option value="0 0 0 1px var(--color-primary)">Hairline ring — k95.it</option>
+                    <option value="0 20px 40px rgba(0,0,0,0.25)">Soft elevation</option>
+                  </select>
+                </Row>
+              </Group>
+              <Group title="Filters & blend">
+                <NumRow
+                  label="Blur"
+                  value={numStr(String(ov['filter'] ?? '').replace(/[^\d.]/g, ''))}
+                  onSet={(v) => set('filter')(v === null ? null : `blur(${parseFloat(v)}px)`)}
+                />
+                <SelectRow
+                  label="Blend"
+                  value={raw('mix-blend-mode')}
+                  onSet={set('mix-blend-mode')}
+                  options={['normal', 'multiply', 'screen', 'overlay', 'difference', 'exclusion']}
+                />
+                <NumRow
+                  label="Speed"
+                  unit="s"
+                  value={numStr(String(ov['transition-duration'] ?? '').replace('s', ''))}
+                  onSet={(v) => set('transition-duration')(v === null ? null : `${parseFloat(v)}s`)}
+                />
+              </Group>
+            </>
+          );
+        })()}
       </div>
     </div>
   );

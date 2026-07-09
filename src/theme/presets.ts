@@ -24,6 +24,106 @@ export interface ThemeState {
   };
 }
 
+// ── Font families collected from each reference website (Google-Fonts equivalents) ──
+// Grouped so the Studio can render an optgroup per source site.
+export interface SiteFontGroup {
+  site: string;
+  fonts: { name: string; stack: string; role: 'heading' | 'body' | 'both' }[];
+}
+
+export const SITE_FONTS: SiteFontGroup[] = [
+  {
+    site: 'drinkjoyrush.com (Joy Rush)',
+    fonts: [
+      { name: 'Fredoka', stack: 'Fredoka, sans-serif', role: 'heading' },
+      { name: 'Sora', stack: 'Sora, sans-serif', role: 'body' },
+      { name: 'Baloo 2', stack: 'Baloo 2, sans-serif', role: 'both' },
+    ],
+  },
+  {
+    site: 'k95.it (K95 Studio)',
+    fonts: [
+      { name: 'Space Mono', stack: 'Space Mono, monospace', role: 'both' },
+      { name: 'Archivo', stack: 'Archivo, sans-serif', role: 'body' },
+    ],
+  },
+  {
+    site: 'juliencalot.com (Julien Calot)',
+    fonts: [
+      { name: 'Anton', stack: 'Anton, sans-serif', role: 'heading' },
+      { name: 'Fraunces', stack: 'Fraunces, serif', role: 'heading' },
+      { name: 'Space Grotesk', stack: 'Space Grotesk, sans-serif', role: 'body' },
+    ],
+  },
+  {
+    site: 'depoluxe.xyz (Depo Luxe)',
+    fonts: [
+      { name: 'Cinzel', stack: 'Cinzel, serif', role: 'heading' },
+      { name: 'Cormorant Garamond', stack: 'Cormorant Garamond, serif', role: 'body' },
+      { name: 'EB Garamond', stack: 'EB Garamond, serif', role: 'body' },
+    ],
+  },
+  {
+    site: 'bymonolog.com (MONOLOG)',
+    fonts: [
+      { name: 'Instrument Serif', stack: 'Instrument Serif, serif', role: 'heading' },
+      { name: 'Cormorant Garamond', stack: 'Cormorant Garamond, serif', role: 'heading' },
+      { name: 'Archivo', stack: 'Archivo, sans-serif', role: 'body' },
+    ],
+  },
+  {
+    site: 'hildenkaira.fi (Hildén & Kaira)',
+    fonts: [
+      { name: 'Playfair Display', stack: 'Playfair Display, serif', role: 'heading' },
+      { name: 'Outfit', stack: 'Outfit, sans-serif', role: 'body' },
+      { name: 'DM Sans', stack: 'DM Sans, sans-serif', role: 'body' },
+    ],
+  },
+  {
+    site: 'rideradian.com (Radian)',
+    fonts: [
+      { name: 'Anton', stack: 'Anton, sans-serif', role: 'heading' },
+      { name: 'Plus Jakarta Sans', stack: 'Plus Jakarta Sans, sans-serif', role: 'body' },
+      { name: 'JetBrains Mono', stack: 'JetBrains Mono, monospace', role: 'body' },
+    ],
+  },
+  {
+    site: 'Awwwards extras',
+    fonts: [
+      { name: 'Syne', stack: 'Syne, sans-serif', role: 'heading' },
+      { name: 'Unbounded', stack: 'Unbounded, sans-serif', role: 'heading' },
+      { name: 'JetBrains Mono', stack: 'JetBrains Mono, monospace', role: 'body' },
+      { name: 'Playfair Display', stack: 'Playfair Display, serif', role: 'heading' },
+      { name: 'Inter', stack: 'Inter, sans-serif', role: 'body' },
+      { name: 'Space Grotesk', stack: 'Space Grotesk, sans-serif', role: 'both' },
+    ],
+  },
+];
+
+// ── Effect styles (site-wide animation packages), labeled by source website ──
+export const EFFECT_STYLES: { value: NonNullable<ThemeState['layout']['animationStyle']>; label: string }[] = [
+  { value: 'default', label: 'None — clean (no site effects)' },
+  { value: 'joyrush', label: 'Joy Rush — top marquee, lowercase, sticker buttons (drinkjoyrush.com)' },
+  { value: 'k95', label: 'K95 — letter-roll nav hover, uppercase grid (k95.it)' },
+  { value: 'juliencalot', label: 'Calot — 000% preloader, film grain (juliencalot.com)' },
+  { value: 'depoluxe', label: 'Depo Luxe — roman-numeral index, cinematic (depoluxe.xyz)' },
+  { value: 'monolog', label: 'Monolog — word rotator, giant footer brand (bymonolog.com)' },
+  { value: 'hildenkaira', label: 'Hildén & Kaira — letter-stagger headline (hildenkaira.fi)' },
+  { value: 'radian', label: 'Radian — chapter scroll nav 01/06 (rideradian.com)' },
+  { value: 'avantgarde', label: 'Avant-Garde — overlap & outline type' },
+  { value: 'cyber', label: 'Retro Cyber — scanlines & glitch' },
+  { value: 'metropolitan', label: 'Metropolitan Luxe — slow gold fades' },
+];
+
+export const CURSOR_STYLES: { value: NonNullable<ThemeState['layout']['cursorStyle']>; label: string }[] = [
+  { value: 'default', label: 'System default' },
+  { value: 'dot', label: 'Dot — k95.it / rideradian.com' },
+  { value: 'bubble', label: 'Bubble ring — drinkjoyrush.com' },
+  { value: 'invert', label: 'Invert blend — juliencalot.com' },
+  { value: 'crosshair', label: 'Crosshair — depoluxe.xyz' },
+  { value: 'none', label: 'Hidden' },
+];
+
 export const presets: Record<string, ThemeState> = {
   Default: {
     colors: {

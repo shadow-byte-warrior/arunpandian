@@ -175,6 +175,52 @@ export function RadianScrollNav() {
   );
 }
 
+// ─── 5b. LETTER STAGGER ENTRANCE (Hildén & Kaira style — hildenkaira.fi) ───
+// Each character springs in independently, like H&K's letter-image logo assembly.
+export function LetterStagger({ text = '', delay = 0, className = '' }) {
+  const chars = String(text).split('');
+  return (
+    <span className={`inline-block ${className}`} aria-label={text}>
+      {chars.map((char, i) => (
+        <motion.span
+          key={i}
+          aria-hidden
+          initial={{ opacity: 0, y: '0.6em', rotate: -6, scale: 0.85 }}
+          animate={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
+          transition={{ delay: delay + i * 0.045, type: 'spring', stiffness: 320, damping: 22 }}
+          className="inline-block will-change-transform"
+        >
+          {char === ' ' ? ' ' : char}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+// ─── 5c. ROMAN NUMERAL HELPER (Depo Luxe style — depoluxe.xyz index list) ───
+export function toRoman(num) {
+  const map = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+  let n = Math.max(1, Math.round(num));
+  let out = '';
+  for (const [v, s] of map) { while (n >= v) { out += s; n -= v; } }
+  return out;
+}
+
+// ─── 5d. SCANLINES OVERLAY (Retro Cyber) ───
+export function Scanlines({ opacity = 0.08 }) {
+  return (
+    <div
+      aria-hidden
+      className="fixed inset-0 z-[9998] pointer-events-none"
+      style={{
+        opacity,
+        backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, rgba(0,0,0,0.9) 3px, transparent 4px)',
+        mixBlendMode: 'multiply',
+      }}
+    />
+  );
+}
+
 // ─── 6. LETTER ROLL HOVER EFFECT (K95 style) ───
 export function LetterRoll({ text }) {
   return (

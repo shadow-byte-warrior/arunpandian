@@ -5,7 +5,7 @@ import MagneticButton from './MagneticButton';
 import Parallax from './Parallax';
 import arunProfile from '../assets/arun-profile.jpg';
 import { useContent } from '../context/ContentProvider';
-import { WordRotator } from '../theme/Modifiers';
+import { WordRotator, LetterStagger } from '../theme/Modifiers';
 
 const GithubIcon = ({ size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -41,9 +41,12 @@ const Hero = () => {
   const isVisible = (field) => !hiddenFields.includes(field);
 
   return (
-    <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-dvh flex flex-col justify-center overflow-hidden pt-28 pb-12">
-      {/* Soft radial wash */}
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(120%_90%_at_85%_10%,#eef3ff_0%,transparent_55%)]" />
+    <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-dvh flex flex-col justify-center overflow-hidden pt-36 sm:pt-40 pb-12">
+      {/* Soft radial wash — derived from the theme accent so every preset (light or dark) adapts */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={{ background: 'radial-gradient(120% 90% at 85% 10%, color-mix(in srgb, var(--color-accent) 10%, transparent) 0%, transparent 55%)' }}
+      />
       {/* Full-bleed background grid — graph-paper lines fading toward the bottom */}
       <div
         aria-hidden
@@ -77,7 +80,12 @@ const Hero = () => {
           {/* Banner headline — oversized Swiss-modern type */}
           <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="mt-6 font-display font-extrabold text-ink leading-[0.92] tracking-tight text-[clamp(2.75rem,7vw,5.5rem)]">
             {(hero.headline || []).map((line, i) => (
-              <motion.span key={i} custom={i + 1} variants={rise} initial="hidden" animate="show" className="block">{line}</motion.span>
+              animationStyle === 'hildenkaira' ? (
+                // hildenkaira.fi — each character springs in independently
+                <span key={i} className="block"><LetterStagger text={line} delay={0.15 + i * 0.35} /></span>
+              ) : (
+                <motion.span key={i} custom={i + 1} variants={rise} initial="hidden" animate="show" className="block">{line}</motion.span>
+              )
             ))}
             {isVisible('headlineAccent') && (
               <motion.span custom={(hero.headline || []).length + 1} variants={rise} initial="hidden" animate="show" className="block">
@@ -111,7 +119,7 @@ const Hero = () => {
             {story.map((s, i) => (
               <React.Fragment key={s.k}>
                 <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 backdrop-blur pl-2 pr-3.5 py-1.5">
-                  <span className="grid h-6 w-6 place-items-center rounded-full bg-ink text-white text-[11px] font-mono font-bold">{s.k}</span>
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-ink text-bg text-[11px] font-mono font-bold">{s.k}</span>
                   <span className="text-xs sm:text-sm font-medium text-ink-soft">{s.label}</span>
                 </div>
                 {i < story.length - 1 && <ArrowRight size={16} className="text-ink-soft/40 shrink-0" aria-hidden />}
@@ -129,7 +137,7 @@ const Hero = () => {
               <MagneticButton
                 href={hero.primaryCta?.href || '#projects'}
                 data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label"
-                className="group gap-2 rounded-full bg-ink text-white px-8 py-4 text-base font-semibold shadow-[0_10px_30px_-10px_rgba(9,9,11,0.5)] hover:bg-accent transition-colors duration-300"
+                className="group gap-2 rounded-full bg-ink text-bg px-8 py-4 text-base font-semibold shadow-[0_10px_30px_-10px_rgba(9,9,11,0.5)] hover:bg-accent hover:text-ink transition-colors duration-300"
               >
                 {hero.primaryCta?.label || 'View selected work'}
                 <ArrowDownRight size={19} className="group-hover:translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
@@ -187,7 +195,7 @@ const Hero = () => {
               };
               if (el.kind === 'heading') return <h3 {...commonProps} className={`${commonProps.className} font-display font-bold text-xl sm:text-2xl text-ink`}>{el.value}</h3>;
               if (el.kind === 'text') return <p {...commonProps} className={`${commonProps.className} text-sm sm:text-base text-ink-soft`}>{el.value}</p>;
-              if (el.kind === 'button') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-ink text-white font-semibold hover:bg-accent text-xs sm:text-sm">{el.value}</a></div>;
+              if (el.kind === 'button') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-ink text-bg font-semibold hover:bg-accent text-xs sm:text-sm">{el.value}</a></div>;
               if (el.kind === 'link') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="text-xs sm:text-sm font-semibold text-accent hover:underline">{el.value}</a></div>;
               if (el.kind === 'image') return <img key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
               return null;
