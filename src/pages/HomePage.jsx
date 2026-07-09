@@ -17,6 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useContent } from '../context/ContentProvider';
 import CanvasRuntime from '../editor/CanvasRuntime';
 import StyleOverrides from '../editor/StyleOverrides';
+import { TopMarquee, PreloaderCounter, GrainOverlay, RadianScrollNav } from '../theme/Modifiers';
 
 export default function HomePage() {
   const { settings, projects, blogs } = useContent();
@@ -28,7 +29,15 @@ export default function HomePage() {
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).get('preview') === '1';
 
+  const theme = settings?.theme;
+  const animationStyle = theme?.layout?.animationStyle || 'default';
+
+  const [loadComplete, setLoadComplete] = useState(animationStyle !== 'juliencalot');
   const [intro, setIntro] = useState(!isPreview);
+
+  useEffect(() => {
+    setLoadComplete(animationStyle !== 'juliencalot');
+  }, [animationStyle]);
 
   // Admin can disable the welcome intro entirely
   const welcomeEnabled = settings?.welcome?.enabled !== false;
@@ -97,7 +106,6 @@ export default function HomePage() {
   }, [cursorStyle, isPreview]);
 
   // ── Theme: apply admin-configured tokens as CSS variables (live) ──
-  const theme = settings?.theme;
   useEffect(() => {
     if (!theme) return;
     const root = document.documentElement;
@@ -188,31 +196,42 @@ export default function HomePage() {
   const projectsSection = settings?.sections?.projects || {};
   const blogSection = settings?.sections?.blog || {};
 
-  const animationStyle = theme?.layout?.animationStyle || 'default';
-
   return (
-    <div className={`grain bg-bg text-ink min-h-screen relative awwwards-preset-${animationStyle}`}>
-      {/* Custom Styles Injector for Awwwards animations */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        .custom-element { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .awwwards-preset-joyrush .custom-element-button { background-color: var(--color-primary); color: #2C0E1E; border: 3px solid #2C0E1E; box-shadow: 4px 4px 0px #2C0E1E; border-radius: 9999px; }
-        .awwwards-preset-joyrush .custom-element-button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #2C0E1E; }
-        .awwwards-preset-k95 { font-family: var(--font-primary); }
-        .awwwards-preset-k95 .custom-element-button { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); border-radius: 0px; text-transform: uppercase; letter-spacing: 0.1em; }
-        .awwwards-preset-k95 .custom-element-button:hover { background: var(--color-text); color: var(--color-background); }
-        .awwwards-preset-juliencalot { background-image: radial-gradient(circle at 10% 20%, rgba(255, 42, 84, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%); }
-        .awwwards-preset-depoluxe { text-transform: uppercase; }
-        .awwwards-preset-depoluxe .custom-element-button { border: 1px solid var(--color-primary); color: var(--color-primary); background: transparent; border-radius: 0px; font-weight: 800; letter-spacing: 0.2em; }
-        .awwwards-preset-depoluxe .custom-element-button:hover { background: var(--color-primary); color: var(--color-background); }
-        .awwwards-preset-monolog { letter-spacing: 0.05em; line-height: 1.8; }
-        .awwwards-preset-monolog .custom-element-button { border-bottom: 1px solid var(--color-primary); border-radius: 0px; background: transparent; color: var(--color-text); padding: 4px 0px; }
-        .awwwards-preset-radian { background-color: #000; color: #fff; }
-        .awwwards-preset-radian .custom-element-button { background: var(--color-primary); color: #000; border-radius: 4px; font-weight: 900; }
-        .awwwards-preset-radian .custom-element-button:hover { box-shadow: 0 0 15px var(--color-primary); }
-      ` }} />
+    <>
+      {animationStyle === 'juliencalot' && !loadComplete && !isPreview && (
+        <PreloaderCounter onComplete={() => setLoadComplete(true)} />
+      )}
 
-      <StyleOverrides />
-      {isPreview && <CanvasRuntime />}
+      <div className={`grain bg-bg text-ink min-h-screen relative awwwards-preset-${animationStyle}`}>
+        {animationStyle === 'joyrush' && <TopMarquee />}
+        {animationStyle === 'juliencalot' && !isPreview && <GrainOverlay opacity={0.06} />}
+        {animationStyle === 'monolog' && <GrainOverlay opacity={0.03} />}
+        {animationStyle === 'radian' && <RadianScrollNav />}
+
+        {/* Custom Styles Injector for Awwwards animations */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          .custom-element { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+          .awwwards-preset-joyrush { text-transform: lowercase; }
+          .awwwards-preset-joyrush h1, .awwwards-preset-joyrush h2, .awwwards-preset-joyrush h3, .awwwards-preset-joyrush p, .awwwards-preset-joyrush span, .awwwards-preset-joyrush a { text-transform: lowercase !important; }
+          .awwwards-preset-joyrush .custom-element-button { background-color: var(--color-primary); color: #2C0E1E; border: 3px solid #2C0E1E; box-shadow: 4px 4px 0px #2C0E1E; border-radius: 9999px; }
+          .awwwards-preset-joyrush .custom-element-button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #2C0E1E; }
+          .awwwards-preset-k95 { font-family: var(--font-primary); }
+          .awwwards-preset-k95 h1, .awwwards-preset-k95 h2, .awwwards-preset-k95 h3, .awwwards-preset-k95 p, .awwwards-preset-k95 span, .awwwards-preset-k95 a { text-transform: uppercase !important; }
+          .awwwards-preset-k95 .custom-element-button { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); border-radius: 0px; text-transform: uppercase; letter-spacing: 0.1em; }
+          .awwwards-preset-k95 .custom-element-button:hover { background: var(--color-text); color: var(--color-background); }
+          .awwwards-preset-juliencalot { background-image: radial-gradient(circle at 10% 20%, rgba(255, 42, 84, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%); }
+          .awwwards-preset-depoluxe { text-transform: uppercase; }
+          .awwwards-preset-depoluxe .custom-element-button { border: 1px solid var(--color-primary); color: var(--color-primary); background: transparent; border-radius: 0px; font-weight: 800; letter-spacing: 0.2em; }
+          .awwwards-preset-depoluxe .custom-element-button:hover { background: var(--color-primary); color: var(--color-background); }
+          .awwwards-preset-monolog { letter-spacing: 0.05em; line-height: 1.8; }
+          .awwwards-preset-monolog .custom-element-button { border-bottom: 1px solid var(--color-primary); border-radius: 0px; background: transparent; color: var(--color-text); padding: 4px 0px; }
+          .awwwards-preset-radian { background-color: #000; color: #fff; }
+          .awwwards-preset-radian .custom-element-button { background: var(--color-primary); color: #000; border-radius: 4px; font-weight: 900; }
+          .awwwards-preset-radian .custom-element-button:hover { box-shadow: 0 0 15px var(--color-primary); }
+        ` }} />
+
+        <StyleOverrides />
+        {isPreview && <CanvasRuntime />}
 
 
       <AnimatePresence>
@@ -242,7 +261,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
             {projects?.map((project, i) => (
               <SliceReveal key={project._id || project.title} delay={(i % 2) * 0.12}>
-                <ProjectCard project={project} />
+                <ProjectCard project={project} index={i} />
               </SliceReveal>
             ))}
           </div>
@@ -342,6 +361,7 @@ export default function HomePage() {
         />
       )}
     </div>
+    </>
   );
 }
 

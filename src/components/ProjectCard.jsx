@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ExternalLink, FileText, ArrowUpRight } from 'lucide-react';
+import { useContent } from '../context/ContentProvider';
 
 const GithubIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -16,8 +17,10 @@ const flow = [
   { key: 'insight', label: 'Insight', dot: 'bg-emerald-500' },
 ];
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, index = 0 }) => {
   const { title, tags, githubLink, caseStudyLink, demoLink, insight } = project;
+  const { settings } = useContent();
+  const animationStyle = settings?.theme?.layout?.animationStyle || 'default';
 
   // 3D tilt following the pointer
   const ref = useRef(null);
@@ -64,7 +67,14 @@ const ProjectCard = ({ project }) => {
           </div>
         </div>
 
-        <h3 className="font-display font-bold text-xl sm:text-[1.35rem] text-ink leading-snug mb-4" style={{ transform: 'translateZ(40px)' }}>{title}</h3>
+        <h3 className="font-display font-bold text-xl sm:text-[1.35rem] text-ink leading-snug mb-4" style={{ transform: 'translateZ(40px)' }}>
+          {animationStyle === 'depoluxe' && (
+            <span className="font-mono text-accent mr-3">
+              {['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'][index] || String(index + 1)}.
+            </span>
+          )}
+          {title}
+        </h3>
 
         <div className="space-y-3.5 flex-1" style={{ transform: 'translateZ(20px)' }}>
           {flow.map((f) => {

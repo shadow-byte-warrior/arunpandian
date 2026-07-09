@@ -5,6 +5,7 @@ import MagneticButton from './MagneticButton';
 import Parallax from './Parallax';
 import arunProfile from '../assets/arun-profile.jpg';
 import { useContent } from '../context/ContentProvider';
+import { WordRotator } from '../theme/Modifiers';
 
 const GithubIcon = ({ size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -29,6 +30,7 @@ const rise = {
 const Hero = () => {
   const { settings } = useContent();
   const hero = settings.hero;
+  const animationStyle = settings.theme?.layout?.animationStyle || 'default';
 
   const story = hero.story || [];
   const credentials = hero.credentials || [];
@@ -79,7 +81,14 @@ const Hero = () => {
             ))}
             {isVisible('headlineAccent') && (
               <motion.span custom={(hero.headline || []).length + 1} variants={rise} initial="hidden" animate="show" className="block">
-                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="italic font-medium text-accent">{hero.headlineAccent}</span>
+                {animationStyle === 'monolog' ? (
+                  <span className="inline-flex items-center">
+                    <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="italic font-medium text-accent mr-2">{hero.headlineAccent}</span>
+                    <WordRotator words={['with SQL', 'with Python', 'with Power BI', 'with n8n']} />
+                  </span>
+                ) : (
+                  <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="italic font-medium text-accent">{hero.headlineAccent}</span>
+                )}
               </motion.span>
             )}
           </h1>

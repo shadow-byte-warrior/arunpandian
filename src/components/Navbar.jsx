@@ -3,11 +3,13 @@ import { Menu, X } from 'lucide-react';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import Logo from './Logo';
 import { useContent } from '../context/ContentProvider';
+import { LetterRoll } from '../theme/Modifiers';
 
 const Navbar = () => {
   const { settings } = useContent();
   const navbar = settings.navbar || {};
   const brandName = settings.hero?.name || 'Arun Pandian';
+  const animationStyle = settings.theme?.layout?.animationStyle || 'default';
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -65,7 +67,11 @@ const Navbar = () => {
                   data-edit-path={`navbar.links.${idx}.name`}
                   className={`relative px-3.5 py-2 text-sm font-medium rounded-full transition-colors ${isActive ? 'text-ink' : 'text-ink-soft hover:text-ink'}`}
                 >
-                  {link.name}
+                  {animationStyle === 'k95' ? (
+                    <LetterRoll text={link.name} />
+                  ) : (
+                    link.name
+                  )}
                   {isActive && (
                     <motion.span layoutId="nav-pill" className="absolute inset-0 -z-10 rounded-full bg-muted" transition={{ type: 'spring', stiffness: 350, damping: 30 }} />
                   )}
