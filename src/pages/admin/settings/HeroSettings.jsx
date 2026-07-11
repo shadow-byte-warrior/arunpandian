@@ -128,6 +128,7 @@ export default function HeroSettings() {
   });
 
   useEffect(() => {
+    form.register('hiddenFields');
     fetchSettings().then(data => {
       if (data) {
         setInitialData(data);

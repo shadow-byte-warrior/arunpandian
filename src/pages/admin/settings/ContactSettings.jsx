@@ -48,6 +48,7 @@ export default function ContactSettings() {
   };
 
   useEffect(() => {
+    form.register('hiddenFields');
     fetchSettings().then(data => {
       if (data) {
         setInitialData(data);

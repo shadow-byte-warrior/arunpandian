@@ -97,6 +97,7 @@ export default function CertificationsSettings() {
   });
 
   useEffect(() => {
+    form.register('hiddenFields');
     fetchSettings().then(data => {
       if (data) {
         if (Array.isArray(data)) {

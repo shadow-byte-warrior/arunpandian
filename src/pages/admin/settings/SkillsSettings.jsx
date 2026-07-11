@@ -113,6 +113,7 @@ export default function SkillsSettings() {
   });
 
   useEffect(() => {
+    form.register('hiddenFields');
     fetchSettings().then(data => {
       if (data) {
         setInitialData(data);

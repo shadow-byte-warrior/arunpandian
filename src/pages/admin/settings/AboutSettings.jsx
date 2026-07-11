@@ -101,6 +101,7 @@ export default function AboutSettings() {
   });
 
   useEffect(() => {
+    form.register('hiddenFields');
     fetchSettings().then(data => {
       if (data) {
         setInitialData(data);
