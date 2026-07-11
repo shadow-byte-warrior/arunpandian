@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-/* Admin settings card with an eye toggle to show/hide its inputs.
-   Collapsing unmounts the fields, but react-hook-form keeps their
-   values (shouldUnregister defaults to false), so nothing is lost. */
+/* Admin settings card with an expand/collapse chevron.
+   The action prop (like the site-visibility eye toggle) is always visible in the header. */
 
 export default function SectionCard({ title, description, action, defaultOpen = true, children, className = '' }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -17,21 +16,17 @@ export default function SectionCard({ title, description, action, defaultOpen = 
           {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
         </div>
         <div className="flex items-center gap-2 shrink-0">
-        {open && action}
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          aria-label={open ? `Hide ${title} fields` : `Show ${title} fields`}
-          title={open ? 'Hide fields' : 'Show fields'}
-          className={`shrink-0 p-2 rounded-lg border transition-colors cursor-pointer ${
-            open
-              ? 'text-slate-500 border-slate-200 hover:text-slate-700 hover:bg-slate-50'
-              : 'text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100'
-          }`}
-        >
-          {open ? <Eye size={16} /> : <EyeOff size={16} />}
-        </button>
+          {action}
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-label={open ? `Collapse ${title}` : `Expand ${title}`}
+            title={open ? 'Collapse' : 'Expand'}
+            className="shrink-0 p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <ChevronDown size={16} className={`transform transition-transform ${open ? 'rotate-180' : ''}`} />
+          </button>
         </div>
       </div>
       <AnimatePresence initial={false}>

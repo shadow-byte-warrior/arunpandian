@@ -349,9 +349,22 @@ export function ContentProvider({ children }) {
       if (!error && rows && rows.length > 0) {
         const merged = { ...fallbackSettings };
         for (const row of rows) {
-          merged[row.key] = row.value && typeof row.value === 'object' && !Array.isArray(row.value)
-            ? { ...(fallbackSettings[row.key] || {}), ...row.value }
-            : row.value;
+          let val = row.value;
+          if (val && typeof val === 'object' && !Array.isArray(val)) {
+            // Map legacy hidden object if it exists
+            if (val.hidden && typeof val.hidden === 'object') {
+              const extraHiddenFields = Object.entries(val.hidden)
+                .filter(([_, isHidden]) => isHidden === true)
+                .map(([k]) => k);
+              val = {
+                ...val,
+                hiddenFields: Array.from(new Set([...(val.hiddenFields || []), ...extraHiddenFields]))
+              };
+            }
+            merged[row.key] = { ...(fallbackSettings[row.key] || {}), ...val };
+          } else {
+            merged[row.key] = val;
+          }
         }
         setSettings(merged);
       }

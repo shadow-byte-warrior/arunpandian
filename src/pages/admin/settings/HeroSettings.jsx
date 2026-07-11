@@ -132,7 +132,14 @@ export default function HeroSettings() {
     fetchSettings().then(data => {
       if (data) {
         setInitialData(data);
-        form.reset(data);
+        let resetData = { ...data };
+        if (data.hidden && typeof data.hidden === 'object') {
+          const extraHiddenFields = Object.entries(data.hidden)
+            .filter(([_, isHidden]) => isHidden === true)
+            .map(([k]) => k);
+          resetData.hiddenFields = Array.from(new Set([...(data.hiddenFields || []), ...extraHiddenFields]));
+        }
+        form.reset(resetData);
       }
     });
   }, []);
