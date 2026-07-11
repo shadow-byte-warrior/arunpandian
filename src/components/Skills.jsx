@@ -47,27 +47,29 @@ const Skills = () => {
   return (
     <section id="skills" className="py-24 sm:py-32 bg-bg">
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="mb-14">
-          {isVisible('sectionLabel') && <span data-edit-id="skills.sectionLabel" data-edit-name="Toolkit · Eyebrow" data-edit-kind="text" data-edit-path="skills.sectionLabel" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{skills.sectionLabel}</span>}
-          {isVisible('sectionTitle') && <h2 data-edit-id="skills.sectionTitle" data-edit-name="Toolkit · Title" data-edit-kind="heading" data-edit-path="skills.sectionTitle" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{skills.sectionTitle}</h2>}
-        </div>
+        {isVisible('sectionHeaders') && (
+          <div className="mb-14">
+            <span data-edit-id="skills.sectionLabel" data-edit-name="Toolkit · Eyebrow" data-edit-kind="text" data-edit-path="skills.sectionLabel" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{skills.sectionLabel}</span>
+            <h2 data-edit-id="skills.sectionTitle" data-edit-name="Toolkit · Title" data-edit-kind="heading" data-edit-path="skills.sectionTitle" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{skills.sectionTitle}</h2>
+          </div>
+        )}
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {categories.map((cat, i) => {
-            const Icon = iconMap[cat.icon] || Database;
-            return (
-              <motion.div
-                key={cat.title}
-                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ duration: 0.6, ease, delay: i * 0.08 }}
-                whileHover={{ y: -6 }}
-                className="group rounded-2xl border border-line bg-surface p-6 hover:shadow-[0_20px_50px_-25px_rgba(9,9,11,0.3)] hover:border-ink/20 transition-all duration-300"
-              >
-                <div className="h-11 w-11 grid place-items-center rounded-xl bg-muted text-ink group-hover:bg-ink group-hover:text-white transition-colors">
-                  {isVisible(`categories.${i}.icon`) && <Icon size={20} />}
-                </div>
-                {isVisible(`categories.${i}.title`) && <h3 className="mt-5 font-display font-bold text-lg text-ink">{cat.title}</h3>}
-                {isVisible(`categories.${i}.items`) && (
+        {isVisible('categories') && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {categories.map((cat, i) => {
+              const Icon = iconMap[cat.icon] || Database;
+              return (
+                <motion.div
+                  key={cat.title}
+                  initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }} transition={{ duration: 0.6, ease, delay: i * 0.08 }}
+                  whileHover={{ y: -6 }}
+                  className="group rounded-2xl border border-line bg-surface p-6 hover:shadow-[0_20px_50px_-25px_rgba(9,9,11,0.3)] hover:border-ink/20 transition-all duration-300"
+                >
+                  <div className="h-11 w-11 grid place-items-center rounded-xl bg-muted text-ink group-hover:bg-ink group-hover:text-white transition-colors">
+                    <Icon size={20} />
+                  </div>
+                  <h3 className="mt-5 font-display font-bold text-lg text-ink">{cat.title}</h3>
                   <ul className="mt-4 space-y-2.5">
                     {(cat.items || []).map((item) => (
                       <li key={item} className="flex items-start gap-2 text-sm text-ink-soft">
@@ -76,14 +78,14 @@ const Skills = () => {
                       </li>
                     ))}
                   </ul>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Certifications - Now rendering as complex objects with images */}
-        {certifications.length > 0 && (
+        {isVisible('certifications') && certifications.length > 0 && (
         <div className="mt-12">
           <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">Certifications & Credentials</span>
           <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">

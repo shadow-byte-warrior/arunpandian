@@ -39,30 +39,32 @@ const ContactForm = () => {
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.7, ease }}
           >
-            {isVisible('sectionLabel') && <span data-edit-id="contact.sectionLabel" data-edit-name="Contact · Eyebrow" data-edit-kind="text" data-edit-path="contact.sectionLabel" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{contact.sectionLabel || '05 — Contact'}</span>}
-            {isVisible('sectionTitle') && (
-              <h2 data-edit-id="contact.sectionTitle" data-edit-name="Contact · Title" data-edit-kind="heading" data-edit-path="contact.sectionTitle" className="mt-3 font-display font-extrabold text-4xl sm:text-6xl text-ink tracking-tight leading-[0.95]"
-                  dangerouslySetInnerHTML={{ __html: (contact.sectionTitle || 'Get in touch').replace('\n', '<br />') }} />
+            {isVisible('sectionHeaders') && (
+              <>
+                <span data-edit-id="contact.sectionLabel" data-edit-name="Contact · Eyebrow" data-edit-kind="text" data-edit-path="contact.sectionLabel" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{contact.sectionLabel || '05 — Contact'}</span>
+                <h2 data-edit-id="contact.sectionTitle" data-edit-name="Contact · Title" data-edit-kind="heading" data-edit-path="contact.sectionTitle" className="mt-3 font-display font-extrabold text-4xl sm:text-6xl text-ink tracking-tight leading-[0.95]"
+                    dangerouslySetInnerHTML={{ __html: (contact.sectionTitle || 'Get in touch').replace('\n', '<br />') }} />
+                <p data-edit-id="contact.subtitle" data-edit-name="Contact · Subtitle" data-edit-kind="text" data-edit-path="contact.subtitle" className="mt-6 text-lg text-ink-soft max-w-md leading-relaxed">
+                  {contact.subtitle || 'Let us build something together.'}
+                </p>
+              </>
             )}
-            {isVisible('subtitle') && (
-              <p data-edit-id="contact.subtitle" data-edit-name="Contact · Subtitle" data-edit-kind="text" data-edit-path="contact.subtitle" className="mt-6 text-lg text-ink-soft max-w-md leading-relaxed">
-                {contact.subtitle || 'Let us build something together.'}
-              </p>
+            {isVisible('contactDetails') && (
+              <>
+                <a
+                  href={`mailto:${contact.email}`}
+                  data-edit-id="contact.email" data-edit-name="Contact · Email" data-edit-kind="link" data-edit-path="contact.email"
+                  className="group mt-8 inline-flex items-center gap-2 font-display font-bold text-xl sm:text-2xl text-ink hover:text-accent transition-colors"
+                >
+                  {contact.email || 'hello@example.com'}
+                  <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </a>
+                <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-ink-soft">
+                  {contact.phone && <a href={`tel:${contact.phone.replace(/\s/g, '')}`} data-edit-id="contact.phone" data-edit-name="Contact · Phone" data-edit-kind="link" data-edit-path="contact.phone" className="hover:text-ink transition-colors">{contact.phone}</a>}
+                  {contact.location && <span data-edit-id="contact.location" data-edit-name="Contact · Location" data-edit-kind="text" data-edit-path="contact.location">{contact.location}</span>}
+                </div>
+              </>
             )}
-            {isVisible('email') && (
-              <a
-                href={`mailto:${contact.email}`}
-                data-edit-id="contact.email" data-edit-name="Contact · Email" data-edit-kind="link" data-edit-path="contact.email"
-                className="group mt-8 inline-flex items-center gap-2 font-display font-bold text-xl sm:text-2xl text-ink hover:text-accent transition-colors"
-              >
-                {contact.email || 'hello@example.com'}
-                <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-              </a>
-            )}
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-ink-soft">
-              {isVisible('phone') && contact.phone && <a href={`tel:${contact.phone.replace(/\s/g, '')}`} data-edit-id="contact.phone" data-edit-name="Contact · Phone" data-edit-kind="link" data-edit-path="contact.phone" className="hover:text-ink transition-colors">{contact.phone}</a>}
-              {isVisible('location') && contact.location && <span data-edit-id="contact.location" data-edit-name="Contact · Location" data-edit-kind="text" data-edit-path="contact.location">{contact.location}</span>}
-            </div>
           </motion.div>
 
           {/* Form */}

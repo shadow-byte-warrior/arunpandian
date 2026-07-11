@@ -3,7 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, Plus, GripVertical, Trash2 } from 'lucide-react';
-import { TextField } from '../../../components/admin/ui/FormInputs';
+import { TextField, EyeToggle } from '../../../components/admin/ui/FormInputs';
 import ImageUpload from '../../../components/admin/ui/ImageUpload';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
@@ -143,9 +143,12 @@ export default function CertificationsSettings() {
         <p className="text-slate-500 mt-1 text-sm">Manage your professional certifications and courses.</p>
       </div>
 
-      <SectionCard title="Certifications List" action={<button type="button" onClick={() => append({ name: '', issuer: '', issueDate: '', credentialId: '', credentialUrl: '', image: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-            <Plus size={16} /> Add Certification
-          </button>}>
+      <SectionCard title="Certifications List" action={<div className="flex items-center gap-2">
+            <EyeToggle visible={isVisible('certifications')} onToggle={() => toggleVisibility('certifications')} label="certifications section" />
+            <button type="button" onClick={() => append({ name: '', issuer: '', issueDate: '', credentialId: '', credentialUrl: '', image: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+              <Plus size={16} /> Add Certification
+            </button>
+          </div>}>
         
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={fields.map(f => f.id)} strategy={verticalListSortingStrategy}>
@@ -159,31 +162,26 @@ export default function CertificationsSettings() {
                         className="md:col-span-2"
                         {...form.register(`certifications.${index}.name`)} 
                         error={form.formState.errors.certifications?.[index]?.name?.message} 
-                        siteVisible={isVisible(`certifications.${index}.name`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.name`)}
                       />
                       <TextField 
                         label="Issuer"
                         {...form.register(`certifications.${index}.issuer`)} 
                         error={form.formState.errors.certifications?.[index]?.issuer?.message} 
-                        siteVisible={isVisible(`certifications.${index}.issuer`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.issuer`)}
                       />
                       <TextField 
                         label="Issue Date"
                         {...form.register(`certifications.${index}.issueDate`)} 
                         error={form.formState.errors.certifications?.[index]?.issueDate?.message} 
-                        siteVisible={isVisible(`certifications.${index}.issueDate`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.issueDate`)}
                       />
                       <TextField 
                         label="Credential ID"
                         {...form.register(`certifications.${index}.credentialId`)} 
                         error={form.formState.errors.certifications?.[index]?.credentialId?.message} 
-                        siteVisible={isVisible(`certifications.${index}.credentialId`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.credentialId`)}
                       />
                       <TextField 
                         label="Credential URL"
                         {...form.register(`certifications.${index}.credentialUrl`)} 
                         error={form.formState.errors.certifications?.[index]?.credentialUrl?.message} 
-                        siteVisible={isVisible(`certifications.${index}.credentialUrl`)} onToggleVisible={() => toggleVisibility(`certifications.${index}.credentialUrl`)}
                       />
                       <div className="md:col-span-2">
                         <ImageUpload

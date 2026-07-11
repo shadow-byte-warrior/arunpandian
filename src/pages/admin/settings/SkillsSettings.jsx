@@ -3,7 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, Plus, GripVertical, Trash2 } from 'lucide-react';
-import { TextField } from '../../../components/admin/ui/FormInputs';
+import { TextField, EyeToggle } from '../../../components/admin/ui/FormInputs';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
 import { useSiteSettings } from '../../../components/admin/hooks/useSiteSettings';
@@ -171,16 +171,19 @@ export default function SkillsSettings() {
         <p className="text-slate-500 mt-1 text-sm">Configure your toolkit and infinite marquee ticker.</p>
       </div>
 
-      <SectionCard title="Section Headers">
+      <SectionCard title="Section Headers" action={<EyeToggle visible={isVisible('sectionHeaders')} onToggle={() => toggleVisibility('sectionHeaders')} label="section headers" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} siteVisible={isVisible('sectionLabel')} onToggleVisible={() => toggleVisibility('sectionLabel')} />
-          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} siteVisible={isVisible('sectionTitle')} onToggleVisible={() => toggleVisibility('sectionTitle')} />
+          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} />
+          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} />
         </div>
       </SectionCard>
 
-      <SectionCard title="Skill Categories" action={<button type="button" onClick={() => appendCat({ title: '', icon: '', items: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-            <Plus size={16} /> Add Category
-          </button>}>
+      <SectionCard title="Skill Categories" action={<div className="flex items-center gap-2">
+            <EyeToggle visible={isVisible('categories')} onToggle={() => toggleVisibility('categories')} label="skill categories" />
+            <button type="button" onClick={() => appendCat({ title: '', icon: '', items: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+              <Plus size={16} /> Add Category
+            </button>
+          </div>}>
         
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={catFields.map(f => f.id)} strategy={verticalListSortingStrategy}>
@@ -194,14 +197,12 @@ export default function SkillsSettings() {
                         placeholder="e.g. Languages & Querying" 
                         {...form.register(`categories.${index}.title`)} 
                         error={form.formState.errors.categories?.[index]?.title?.message} 
-                        siteVisible={isVisible(`categories.${index}.title`)} onToggleVisible={() => toggleVisibility(`categories.${index}.title`)}
                       />
                       <TextField 
                         label="Lucide Icon Name"
                         placeholder="e.g. Database" 
                         {...form.register(`categories.${index}.icon`)} 
                         error={form.formState.errors.categories?.[index]?.icon?.message} 
-                        siteVisible={isVisible(`categories.${index}.icon`)} onToggleVisible={() => toggleVisibility(`categories.${index}.icon`)}
                       />
                       <TextField 
                         label="Skills (Comma separated)"
@@ -209,7 +210,6 @@ export default function SkillsSettings() {
                         placeholder="SQL, Python, R" 
                         {...form.register(`categories.${index}.items`)} 
                         error={form.formState.errors.categories?.[index]?.items?.message} 
-                        siteVisible={isVisible(`categories.${index}.items`)} onToggleVisible={() => toggleVisibility(`categories.${index}.items`)}
                       />
                     </div>
                     <button type="button" onClick={() => removeCat(index)} className="mt-8 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -224,13 +224,12 @@ export default function SkillsSettings() {
         </DndContext>
       </SectionCard>
 
-      <SectionCard title="Ticker Items">
+      <SectionCard title="Ticker Items" action={<EyeToggle visible={isVisible('ticker')} onToggle={() => toggleVisibility('ticker')} label="skills ticker" />}>
         <TextField 
           label="Skills Ticker (Comma separated)" 
           placeholder="SQL, Python, React, Next.js"
           {...form.register('ticker')} 
           error={form.formState.errors.ticker?.message} 
-          siteVisible={isVisible('ticker')} onToggleVisible={() => toggleVisibility('ticker')}
         />
       </SectionCard>
 

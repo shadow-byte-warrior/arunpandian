@@ -3,7 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, Plus, GripVertical, Trash2 } from 'lucide-react';
-import { TextField, TextArea } from '../../../components/admin/ui/FormInputs';
+import { TextField, TextArea, EyeToggle } from '../../../components/admin/ui/FormInputs';
 import ImageUpload from '../../../components/admin/ui/ImageUpload';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
@@ -159,14 +159,14 @@ export default function AboutSettings() {
         <p className="text-slate-500 mt-1 text-sm">Configure your personal narrative, education, and goals.</p>
       </div>
 
-      <SectionCard title="Section Headers">
+      <SectionCard title="Section Headers" action={<EyeToggle visible={isVisible('sectionHeaders')} onToggle={() => toggleVisibility('sectionHeaders')} label="section headers" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} siteVisible={isVisible('sectionLabel')} onToggleVisible={() => toggleVisibility('sectionLabel')} />
-          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} siteVisible={isVisible('sectionTitle')} onToggleVisible={() => toggleVisibility('sectionTitle')} />
+          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} />
+          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} />
         </div>
       </SectionCard>
 
-      <SectionCard title="The Narrative">
+      <SectionCard title="The Narrative" action={<EyeToggle visible={isVisible('narrative')} onToggle={() => toggleVisibility('narrative')} label="narrative card" />}>
         <div className="space-y-6">
           <ImageUpload
             label="Profile Image"
@@ -174,34 +174,37 @@ export default function AboutSettings() {
             url={form.watch('profileImage')}
             onUpload={(url) => form.setValue('profileImage', url, { shouldDirty: true })}
           />
-          <TextArea label="Primary Narrative" rows={4} {...form.register('narrative')} error={form.formState.errors.narrative?.message} siteVisible={isVisible('narrative')} onToggleVisible={() => toggleVisibility('narrative')} />
-          <TextArea label="Secondary Narrative (Extra)" rows={3} {...form.register('narrativeExtra')} error={form.formState.errors.narrativeExtra?.message} siteVisible={isVisible('narrativeExtra')} onToggleVisible={() => toggleVisibility('narrativeExtra')} />
+          <TextArea label="Primary Narrative" rows={4} {...form.register('narrative')} error={form.formState.errors.narrative?.message} />
+          <TextArea label="Secondary Narrative (Extra)" rows={3} {...form.register('narrativeExtra')} error={form.formState.errors.narrativeExtra?.message} />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
-            <TextField label="Profile Caption (Name)" {...form.register('profileCaption')} error={form.formState.errors.profileCaption?.message} siteVisible={isVisible('profileCaption')} onToggleVisible={() => toggleVisibility('profileCaption')} />
-            <TextField label="Profile Sub-caption (Location/Role)" {...form.register('profileSubCaption')} error={form.formState.errors.profileSubCaption?.message} siteVisible={isVisible('profileSubCaption')} onToggleVisible={() => toggleVisibility('profileSubCaption')} />
+            <TextField label="Profile Caption (Name)" {...form.register('profileCaption')} error={form.formState.errors.profileCaption?.message} />
+            <TextField label="Profile Sub-caption (Location/Role)" {...form.register('profileSubCaption')} error={form.formState.errors.profileSubCaption?.message} />
           </div>
         </div>
       </SectionCard>
 
-      <SectionCard title="Goals">
+      <SectionCard title="Goals" action={<EyeToggle visible={isVisible('goals')} onToggle={() => toggleVisibility('goals')} label="goals card" />}>
         <div className="space-y-6">
-          <TextArea label="Current Goal (Now)" rows={2} {...form.register('goals.now')} error={form.formState.errors.goals?.now?.message} siteVisible={isVisible('goals.now')} onToggleVisible={() => toggleVisibility('goals.now')} />
-          <TextArea label="Future Goal (Next)" rows={2} {...form.register('goals.next')} error={form.formState.errors.goals?.next?.message} siteVisible={isVisible('goals.next')} onToggleVisible={() => toggleVisibility('goals.next')} />
+          <TextArea label="Current Goal (Now)" rows={2} {...form.register('goals.now')} error={form.formState.errors.goals?.now?.message} />
+          <TextArea label="Future Goal (Next)" rows={2} {...form.register('goals.next')} error={form.formState.errors.goals?.next?.message} />
         </div>
       </SectionCard>
 
-      <SectionCard title="Education">
+      <SectionCard title="Education" action={<EyeToggle visible={isVisible('education')} onToggle={() => toggleVisibility('education')} label="education card" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="School / University" className="md:col-span-2" {...form.register('education.school')} error={form.formState.errors.education?.school?.message} siteVisible={isVisible('education.school')} onToggleVisible={() => toggleVisibility('education.school')} />
-          <TextField label="Degree" {...form.register('education.degree')} error={form.formState.errors.education?.degree?.message} siteVisible={isVisible('education.degree')} onToggleVisible={() => toggleVisibility('education.degree')} />
-          <TextField label="Years (e.g. 2022 - 2026)" {...form.register('education.years')} error={form.formState.errors.education?.years?.message} siteVisible={isVisible('education.years')} onToggleVisible={() => toggleVisibility('education.years')} />
+          <TextField label="School / University" className="md:col-span-2" {...form.register('education.school')} error={form.formState.errors.education?.school?.message} />
+          <TextField label="Degree" {...form.register('education.degree')} error={form.formState.errors.education?.degree?.message} />
+          <TextField label="Years (e.g. 2022 - 2026)" {...form.register('education.years')} error={form.formState.errors.education?.years?.message} />
         </div>
       </SectionCard>
 
-      <SectionCard title="Highlights / Stats" action={<button type="button" onClick={() => appendStat({ value: '', label: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-            <Plus size={16} /> Add Highlight
-          </button>}>
+      <SectionCard title="Highlights / Stats" action={<div className="flex items-center gap-2">
+            <EyeToggle visible={isVisible('stats')} onToggle={() => toggleVisibility('stats')} label="stats card" />
+            <button type="button" onClick={() => appendStat({ value: '', label: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+              <Plus size={16} /> Add Highlight
+            </button>
+          </div>}>
         
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={statsFields.map(f => f.id)} strategy={verticalListSortingStrategy}>

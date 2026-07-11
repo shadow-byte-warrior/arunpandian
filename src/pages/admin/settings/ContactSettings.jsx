@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2 } from 'lucide-react';
-import { TextField, TextArea } from '../../../components/admin/ui/FormInputs';
+import { TextField, TextArea, EyeToggle } from '../../../components/admin/ui/FormInputs';
 import SaveActionPanel from '../../../components/admin/ui/SaveActionPanel';
 import SectionCard from '../../../components/admin/ui/SectionCard';
 import { useSiteSettings } from '../../../components/admin/hooks/useSiteSettings';
@@ -78,19 +78,19 @@ export default function ContactSettings() {
         <p className="text-slate-500 mt-1 text-sm">Configure your contact details and form headers.</p>
       </div>
 
-      <SectionCard title="Section Headers">
+      <SectionCard title="Section Headers" action={<EyeToggle visible={isVisible('sectionHeaders')} onToggle={() => toggleVisibility('sectionHeaders')} label="section headers" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} siteVisible={isVisible('sectionLabel')} onToggleVisible={() => toggleVisibility('sectionLabel')} />
-          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} siteVisible={isVisible('sectionTitle')} onToggleVisible={() => toggleVisibility('sectionTitle')} />
-          <TextArea label="Subtitle" rows={2} className="md:col-span-2" {...form.register('subtitle')} error={form.formState.errors.subtitle?.message} siteVisible={isVisible('subtitle')} onToggleVisible={() => toggleVisibility('subtitle')} />
+          <TextField label="Section Label" {...form.register('sectionLabel')} error={form.formState.errors.sectionLabel?.message} />
+          <TextField label="Section Title" {...form.register('sectionTitle')} error={form.formState.errors.sectionTitle?.message} />
+          <TextArea label="Subtitle" rows={2} className="md:col-span-2" {...form.register('subtitle')} error={form.formState.errors.subtitle?.message} />
         </div>
       </SectionCard>
 
-      <SectionCard title="Contact Details">
+      <SectionCard title="Contact Details" action={<EyeToggle visible={isVisible('contactDetails')} onToggle={() => toggleVisibility('contactDetails')} label="contact details" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextField label="Email Address" type="email" {...form.register('email')} error={form.formState.errors.email?.message} siteVisible={isVisible('email')} onToggleVisible={() => toggleVisibility('email')} />
-          <TextField label="Phone Number" {...form.register('phone')} error={form.formState.errors.phone?.message} siteVisible={isVisible('phone')} onToggleVisible={() => toggleVisibility('phone')} />
-          <TextField label="Location" className="md:col-span-2" {...form.register('location')} error={form.formState.errors.location?.message} siteVisible={isVisible('location')} onToggleVisible={() => toggleVisibility('location')} />
+          <TextField label="Email Address" type="email" {...form.register('email')} error={form.formState.errors.email?.message} />
+          <TextField label="Phone Number" {...form.register('phone')} error={form.formState.errors.phone?.message} />
+          <TextField label="Location" className="md:col-span-2" {...form.register('location')} error={form.formState.errors.location?.message} />
         </div>
       </SectionCard>
 
