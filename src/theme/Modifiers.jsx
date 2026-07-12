@@ -152,11 +152,11 @@ export function RadianScrollNav() {
   const currentIndex = sections.findIndex(s => s.id === activeSection) + 1;
 
   return (
-    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-end gap-6 font-mono text-[10px] tracking-widest text-[#FAF9FC]">
+    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-end gap-6 font-mono text-[10px] tracking-widest text-ink">
       <div className="text-right">
-        <span className="text-[#CCFF00] font-bold">0{currentIndex}</span>
-        <span className="text-white/30"> / 0{sections.length}</span>
-        <div className="text-white/60 font-bold uppercase mt-1">{sections.find(s => s.id === activeSection)?.name}</div>
+        <span className="font-bold text-accent">0{currentIndex}</span>
+        <span className="text-ink-soft opacity-50"> / 0{sections.length}</span>
+        <div className="text-ink-soft font-bold uppercase mt-1">{sections.find(s => s.id === activeSection)?.name}</div>
       </div>
       
       <div className="flex flex-col gap-3 pr-1">
@@ -165,8 +165,9 @@ export function RadianScrollNav() {
             key={sec.id}
             href={`#${sec.id}`}
             className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-              activeSection === sec.id ? 'bg-[#CCFF00] scale-150 shadow-[0_0_8px_#CCFF00]' : 'bg-white/20 hover:bg-white/50'
+              activeSection === sec.id ? 'bg-accent scale-150' : 'bg-ink-soft opacity-30 hover:opacity-70'
             }`}
+            style={activeSection === sec.id ? { boxShadow: '0 0 8px var(--color-accent)' } : {}}
             title={sec.name}
           />
         ))}

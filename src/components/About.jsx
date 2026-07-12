@@ -101,15 +101,16 @@ const About = () => {
           {/* SQL terminal card */}
           <motion.div
             custom={2} variants={rise} initial="hidden" whileInView="show" viewport={{ once: true }}
+            data-edit-id="about.sqlCard" data-edit-name="About · SQL Terminal" data-edit-kind="section"
             className="lg:col-span-2 rounded-3xl border border-ink/80 bg-ink p-5 shadow-[0_30px_60px_-30px_rgba(9,9,11,0.6)]"
           >
             <div className="flex items-center gap-1.5 mb-4">
               <span className="h-3 w-3 rounded-full bg-danger/90" />
               <span className="h-3 w-3 rounded-full bg-amber-400/90" />
               <span className="h-3 w-3 rounded-full bg-emerald-400/90" />
-              <span className="ml-2 text-[10px] font-mono text-white/40">whoami.sql</span>
+              <span data-edit-id="about.sqlFilename" data-edit-name="About · SQL filename" data-edit-kind="text" data-edit-path="about.sqlFilename" className="ml-2 text-[10px] font-mono text-white/40">{about.sqlFilename || 'whoami.sql'}</span>
             </div>
-            <pre className="font-mono text-[12.5px] leading-relaxed text-white/90 whitespace-pre-wrap">
+            <pre data-edit-id="about.sqlQuery" data-edit-name="About · SQL query" data-edit-kind="text" data-edit-path="about.sqlQuery" className="font-mono text-[12.5px] leading-relaxed text-white/90 whitespace-pre-wrap">
 <span className="text-indigo-300">SELECT</span> role, focus{'\n'}
 <span className="text-indigo-300">FROM</span>   arun_pandian{'\n'}
 <span className="text-indigo-300">WHERE</span>  curiosity = <span className="text-emerald-300">TRUE</span>;
@@ -124,12 +125,13 @@ const About = () => {
           {isVisible('education') && (
             <motion.div
               custom={3} variants={rise} initial="hidden" whileInView="show" viewport={{ once: true }}
+              data-edit-id="about.education" data-edit-name="About · Education" data-edit-kind="section"
               className="lg:col-span-2 rounded-3xl border border-line bg-bg p-6"
             >
               <span className="text-xs font-mono text-accent uppercase tracking-wider">Education</span>
-              <p className="mt-2 text-ink font-semibold leading-snug">{about.education?.school}</p>
-              <p className="mt-1 text-sm text-ink-soft">{about.education?.degree}</p>
-              <p className="mt-3 text-xs font-mono text-ink-soft/70">{about.education?.years}</p>
+              <p data-edit-id="about.education.school" data-edit-name="About · School" data-edit-kind="text" data-edit-path="about.education.school" className="mt-2 text-ink font-semibold leading-snug">{about.education?.school}</p>
+              <p data-edit-id="about.education.degree" data-edit-name="About · Degree" data-edit-kind="text" data-edit-path="about.education.degree" className="mt-1 text-sm text-ink-soft">{about.education?.degree}</p>
+              <p data-edit-id="about.education.years" data-edit-name="About · Years" data-edit-kind="text" data-edit-path="about.education.years" className="mt-3 text-xs font-mono text-ink-soft/70">{about.education?.years}</p>
             </motion.div>
           )}
 
@@ -137,14 +139,15 @@ const About = () => {
           {isVisible('goals') && (
             <motion.div
               custom={4} variants={rise} initial="hidden" whileInView="show" viewport={{ once: true }}
+              data-edit-id="about.goals" data-edit-name="About · Goals" data-edit-kind="section"
               className="lg:col-span-2 rounded-3xl border border-line bg-bg p-6"
             >
               <span className="text-xs font-mono text-accent uppercase tracking-wider">Goals</span>
               <p className="mt-2 text-ink font-medium leading-snug">
-                <span className="text-accent">Now →</span> {about.goals?.now}
+                <span className="text-accent">Now →</span> <span data-edit-id="about.goals.now" data-edit-name="About · Goal Now" data-edit-kind="text" data-edit-path="about.goals.now">{about.goals?.now}</span>
               </p>
               <p className="mt-3 text-ink font-medium leading-snug">
-                <span className="text-accent">Next →</span> {about.goals?.next}
+                <span className="text-accent">Next →</span> <span data-edit-id="about.goals.next" data-edit-name="About · Goal Next" data-edit-kind="text" data-edit-path="about.goals.next">{about.goals?.next}</span>
               </p>
             </motion.div>
           )}

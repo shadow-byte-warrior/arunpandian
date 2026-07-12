@@ -11,7 +11,7 @@ import * as THREE from 'three';
  *  The whole rig gently parallax-follows the pointer.
  * ------------------------------------------------------------------ */
 
-function DataCore() {
+function DataCore({ color = '#111114' }) {
   const ref = useRef();
   useFrame(({ clock }) => {
     if (!ref.current) return;
@@ -24,7 +24,7 @@ function DataCore() {
     <Float speed={1.6} rotationIntensity={0.6} floatIntensity={1.1}>
       <Icosahedron ref={ref} args={[1.35, 12]}>
         <MeshDistortMaterial
-          color="#111114"
+          color={color}
           roughness={0.12}
           metalness={0.9}
           distort={0.38}
@@ -50,7 +50,7 @@ function GlassRing({ radius = 2.4, tilt = 0.5, speed = 0.25, color = '#2563EB' }
   );
 }
 
-function ParticleField({ count = 900 }) {
+function ParticleField({ count = 900, color = '#18181B' }) {
   const ref = useRef();
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3);
@@ -81,7 +81,7 @@ function ParticleField({ count = 900 }) {
       <pointsMaterial
         size={0.028}
         sizeAttenuation
-        color="#18181B"
+        color={color}
         transparent
         opacity={0.55}
         depthWrite={false}
@@ -106,33 +106,48 @@ function Rig({ children }) {
   return <group ref={group}>{children}</group>;
 }
 
-export default function Scene3D() {
+export default function Scene3D({ accentColor, coreColor, particleColor }) {
   const reduced =
     typeof window !== 'undefined' &&
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-  return (
-    <Canvas
-      dpr={[1, 2]}
-      camera={{ position: [0, 0, 6.4], fov: 42 }}
-      gl={{ antialias: true, alpha: true }}
-      frameloop={reduced ? 'demand' : 'always'}
-      style={{ background: 'transparent' }}
-    >
-      {/* Studio lighting for the glossy core */}
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[4, 5, 3]} intensity={2.4} />
-      <directionalLight position={[-5, -2, -4]} intensity={1.1} color="#2563EB" />
-      <pointLight position={[0, 0, 5]} intensity={1.2} color="#ffffff" />
+  const accent = accentColor || getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#2563EB';
+  const core = coreColor || '#111114';
+  const particles = particleColor || '#18181B';
 
-      <Suspense fallback={null}>
-        <Rig>
-          <DataCore />
-          <GlassRing radius={2.35} tilt={0.6} speed={0.22} color="#2563EB" />
-          <GlassRing radius={2.9} tilt={-0.4} speed={-0.16} color="#c4c4cc" />
-          <ParticleField />
-        </Rig>
-      </Suspense>
-    </Canvas>
+  return (
+    <div
+      data-edit-id="hero.scene3d"
+      data-edit-name="Hero · 3D Scene"
+      data-edit-kind="section"
+      className="relative w-full h-full"
+      style={{ pointerEvents: 'none' }}
+    >
+      {/* Transparent click-through overlay for editor targeting */}
+      <div className="absolute inset-0 z-10 pointer-events-none" />
+      <Canvas
+        dpr={[1, 2]}
+        camera={{ position: [0, 0, 6.4], fov: 42 }}
+        gl={{ antialias: true, alpha: true }}
+        frameloop={reduced ? 'demand' : 'always'}
+        style={{ background: 'transparent', pointerEvents: 'all' }}
+      >
+        {/* Studio lighting for the glossy core */}
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[4, 5, 3]} intensity={2.4} />
+        <directionalLight position={[-5, -2, -4]} intensity={1.1} color={accent} />
+        <pointLight position={[0, 0, 5]} intensity={1.2} color="#ffffff" />
+
+        <Suspense fallback={null}>
+          <Rig>
+            <DataCore color={core} />
+            <GlassRing radius={2.35} tilt={0.6} speed={0.22} color={accent} />
+            <GlassRing radius={2.9} tilt={-0.4} speed={-0.16} color="#c4c4cc" />
+            <ParticleField color={particles} />
+          </Rig>
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }
+

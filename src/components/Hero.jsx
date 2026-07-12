@@ -39,6 +39,176 @@ const Hero = () => {
   const hiddenFields = hero.hiddenFields || [];
   const isVisible = (field) => !hiddenFields.includes(field);
 
+  const heroStyle = settings.theme?.layout?.heroStyle || 'default';
+
+  // ─── HERO STYLE: KAROL BINKOWSKI (Massive Split Typography) ───
+  if (heroStyle === 'karolbinkowski') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-center bg-bg text-ink pt-32 pb-12 border-b-[3px] border-ink">
+        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col items-start">
+          {isVisible('badge') && (
+            <div data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="text-xs uppercase tracking-[0.2em] font-bold border border-ink px-4 py-2 mb-8 bg-surface">
+              {hero.badge}
+            </div>
+          )}
+          <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-black uppercase text-[clamp(3rem,10vw,8rem)] leading-[0.85] tracking-tighter w-full">
+            {(hero.headline || []).map((line, i) => (
+              <span key={i} className="block hover:text-accent transition-colors duration-300" style={{ textShadow: '4px 4px 0px var(--color-ink)' }}>{line}</span>
+            ))}
+            {isVisible('headlineAccent') && (
+              <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="block text-bg mt-4" style={{ WebkitTextStroke: '2px var(--color-ink)' }}>
+                {hero.headlineAccent}
+              </span>
+            )}
+          </h1>
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between w-full mt-12 gap-8">
+            {isVisible('subtitle') && (
+              <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="max-w-md text-sm font-bold uppercase leading-relaxed border-l-[3px] border-accent pl-4">
+                {hero.subtitle?.replace(/<[^>]*>/g, '')}
+              </p>
+            )}
+            <div className="flex gap-4">
+              {isVisible('primaryCta') && (
+                <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-8 py-4 bg-accent text-ink border-[3px] border-ink font-bold uppercase tracking-widest text-sm hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_var(--color-ink)] transition-all">
+                  {hero.primaryCta?.label}
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: PELIZZARI (Editorial Cinematic) ───
+  if (heroStyle === 'pelizzari') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-end pb-24 px-6 text-bg">
+        <div className="absolute inset-0 -z-10 bg-ink">
+          {hero.profileImage && (
+            <img src={hero.profileImage || arunProfile} alt="Hero" className="w-full h-full object-cover opacity-60" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
+        </div>
+        <div className="w-full max-w-7xl mx-auto flex flex-col items-center text-center">
+          {isVisible('badge') && (
+            <div data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="text-[10px] uppercase tracking-[0.3em] font-medium mb-8 text-bg/70">
+              {hero.badge}
+            </div>
+          )}
+          <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-serif italic text-5xl sm:text-7xl lg:text-8xl leading-tight font-light w-full max-w-5xl">
+            {(hero.headline || []).map((line, i) => (
+              <span key={i} className="block">{line}</span>
+            ))}
+            {isVisible('headlineAccent') && (
+              <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="block not-italic mt-2 text-surface">
+                {hero.headlineAccent}
+              </span>
+            )}
+          </h1>
+          {isVisible('subtitle') && (
+            <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="mt-10 max-w-xl text-base sm:text-lg text-bg/80 leading-relaxed font-serif">
+              {hero.subtitle?.replace(/<[^>]*>/g, '')}
+            </p>
+          )}
+          <div className="mt-12">
+            {isVisible('primaryCta') && (
+              <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-8 py-4 border border-bg/30 text-bg text-sm uppercase tracking-widest hover:bg-bg hover:text-ink transition-colors">
+                {hero.primaryCta?.label}
+              </a>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: RUSSELL NUMO (Monospace Grid) ───
+  if (heroStyle === 'russellnumo') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col pt-32 pb-12 bg-surface text-ink border-b border-ink">
+        <div className="w-full h-full flex flex-col md:flex-row border-t border-ink border-b border-ink mx-6 max-w-[calc(100%-3rem)]">
+          <div className="w-full md:w-2/3 p-8 border-r border-ink flex flex-col justify-center bg-bg">
+            <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-mono uppercase text-4xl sm:text-6xl font-bold leading-tight">
+              {(hero.headline || []).map((line, i) => (
+                <span key={i} className="block">{line}</span>
+              ))}
+              {isVisible('headlineAccent') && (
+                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="block text-accent mt-4">
+                  {hero.headlineAccent}
+                </span>
+              )}
+            </h1>
+          </div>
+          <div className="w-full md:w-1/3 p-8 flex flex-col justify-between bg-surface">
+            <div>
+              {isVisible('badge') && (
+                <div data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="text-xs font-mono uppercase border border-ink p-2 mb-8 inline-block">
+                  {hero.badge}
+                </div>
+              )}
+              {isVisible('subtitle') && (
+                <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="text-sm font-mono leading-relaxed">
+                  {hero.subtitle?.replace(/<[^>]*>/g, '')}
+                </p>
+              )}
+            </div>
+            <div className="mt-12 flex flex-col gap-4">
+              {isVisible('primaryCta') && (
+                <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="w-full text-center px-6 py-4 bg-ink text-bg font-mono font-bold uppercase tracking-wider hover:bg-accent hover:text-ink transition-colors">
+                  {hero.primaryCta?.label}
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: VIVID MOTION (Soft Glassy) ───
+  if (heroStyle === 'vividmotion') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden bg-bg">
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-transparent blur-[100px] -z-10" />
+        <div className="w-full max-w-6xl rounded-[3rem] bg-surface/40 backdrop-blur-3xl border border-white/20 shadow-2xl p-12 sm:p-20 text-center flex flex-col items-center">
+          {isVisible('badge') && (
+            <div data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="px-5 py-2 rounded-full bg-white/10 border border-white/20 text-ink/80 text-xs font-medium tracking-wide mb-10">
+              {hero.badge}
+            </div>
+          )}
+          <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-medium text-4xl sm:text-7xl text-ink leading-tight tracking-tight max-w-4xl">
+            {(hero.headline || []).map((line, i) => (
+              <span key={i} className="block">{line}</span>
+            ))}
+            {isVisible('headlineAccent') && (
+              <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="inline-block px-4 rounded-full bg-accent/20 text-accent/90 mt-2">
+                {hero.headlineAccent}
+              </span>
+            )}
+          </h1>
+          {isVisible('subtitle') && (
+            <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="mt-8 max-w-2xl text-lg sm:text-xl text-ink/60 leading-relaxed font-light">
+              {hero.subtitle?.replace(/<[^>]*>/g, '')}
+            </p>
+          )}
+          <div className="mt-12 flex items-center justify-center gap-4">
+            {isVisible('primaryCta') && (
+              <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-10 py-4 rounded-full bg-ink text-bg font-medium hover:scale-105 hover:shadow-xl transition-all">
+                {hero.primaryCta?.label}
+              </a>
+            )}
+            {isVisible('secondaryCta') && (
+              <a href={hero.secondaryCta?.href || '/resume.pdf'} data-edit-id="hero.secondaryCta" data-edit-name="Hero · Secondary button" data-edit-kind="button" data-edit-path="hero.secondaryCta.label" className="px-10 py-4 rounded-full border border-ink/20 text-ink hover:bg-white/10 transition-colors">
+                {hero.secondaryCta?.label}
+              </a>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // ─── LAYOUT A: JOY RUSH (Playful Candy & Floaters) ───
   if (animationStyle === 'joyrush') {
     return (
@@ -271,29 +441,32 @@ const Hero = () => {
   // ─── LAYOUT E: RADIAN (Neon Hazard Sports) ───
   if (animationStyle === 'radian') {
     return (
-      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-center bg-black text-white overflow-hidden pt-36 pb-12">
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-center bg-bg text-ink overflow-hidden pt-36 pb-12">
         {/* Full-width neon lines background */}
-        <div className="absolute inset-0 pointer-events-none -z-10 bg-[radial-gradient(circle_at_center,rgba(243,208,22,0.06)_0%,transparent_60%)]" />
+        <div 
+          className="absolute inset-0 pointer-events-none -z-10" 
+          style={{ background: 'radial-gradient(circle at center, color-mix(in srgb, var(--color-accent) 15%, transparent) 0%, transparent 60%)' }}
+        />
 
         <div className="w-full max-w-7xl mx-auto px-5 grid lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7">
             {isVisible('badge') && (
-              <span data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="inline-block px-3 py-1 bg-[#F3D016] text-black font-mono text-xs font-bold uppercase tracking-widest mb-6">
+              <span data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="inline-block px-3 py-1 bg-accent text-bg font-mono text-xs font-bold uppercase tracking-widest mb-6">
                 {hero.badge}
               </span>
             )}
 
-            <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-black uppercase text-5xl sm:text-8xl tracking-tighter leading-[0.85]">
+            <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-black uppercase text-[clamp(2.5rem,8vw,6rem)] tracking-tighter leading-[0.85] break-words">
               {(hero.headline || []).map((line, i) => (
                 <span key={i} className="block">{line}</span>
               ))}
               {isVisible('headlineAccent') && (
-                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="block text-[#F3D016]">{hero.headlineAccent}</span>
+                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="block text-accent">{hero.headlineAccent}</span>
               )}
             </h1>
 
             {isVisible('subtitle') && (
-              <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="mt-8 max-w-md text-sm sm:text-base text-white/60 leading-relaxed font-mono">
+              <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="mt-8 max-w-md text-sm sm:text-base text-ink-soft leading-relaxed font-mono">
                 {hero.subtitle?.replace(/<[^>]*>/g, '')}
               </p>
             )}
@@ -303,7 +476,8 @@ const Hero = () => {
                 <a
                   href={hero.primaryCta?.href || '#projects'}
                   data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label"
-                  className="custom-element-button inline-flex items-center gap-2 px-8 py-3.5 bg-[#F3D016] text-black font-bold uppercase hover:shadow-[0_0_15px_#F3D016] transition-all text-xs tracking-wider"
+                  className="custom-element-button inline-flex items-center gap-2 px-8 py-3.5 bg-accent text-bg font-bold uppercase hover:opacity-90 transition-all text-xs tracking-wider"
+                  style={{ boxShadow: '0 0 15px var(--color-accent)' }}
                 >
                   {hero.primaryCta?.label}
                 </a>
@@ -485,19 +659,21 @@ const Hero = () => {
         </Parallax>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.7 }}
-        className="relative z-10 mt-14 border-y border-line bg-surface/50 backdrop-blur py-3.5 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
-      >
-        <div className="flex w-max animate-marquee">
-          {[...ticker, ...ticker].map((t, i) => (
-            <span key={i} className="mx-6 inline-flex items-center gap-6 text-sm font-mono uppercase tracking-wider text-ink-soft">
-              {t}
-              <span className="h-1 w-1 rounded-full bg-accent/60" />
-            </span>
-          ))}
-        </div>
-      </motion.div>
+      {isVisible('ticker') && ticker.length > 0 && settings.theme?.layout?.scrollStyle !== 'none' && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.7 }}
+          className="relative z-10 mt-14 border-y border-line bg-surface/50 backdrop-blur py-3.5 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]"
+        >
+          <div className={settings.theme?.layout?.scrollStyle === 'vertical' ? "flex flex-col h-20 animate-marquee-vertical" : "flex w-max animate-marquee"}>
+            {[...ticker, ...ticker].map((t, i) => (
+              <span key={i} className={`mx-6 inline-flex items-center gap-6 text-sm font-mono uppercase tracking-wider text-ink-soft ${settings.theme?.layout?.scrollStyle === 'vertical' ? 'py-1' : ''}`}>
+                {t}
+                <span className="h-1 w-1 rounded-full bg-accent/60" />
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 };

@@ -21,6 +21,12 @@ export interface ThemeState {
     borderStyle?: string;
     animationStyle?: 'joyrush' | 'k95' | 'juliencalot' | 'depoluxe' | 'monolog' | 'hildenkaira' | 'radian' | 'avantgarde' | 'cyber' | 'metropolitan' | 'default';
     cursorStyle?: 'dot' | 'bubble' | 'invert' | 'crosshair' | 'none' | 'default';
+    navbarStyle?: 'capsule' | 'minimal' | 'karolbinkowski' | 'pelizzari' | 'vividmotion' | 'studiomodular' | 'default';
+    cardStyle?: 'minimal' | 'editorial' | 'karolbinkowski' | 'pelizzari' | 'russellnumo' | 'vividmotion' | 'glass' | 'gradient' | 'magazine' | 'bento' | 'masonry' | 'flip' | 'magnetic' | 'default';
+    heroStyle?: 'karolbinkowski' | 'pelizzari' | 'russellnumo' | 'vividmotion' | 'default';
+    footerStyle?: 'karolbinkowski' | 'pelizzari' | 'russellnumo' | 'studiomodular' | 'default';
+    scrollStyle?: 'vertical' | 'horizontal' | 'none';
+    projectsScroll?: 'grid' | 'horizontal' | 'vertical' | 'masonry' | 'bento';
   };
 }
 
@@ -146,6 +152,11 @@ export const presets: Record<string, ThemeState> = {
       radius: '1rem',
       animationStyle: 'default',
       cursorStyle: 'default',
+      navbarStyle: 'default',
+      cardStyle: 'default',
+      heroStyle: 'default',
+      footerStyle: 'default',
+      scrollStyle: 'horizontal',
     }
   },
   'Joy Rush (drinkjoyrush.com)': {
@@ -384,6 +395,121 @@ export const presets: Record<string, ThemeState> = {
       radius: '8px',
       animationStyle: 'metropolitan',
       cursorStyle: 'invert',
+    }
+  },
+  'Pelizzari Studio (pelizzari.com)': {
+    colors: {
+      primary: '#D63E2E',
+      background: '#F7F5F0',
+      surface: '#FFFFFF',
+      text: '#1C1C1A',
+      muted: '#8A8A85',
+      border: '#E8E5DF',
+    },
+    typography: {
+      fontFamily: 'Inter, sans-serif',
+      headingFont: 'Playfair Display, serif',
+      bodySize: '16px',
+      headingSize: '72px',
+      bodyWeight: '400',
+      headingWeight: '400',
+    },
+    layout: {
+      radius: '0px',
+      animationStyle: 'default',
+      cursorStyle: 'dot',
+    }
+  },
+  'Karol Binkowski (karolbinkow.ski)': {
+    colors: {
+      primary: '#E0FD60',
+      background: '#0F0F0F',
+      surface: '#1A1A1A',
+      text: '#FFFFFF',
+      muted: '#999999',
+      border: '#333333',
+    },
+    typography: {
+      fontFamily: 'Outfit, sans-serif',
+      headingFont: 'Outfit, sans-serif',
+      bodySize: '16px',
+      headingSize: '84px',
+      bodyWeight: '400',
+      headingWeight: '800',
+    },
+    layout: {
+      radius: '16px',
+      animationStyle: 'k95',
+      cursorStyle: 'invert',
+    }
+  },
+  'Russell Numo (russellnumo.nl)': {
+    colors: {
+      primary: '#000000',
+      background: '#EEEEEE',
+      surface: '#FFFFFF',
+      text: '#000000',
+      muted: '#666666',
+      border: '#CCCCCC',
+    },
+    typography: {
+      fontFamily: 'Space Grotesk, sans-serif',
+      headingFont: 'Space Grotesk, sans-serif',
+      bodySize: '16px',
+      headingSize: '64px',
+      bodyWeight: '400',
+      headingWeight: '700',
+    },
+    layout: {
+      radius: '0px',
+      animationStyle: 'default',
+      cursorStyle: 'dot',
+    }
+  },
+  'Studio Modular (studiomodular.be)': {
+    colors: {
+      primary: '#0055FF',
+      background: '#FFFFFF',
+      surface: '#F5F5F5',
+      text: '#111111',
+      muted: '#888888',
+      border: '#EEEEEE',
+    },
+    typography: {
+      fontFamily: 'Inter, sans-serif',
+      headingFont: 'Inter, sans-serif',
+      bodySize: '15px',
+      headingSize: '56px',
+      bodyWeight: '400',
+      headingWeight: '600',
+    },
+    layout: {
+      radius: '4px',
+      animationStyle: 'default',
+      cursorStyle: 'default',
+    }
+  },
+  'Haoqi Design (haoqi.design)': {
+    colors: {
+      primary: '#FF4D00',
+      background: '#111111',
+      surface: '#1E1E1E',
+      text: '#F5F5F5',
+      muted: '#A0A0A0',
+      border: '#333333',
+    },
+    typography: {
+      fontFamily: 'Roboto, sans-serif',
+      headingFont: 'Space Mono, monospace',
+      bodySize: '16px',
+      headingSize: '48px',
+      bodyWeight: '400',
+      headingWeight: '700',
+    },
+    layout: {
+      radius: '0px',
+      animationStyle: 'cyber',
+      cursorStyle: 'crosshair',
     }
   }
 };

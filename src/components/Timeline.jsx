@@ -9,7 +9,7 @@ const Timeline = () => {
   const { experiences, settings } = useContent();
 
   return (
-    <section id="timeline" className="py-24 sm:py-32 bg-surface border-y border-line">
+    <section id="timeline" data-edit-id="timeline.section" data-edit-name="Experience" data-edit-kind="section" className="py-24 sm:py-32 bg-surface border-y border-line">
       <div className="max-w-5xl mx-auto px-5 sm:px-8">
         <div className="mb-14">
           <span data-edit-id="timeline.label" data-edit-name="Experience · Eyebrow" data-edit-kind="text" data-edit-path="sections.experience.label" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{settings?.sections?.experience?.label || '03 — Experience'}</span>
@@ -30,16 +30,21 @@ const Timeline = () => {
                 <div className="absolute left-0 sm:left-1 top-1 grid place-items-center h-10 w-10 rounded-full bg-ink text-white ring-4 ring-surface">
                   <Briefcase size={16} />
                 </div>
-                <div className="rounded-2xl border border-line bg-bg p-6 hover:border-ink/20 hover:shadow-[0_20px_50px_-30px_rgba(9,9,11,0.4)] transition-all duration-300">
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                    <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-accent-soft text-accent">{exp.type}</span>
-                    <span className="flex items-center gap-1.5 text-xs text-ink-soft font-mono"><Calendar size={12} />{exp.period}</span>
-                  </div>
-                  <h3 className="font-display font-bold text-lg sm:text-xl text-ink">
-                    {exp.role} <span className="text-ink-soft font-medium">· {exp.company}</span>
-                  </h3>
-                  <p className="mt-2.5 text-ink-soft leading-relaxed">{exp.impact}</p>
+              <div
+                data-edit-id={`exp.${exp.id || i}`}
+                data-edit-name={`Experience · ${exp.company || `Item ${i+1}`}`}
+                data-edit-kind="section"
+                className="rounded-2xl border border-line bg-bg p-6 hover:border-ink/20 hover:shadow-[0_20px_50px_-30px_rgba(9,9,11,0.4)] transition-all duration-300"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                  <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-accent-soft text-accent">{exp.type}</span>
+                  <span className="flex items-center gap-1.5 text-xs text-ink-soft font-mono"><Calendar size={12} />{exp.period}</span>
                 </div>
+                <h3 data-edit-id={`exp.${exp.id || i}.role`} data-edit-name={`Experience · ${exp.company} Role`} data-edit-kind="text" className="font-display font-bold text-lg sm:text-xl text-ink">
+                  {exp.role} <span className="text-ink-soft font-medium">· {exp.company}</span>
+                </h3>
+                <p data-edit-id={`exp.${exp.id || i}.impact`} data-edit-name={`Experience · ${exp.company} Impact`} data-edit-kind="text" className="mt-2.5 text-ink-soft leading-relaxed">{exp.impact}</p>
+              </div>
               </motion.div>
             ))}
 

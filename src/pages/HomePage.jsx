@@ -31,6 +31,8 @@ export default function HomePage() {
 
   const theme = settings?.theme;
   const animationStyle = theme?.layout?.animationStyle || 'default';
+  const footerStyle = theme?.layout?.footerStyle || 'default';
+  const projectsScroll = theme?.layout?.projectsScroll || 'grid';
 
   const [loadComplete, setLoadComplete] = useState(animationStyle !== 'juliencalot');
   const [intro, setIntro] = useState(!isPreview);
@@ -259,22 +261,56 @@ export default function HomePage() {
             </div>
           </Parallax>
 
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-            {projects?.map((project, i) => (
-              <SliceReveal key={project._id || project.title} delay={(i % 2) * 0.12}>
-                {/* depoluxe.xyz — cinematic roman-numeral index on each work */}
-                {animationStyle === 'depoluxe' && (
-                  <div className="mb-2 flex items-baseline gap-3 font-display text-accent">
-                    <span className="text-2xl tracking-[0.2em]">{toRoman(i + 1)}</span>
-                    <span className="h-px flex-1 bg-line" />
-                  </div>
-                )}
-                <ProjectCard project={project} index={i} />
-              </SliceReveal>
-            ))}
-          </div>
+          {/* ── Layout wrapper adapts to projectsScroll setting ── */}
+          {projectsScroll === 'masonry' ? (
+            /* Masonry: CSS column layout */
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+              {projects?.map((project, i) => (
+                <SliceReveal key={project._id || project.title} delay={(i % 3) * 0.08}>
+                  <ProjectCard project={project} index={i} />
+                </SliceReveal>
+              ))}
+            </div>
+          ) : projectsScroll === 'bento' ? (
+            /* Bento: CSS grid with auto-placement allowing tall cells */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-[minmax(220px,auto)]" style={{ gridAutoFlow: 'dense' }}>
+              {projects?.map((project, i) => (
+                <div key={project._id || project.title} className={i % 3 === 0 ? 'row-span-2' : ''}>
+                  <SliceReveal delay={(i % 3) * 0.08} className="h-full">
+                    <ProjectCard project={project} index={i} />
+                  </SliceReveal>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Standard / horizontal carousel / vertical track */
+            <div className={`
+              ${projectsScroll === 'horizontal' ? 'flex overflow-x-auto gap-6 lg:gap-8 pb-8 snap-x snap-mandatory hide-scrollbar' : ''}
+              ${projectsScroll === 'vertical' ? 'flex flex-col overflow-y-auto max-h-[85vh] gap-8 pb-8 snap-y snap-mandatory hide-scrollbar' : ''}
+              ${projectsScroll === 'grid' || !projectsScroll ? 'grid md:grid-cols-2 gap-6 lg:gap-8' : ''}
+            `}>
+              {projects?.map((project, i) => (
+                <div key={project._id || project.title} className={`
+                  ${projectsScroll === 'horizontal' ? 'w-[85vw] sm:w-[60vw] md:w-[45vw] shrink-0 snap-center' : ''}
+                  ${projectsScroll === 'vertical' ? 'w-full shrink-0 snap-start' : ''}
+                `}>
+                  <SliceReveal delay={(i % 2) * 0.12}>
+                    {/* depoluxe.xyz — cinematic roman-numeral index on each work */}
+                    {animationStyle === 'depoluxe' && (
+                      <div className="mb-2 flex items-baseline gap-3 font-display text-accent">
+                        <span className="text-2xl tracking-[0.2em]">{toRoman(i + 1)}</span>
+                        <span className="h-px flex-1 bg-line" />
+                      </div>
+                    )}
+                    <ProjectCard project={project} index={i} />
+                  </SliceReveal>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
+
 
       {/* Blog Section */}
       <section id="blog" className="py-24 sm:py-32 bg-surface border-y border-line">
@@ -297,43 +333,149 @@ export default function HomePage() {
       <ContactForm />
 
       {/* Footer */}
-      <footer className="bg-ink text-bg">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-16">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div>
-              <Logo size={40} className="text-bg mb-5" title="AP monogram" />
-              <h3
-                data-edit-id="footer.name" data-edit-name="Footer · Name" data-edit-kind="heading" data-edit-path="footer.name"
-                className={`font-display font-extrabold tracking-tight ${
-                  animationStyle === 'monolog'
-                    ? 'text-[clamp(3rem,12vw,10rem)] leading-none opacity-90' /* bymonolog.com — giant brand wordmark filling the footer */
-                    : 'text-4xl sm:text-6xl'
-                }`}
-              >{footerData.name}</h3>
-              <p data-edit-id="footer.tagline" data-edit-name="Footer · Tagline" data-edit-kind="text" data-edit-path="footer.tagline" className="mt-3 text-bg/60 max-w-sm">{footerData.tagline}</p>
+      {footerStyle === 'karolbinkowski' ? (
+        <footer className="bg-bg text-ink border-t-[3px] border-ink mt-12">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row">
+            <div className="w-full md:w-2/3 p-8 border-b-[3px] md:border-b-0 md:border-r-[3px] border-ink">
+              <h3 data-edit-id="footer.name" data-edit-name="Footer · Name" data-edit-kind="heading" data-edit-path="footer.name" className="font-display font-black text-6xl sm:text-8xl uppercase tracking-tighter hover:text-accent transition-colors duration-300 break-words w-full" style={{ WebkitTextStroke: '1px var(--color-ink)' }}>
+                {footerData.name}
+              </h3>
+              <p data-edit-id="footer.tagline" data-edit-name="Footer · Tagline" data-edit-kind="text" data-edit-path="footer.tagline" className="mt-6 text-sm font-bold uppercase tracking-widest max-w-sm">{footerData.tagline}</p>
             </div>
-            <div className="flex gap-6 text-sm text-bg/70">
-              <a href={footerData.github} target="_blank" rel="noopener noreferrer" className="hover:text-bg transition-colors">GitHub</a>
-              <a href={footerData.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-bg transition-colors">LinkedIn</a>
-              <a href={`mailto:${footerData.email}`} className="hover:text-bg transition-colors">Email</a>
+            <div className="w-full md:w-1/3 flex flex-col justify-between">
+              <div className="p-8 flex flex-col gap-4">
+                <a href={footerData.github} target="_blank" rel="noopener noreferrer" className="text-xl font-bold uppercase border-b-[3px] border-transparent hover:border-accent hover:text-accent transition-all inline-block w-max">GitHub</a>
+                <a href={footerData.linkedin} target="_blank" rel="noopener noreferrer" className="text-xl font-bold uppercase border-b-[3px] border-transparent hover:border-accent hover:text-accent transition-all inline-block w-max">LinkedIn</a>
+                <a href={`mailto:${footerData.email}`} className="text-xl font-bold uppercase border-b-[3px] border-transparent hover:border-accent hover:text-accent transition-all inline-block w-max">Email</a>
+              </div>
+              <div className="border-t-[3px] border-ink p-8 bg-surface text-xs font-bold uppercase tracking-widest flex flex-col gap-2">
+                <span>&copy; {new Date().getFullYear()} {footerData.name}</span>
+                <span>{footerData.copyright}</span>
+                <Link to="/admin" className="mt-4 inline-flex items-center gap-2 hover:text-accent w-max">
+                  <Lock size={12} /> ADMIN
+                </Link>
+              </div>
             </div>
           </div>
-          <div className="mt-12 pt-6 border-t border-bg/10 flex flex-wrap items-center justify-between gap-2 text-xs text-bg/40 font-mono">
-            <span>&copy; {new Date().getFullYear()} {footerData.name}. {footerData.copyright}</span>
-            <div className="flex items-center gap-4">
-              <span>Designed &amp; developed in {footerData.designYear}</span>
-              <Link
-                to="/admin"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-bg/10 text-bg/30 hover:text-bg/70 hover:border-bg/30 transition-all duration-300 cursor-pointer"
-                aria-label="Admin dashboard"
-              >
-                <Lock size={10} />
-                <span className="text-[10px] tracking-wider uppercase">Admin</span>
+        </footer>
+      ) : footerStyle === 'pelizzari' ? (
+        <footer className="bg-bg text-ink border-t border-line mt-24">
+          <div className="max-w-7xl mx-auto px-6 py-20 flex flex-col items-center text-center">
+            <Logo size={48} className="text-ink mb-12 opacity-80" title="Logo" />
+            <h3 data-edit-id="footer.name" data-edit-name="Footer · Name" data-edit-kind="heading" data-edit-path="footer.name" className="font-serif italic text-4xl sm:text-6xl font-light mb-6">{footerData.name}</h3>
+            <p data-edit-id="footer.tagline" data-edit-name="Footer · Tagline" data-edit-kind="text" data-edit-path="footer.tagline" className="text-ink/60 font-serif text-lg max-w-md">{footerData.tagline}</p>
+            <div className="flex items-center gap-12 mt-16 text-sm tracking-widest uppercase text-ink/80">
+              <a href={footerData.github} className="hover:text-ink transition-colors">GitHub</a>
+              <a href={footerData.linkedin} className="hover:text-ink transition-colors">LinkedIn</a>
+              <a href={`mailto:${footerData.email}`} className="hover:text-ink transition-colors">Contact</a>
+            </div>
+          </div>
+          <div className="max-w-7xl mx-auto px-6 py-6 border-t border-line/50 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] uppercase tracking-[0.2em] text-ink/40">
+            <span>&copy; {new Date().getFullYear()} {footerData.copyright}</span>
+            <Link to="/admin" className="hover:text-ink transition-colors flex items-center gap-2">
+              <Lock size={10} /> Admin
+            </Link>
+          </div>
+        </footer>
+      ) : footerStyle === 'russellnumo' ? (
+        <footer className="bg-surface text-ink border-t border-ink mt-20">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 border-b border-ink">
+              <div className="col-span-1 md:col-span-2 p-6 border-b md:border-b-0 md:border-r border-ink">
+                <h3 data-edit-id="footer.name" data-edit-name="Footer · Name" data-edit-kind="heading" data-edit-path="footer.name" className="font-mono text-2xl font-bold uppercase">{footerData.name}</h3>
+                <p data-edit-id="footer.tagline" data-edit-name="Footer · Tagline" data-edit-kind="text" data-edit-path="footer.tagline" className="font-mono text-sm mt-4 text-ink-soft">{footerData.tagline}</p>
+              </div>
+              <div className="col-span-1 p-6 border-b md:border-b-0 md:border-r border-ink flex flex-col gap-4 font-mono text-sm">
+                <span className="font-bold border-b border-ink pb-2 mb-2">Socials</span>
+                <a href={footerData.github} className="hover:text-accent">GitHub</a>
+                <a href={footerData.linkedin} className="hover:text-accent">LinkedIn</a>
+              </div>
+              <div className="col-span-1 p-6 flex flex-col justify-between font-mono text-xs">
+                <div>
+                  <span className="font-bold border-b border-ink pb-2 mb-4 block">Status</span>
+                  <div className="flex items-center gap-2 text-accent">
+                    <span className="w-2 h-2 bg-accent rounded-full animate-pulse" /> Available
+                  </div>
+                </div>
+                <a href={`mailto:${footerData.email}`} className="mt-8 bg-ink text-bg text-center py-2 hover:bg-accent hover:text-ink transition-colors uppercase font-bold">Email Me</a>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between items-center p-6 text-xs font-mono text-ink-soft">
+              <span>&copy; {new Date().getFullYear()} — {footerData.copyright}</span>
+              <Link to="/admin" className="flex items-center gap-2 hover:text-ink border border-line px-3 py-1">
+                <Lock size={12} /> Admin
               </Link>
             </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      ) : footerStyle === 'studiomodular' ? (
+        <footer className="bg-ink text-bg mt-12 py-16 px-8 relative overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-accent/20 rounded-full blur-[100px] pointer-events-none" />
+          <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-12">
+            <div className="md:col-span-5 flex flex-col justify-between">
+              <div>
+                <h3 data-edit-id="footer.name" data-edit-name="Footer · Name" data-edit-kind="heading" data-edit-path="footer.name" className="font-display text-4xl sm:text-5xl font-medium tracking-tight mb-4">{footerData.name}</h3>
+                <p data-edit-id="footer.tagline" data-edit-name="Footer · Tagline" data-edit-kind="text" data-edit-path="footer.tagline" className="text-bg/60 text-lg max-w-sm">{footerData.tagline}</p>
+              </div>
+              <div className="mt-12 text-xs font-mono text-bg/40">
+                <p>&copy; {new Date().getFullYear()} {footerData.copyright}</p>
+                <Link to="/admin" className="mt-4 flex items-center gap-2 hover:text-bg w-max">
+                  <Lock size={12} /> Admin Portal
+                </Link>
+              </div>
+            </div>
+            <div className="md:col-span-7 grid sm:grid-cols-2 gap-8 text-sm">
+              <div className="flex flex-col gap-6 border-t border-bg/20 pt-6">
+                <span className="text-bg/40 uppercase tracking-widest text-xs">Socials</span>
+                <a href={footerData.github} className="hover:text-accent transition-colors font-medium">GitHub</a>
+                <a href={footerData.linkedin} className="hover:text-accent transition-colors font-medium">LinkedIn</a>
+              </div>
+              <div className="flex flex-col gap-6 border-t border-bg/20 pt-6">
+                <span className="text-bg/40 uppercase tracking-widest text-xs">Inquiries</span>
+                <a href={`mailto:${footerData.email}`} className="text-xl hover:text-accent transition-colors font-medium break-all">{footerData.email}</a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      ) : (
+        <footer className="bg-ink text-bg">
+          <div className="max-w-7xl mx-auto px-5 sm:px-8 py-16">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div>
+                <Logo size={40} className="text-bg mb-5" title="AP monogram" />
+                <h3
+                  data-edit-id="footer.name" data-edit-name="Footer · Name" data-edit-kind="heading" data-edit-path="footer.name"
+                  className={`font-display font-extrabold tracking-tight ${
+                    animationStyle === 'monolog'
+                      ? 'text-[clamp(3rem,12vw,10rem)] leading-none opacity-90' /* bymonolog.com — giant brand wordmark filling the footer */
+                      : 'text-4xl sm:text-6xl'
+                  }`}
+                >{footerData.name}</h3>
+                <p data-edit-id="footer.tagline" data-edit-name="Footer · Tagline" data-edit-kind="text" data-edit-path="footer.tagline" className="mt-3 text-bg/60 max-w-sm">{footerData.tagline}</p>
+              </div>
+              <div className="flex gap-6 text-sm text-bg/70">
+                <a href={footerData.github} target="_blank" rel="noopener noreferrer" className="hover:text-bg transition-colors">GitHub</a>
+                <a href={footerData.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-bg transition-colors">LinkedIn</a>
+                <a href={`mailto:${footerData.email}`} className="hover:text-bg transition-colors">Email</a>
+              </div>
+            </div>
+            <div className="mt-12 pt-6 border-t border-bg/10 flex flex-wrap items-center justify-between gap-2 text-xs text-bg/40 font-mono">
+              <span>&copy; {new Date().getFullYear()} {footerData.name}. {footerData.copyright}</span>
+              <div className="flex items-center gap-4">
+                <span>Designed &amp; developed in {footerData.designYear}</span>
+                <Link
+                  to="/admin"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-bg/10 text-bg/30 hover:text-bg/70 hover:border-bg/30 transition-all duration-300 cursor-pointer"
+                  aria-label="Admin dashboard"
+                >
+                  <Lock size={10} />
+                  <span className="text-[10px] tracking-wider uppercase">Admin</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </footer>
+      )}
 
       {/* Dynamic Custom Section */}
       {settings?.custom_elements && Object.values(settings.custom_elements).some((e) => e.section === 'custom_section') && (

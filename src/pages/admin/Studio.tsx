@@ -1,286 +1,344 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import {
+  Monitor, Laptop, Tablet, Smartphone, Undo2, Redo2, Save, Eye,
+  Palette, Layout, Zap, Wand2, Loader2, MousePointer2,
+  Grid3X3, Layers, Globe, RefreshCw, X, PanelLeft, PanelRight,
+} from 'lucide-react';
 import { useThemeStore } from '../../theme/store';
-import { presets, SITE_FONTS, EFFECT_STYLES, CURSOR_STYLES } from '../../theme/presets';
 import { useSiteSettings } from '../../components/admin/hooks/useSiteSettings';
+import { useEditorStore, overridesToCss } from '../../editor/editorStore';
+import { useContent } from '../../context/ContentProvider';
 import toast from 'react-hot-toast';
+import ThemePanel from './studio/ThemePanel';
+import StructurePanel from './studio/StructurePanel';
+import ScrollStudio from './studio/ScrollStudio';
+import ScraperPanel from './studio/ScraperPanel';
+import Inspector from './canvas/Inspector';
+
+type Tab = 'theme' | 'structure' | 'motion' | 'scraper';
+type DeviceKey = 'desktop' | 'laptop' | 'tablet' | 'mobile';
+
+const DEVICES: { id: DeviceKey; icon: any; label: string; width: number | null }[] = [
+  { id: 'desktop', icon: Monitor, label: 'Desktop', width: null },
+  { id: 'laptop', icon: Laptop, label: 'Laptop', width: 1280 },
+  { id: 'tablet', icon: Tablet, label: 'Tablet', width: 834 },
+  { id: 'mobile', icon: Smartphone, label: 'Mobile', width: 390 },
+];
+
+const RIGHT_TABS: { id: Tab; icon: any; label: string; color: string }[] = [
+  { id: 'theme', icon: Palette, label: 'Theme', color: 'text-blue-400' },
+  { id: 'structure', icon: Layout, label: 'Structure', color: 'text-purple-400' },
+  { id: 'motion', icon: Zap, label: 'Motion', color: 'text-amber-400' },
+  { id: 'scraper', icon: Wand2, label: 'Scraper', color: 'text-emerald-400' },
+];
 
 export default function Studio() {
-  const { theme, updateColors, updateTypography, updateLayout, applyPreset } = useThemeStore();
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { theme, updateLayout, applyPreset } = useThemeStore();
   const { saveSettings } = useSiteSettings('theme');
-  const [isSaving, setIsSaving] = useState(false);
+  const { settings } = useContent() as any;
 
-  // Keep the latest theme in a ref so the handshake listener always sends
-  // current values without needing to re-bind the listener on every edit.
+  // Editor store (for visual canvas edit mode)
+  const enabled = useEditorStore((s) => s.enabled);
+  const setEnabled = useEditorStore((s) => s.setEnabled);
+  const toggleEnabled = useEditorStore((s) => s.toggleEnabled);
+  const overrides = useEditorStore((s) => s.overrides);
+  const content = useEditorStore((s) => s.content);
+  const selected = useEditorStore((s) => s.selected);
+  const setSelected = useEditorStore((s) => s.setSelected);
+  const setContent = useEditorStore((s) => s.setContent);
+  const undo = useEditorStore((s) => s.undo);
+  const redo = useEditorStore((s) => s.redo);
+  const canUndo = useEditorStore((s) => s.past.length > 0);
+  const canRedo = useEditorStore((s) => s.future.length > 0);
+
   const themeRef = useRef(theme);
   themeRef.current = theme;
 
-  const pushTheme = () => {
-    iframeRef.current?.contentWindow?.postMessage(
-      { type: 'SYNC_THEME', theme: themeRef.current },
-      '*'
-    );
-  };
+  const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('theme');
+  const [device, setDevice] = useState<DeviceKey>('desktop');
+  const [leftOpen, setLeftOpen] = useState(true);
+  const [rightOpen, setRightOpen] = useState(true);
+  const [iframeKey, setIframeKey] = useState(0);
 
-  // Sync theme to iframe whenever it changes (live edits)
-  useEffect(() => {
-    pushTheme();
-  }, [theme]);
-
-  // The preview iframe announces when its React tree is mounted and listening.
-  // Responding here guarantees the initial theme lands even if the iframe wasn't
-  // ready when onLoad fired (avoids a lost first message).
-  useEffect(() => {
-    const handleReady = (event: MessageEvent) => {
-      if (event.data?.type === 'THEME_STUDIO_READY') {
-        pushTheme();
-      }
-    };
-    window.addEventListener('message', handleReady);
-    return () => window.removeEventListener('message', handleReady);
+  // ── Theme sync to iframe ──
+  const pushTheme = useCallback(() => {
+    iframeRef.current?.contentWindow?.postMessage({ type: 'SYNC_THEME', theme: themeRef.current }, '*');
   }, []);
 
-  // Force sync on iframe load
+  const pushEditorState = useCallback(() => {
+    iframeRef.current?.contentWindow?.postMessage({ type: 'EDITOR_MODE', enabled }, '*');
+    iframeRef.current?.contentWindow?.postMessage({ type: 'EDITOR_STYLE', css: overridesToCss(overrides) }, '*');
+    iframeRef.current?.contentWindow?.postMessage({ type: 'PREVIEW_OVERRIDE', payload: { settings: content } }, '*');
+  }, [enabled, overrides, content]);
+
+  // Sync theme whenever it changes
+  useEffect(() => { pushTheme(); }, [theme, pushTheme]);
+
+  // Handle iframe → admin messages
+  useEffect(() => {
+    const handle = (e: MessageEvent) => {
+      const d = e.data || {};
+      if (d.type === 'THEME_STUDIO_READY' || d.type === 'EDITOR_RUNTIME_READY') {
+        pushTheme();
+        pushEditorState();
+      }
+      if (d.type === 'EDITOR_SELECTED') setSelected(d.info);
+      if (d.type === 'EDITOR_CLEARED') setSelected(null);
+      if (d.type === 'EDITOR_CONTENT' && d.path) setContent(d.path, d.value);
+    };
+    window.addEventListener('message', handle);
+    return () => window.removeEventListener('message', handle);
+  }, [pushTheme, pushEditorState, setSelected, setContent]);
+
+  // Push editor mode changes
+  useEffect(() => { pushEditorState(); }, [enabled, overrides, content, pushEditorState]);
+
   const handleIframeLoad = () => {
     pushTheme();
+    pushEditorState();
   };
 
   const handlePublish = async () => {
     setIsSaving(true);
-    try {
-      await saveSettings(theme);
-    } finally {
-      setIsSaving(false);
-    }
+    try { await saveSettings(theme); } finally { setIsSaving(false); }
   };
 
-  // Fonts grouped by the reference website they were collected from.
-  const FontSelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
-    >
-      {/* Keep the current value selectable even if it isn't in the catalog */}
-      {!SITE_FONTS.some((g) => g.fonts.some((f) => f.stack === value)) && value && (
-        <option value={value}>{value.split(',')[0]}</option>
-      )}
-      {SITE_FONTS.map((group) => (
-        <optgroup key={group.site} label={group.site}>
-          {group.fonts.map((f) => (
-            <option key={`${group.site}-${f.name}`} value={f.stack}>
-              {f.name} · {f.role}
-            </option>
-          ))}
-        </optgroup>
-      ))}
-    </select>
-  );
+  const deviceWidth = DEVICES.find((d) => d.id === device)?.width;
+  const canvasWidth = deviceWidth ? `${deviceWidth}px` : '100%';
+  const canvasMaxWidth = deviceWidth ? `${deviceWidth}px` : '100%';
 
   return (
-    <div className="flex h-full w-full bg-slate-900 overflow-hidden">
-      {/* Studio Sidebar (Controls) */}
-      <div className="w-80 bg-white border-r border-slate-200 flex flex-col shadow-xl z-10 shrink-0">
-        <div className="p-4 border-b border-slate-100 bg-slate-50">
-          <h2 className="font-bold text-slate-800">Theme Studio</h2>
-          <p className="text-xs text-slate-500">Live preview editor</p>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          {/* Presets */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Presets</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.keys(presets).map(preset => (
-                <button
-                  key={preset}
-                  onClick={() => applyPreset(preset)}
-                  className="px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-colors text-slate-700"
-                >
-                  {preset}
+    <div className="flex h-full w-full bg-[#0d0d0d] overflow-hidden select-none">
+
+      {/* ── LEFT PANEL — Component Library ── */}
+      {leftOpen && (
+        <aside className="w-56 bg-[#111] border-r border-[#1f1f1f] flex flex-col shrink-0 z-20">
+          {/* Header */}
+          <div className="flex items-center justify-between px-3 py-3 border-b border-[#1f1f1f]">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Library</span>
+            <button onClick={() => setLeftOpen(false)} className="text-slate-600 hover:text-slate-400 transition-colors">
+              <PanelLeft size={13} />
+            </button>
+          </div>
+
+          {/* Quick sections nav */}
+          <div className="flex-1 overflow-y-auto py-2">
+            <div className="px-3 py-1.5">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-600">Sections</span>
+            </div>
+            {[
+              { anchor: '#hero', label: 'Hero', dot: 'bg-blue-500' },
+              { anchor: '#about', label: 'About', dot: 'bg-purple-500' },
+              { anchor: '#skills', label: 'Skills', dot: 'bg-amber-500' },
+              { anchor: '#timeline', label: 'Experience', dot: 'bg-emerald-500' },
+              { anchor: '#projects', label: 'Projects', dot: 'bg-red-500' },
+              { anchor: '#blog', label: 'Blog', dot: 'bg-cyan-500' },
+              { anchor: 'footer', label: 'Footer', dot: 'bg-slate-500' },
+            ].map(({ anchor, label, dot }) => (
+              <button key={anchor} onClick={() => {
+                iframeRef.current?.contentWindow?.postMessage({ type: 'PREVIEW_SCROLL', anchor }, '*');
+              }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] text-slate-500 hover:text-slate-200 hover:bg-[#1a1a1a] transition-all text-left">
+                <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${dot}`} />
+                {label}
+              </button>
+            ))}
+
+            <div className="px-3 py-1.5 mt-3">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-600">Quick Presets</span>
+            </div>
+            {['Haoqi Design (haoqi.design)', 'Radian (rideradian.com)', 'Karol Binkowski (karolbinkow.ski)', 'Metropolitan Luxe (Awwwards)', 'Depoluxe (depoluxe.xyz)', 'Joy Rush (drinkjoyrush.com)'].map((name) => (
+                <button key={name} onClick={() => applyPreset(name)}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] text-slate-500 hover:text-slate-200 hover:bg-[#1a1a1a] transition-all text-left">
+                  <Grid3X3 size={11} className="text-slate-600 shrink-0" />
+                  {name.split(' (')[0]}
                 </button>
               ))}
+
+            <div className="px-3 py-1.5 mt-3">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-600">Layers</span>
+            </div>
+            {['Navbar', 'Hero · Headline', 'Hero · Subtitle', 'About · Card', 'Skills · Grid', 'Projects · List', 'Footer'].map((layer) => (
+              <button key={layer}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] text-slate-600 hover:text-slate-300 hover:bg-[#1a1a1a] transition-all text-left cursor-pointer">
+                <Layers size={10} className="text-slate-700 shrink-0" />
+                {layer}
+              </button>
+            ))}
+          </div>
+        </aside>
+      )}
+
+      {/* ── CENTER — Preview Canvas ── */}
+      <main className="flex-1 flex flex-col overflow-hidden min-w-0">
+
+        {/* Top Toolbar */}
+        <header className="flex items-center gap-2 px-3 h-11 bg-[#0d0d0d] border-b border-[#1f1f1f] shrink-0">
+          {/* Left: panel toggles + title */}
+          <div className="flex items-center gap-2">
+            {!leftOpen && (
+              <button onClick={() => setLeftOpen(true)} className="p-1.5 rounded hover:bg-[#1f1f1f] text-slate-500 hover:text-slate-300 transition-all">
+                <PanelLeft size={14} />
+              </button>
+            )}
+            <div className="flex items-center gap-1.5">
+              <div className="h-4 w-4 rounded bg-gradient-to-br from-blue-500 to-purple-600" />
+              <span className="text-[12px] font-bold text-slate-300 tracking-tight">Design OS</span>
             </div>
           </div>
 
-          {/* Typography */}
-          <div className="space-y-4 border-t border-slate-100 pt-4">
-            <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Typography</h3>
-            
-            {/* Font Family Selection — grouped by source website */}
-            <div className="space-y-2">
-              <label className="text-xs text-slate-500 block">Body Font Family <span className="text-slate-400">(by website)</span></label>
-              <FontSelect value={theme.typography.fontFamily} onChange={(v) => updateTypography({ fontFamily: v })} />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs text-slate-500 block">Heading Font Family <span className="text-slate-400">(by website)</span></label>
-              <FontSelect value={theme.typography.headingFont} onChange={(v) => updateTypography({ headingFont: v })} />
-            </div>
-
-            {/* Font Sizes */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <label className="text-xs text-slate-500">Body Size</label>
-                <div className="flex items-center border border-slate-200 rounded px-2 py-1">
-                  <input 
-                    type="number"
-                    value={parseInt(theme.typography.bodySize) || 16}
-                    onChange={(e) => updateTypography({ bodySize: `${e.target.value}px` })}
-                    className="w-full text-sm border-0 p-0 focus:ring-0 text-slate-850"
-                  />
-                  <span className="text-xs text-slate-450 ml-1">px</span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs text-slate-500">Heading Size</label>
-                <div className="flex items-center border border-slate-200 rounded px-2 py-1">
-                  <input 
-                    type="number"
-                    value={parseInt(theme.typography.headingSize) || 48}
-                    onChange={(e) => updateTypography({ headingSize: `${e.target.value}px` })}
-                    className="w-full text-sm border-0 p-0 focus:ring-0 text-slate-850"
-                  />
-                  <span className="text-xs text-slate-450 ml-1">px</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Font Weights */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <label className="text-xs text-slate-500">Body Weight</label>
-                <select 
-                  value={theme.typography.bodyWeight}
-                  onChange={(e) => updateTypography({ bodyWeight: e.target.value })}
-                  className="w-full text-sm border border-slate-200 rounded px-2 py-1 bg-white text-slate-850"
-                >
-                  <option value="300">Light (300)</option>
-                  <option value="400">Regular (400)</option>
-                  <option value="500">Medium (500)</option>
-                  <option value="600">Semibold (600)</option>
-                  <option value="700">Bold (700)</option>
-                </select>
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs text-slate-500">Heading Weight</label>
-                <select 
-                  value={theme.typography.headingWeight}
-                  onChange={(e) => updateTypography({ headingWeight: e.target.value })}
-                  className="w-full text-sm border border-slate-200 rounded px-2 py-1 bg-white text-slate-850"
-                >
-                  <option value="400">Regular (450)</option>
-                  <option value="500">Medium (500)</option>
-                  <option value="600">Semibold (600)</option>
-                  <option value="700">Bold (700)</option>
-                  <option value="800">Extra Bold (800)</option>
-                  <option value="900">Black (900)</option>
-                </select>
-              </div>
-            </div>
+          {/* Center: Device switcher */}
+          <div className="flex-1 flex items-center justify-center gap-1">
+            {DEVICES.map(({ id, icon: Icon, label }) => (
+              <button key={id} onClick={() => setDevice(id)} title={label}
+                className={`p-1.5 rounded transition-all ${device === id ? 'bg-[#1f1f1f] text-white' : 'text-slate-600 hover:text-slate-400'}`}>
+                <Icon size={14} />
+              </button>
+            ))}
           </div>
 
-          {/* Effects — site-wide animation packages & cursors from the reference websites */}
-          <div className="space-y-3 border-t border-slate-100 pt-4">
-            <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Effects</h3>
-
-            <div className="space-y-2">
-              <label className="text-xs text-slate-500 block">Animation package <span className="text-slate-400">(by website)</span></label>
-              <select
-                value={theme.layout?.animationStyle || 'default'}
-                onChange={(e) => updateLayout({ animationStyle: e.target.value as any })}
-                className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
-              >
-                {EFFECT_STYLES.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs text-slate-500 block">Custom cursor <span className="text-slate-400">(by website)</span></label>
-              <select
-                value={theme.layout?.cursorStyle || 'default'}
-                onChange={(e) => updateLayout({ cursorStyle: e.target.value as any })}
-                className="w-full text-sm border border-slate-200 rounded px-2 py-1.5 bg-white text-slate-850"
-              >
-                {CURSOR_STYLES.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-              <p className="text-[10px] text-slate-400">Cursor renders on the live site (hidden inside the editor preview).</p>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-xs text-slate-500 block">Corner radius</label>
-              <div className="flex items-center border border-slate-200 rounded px-2 py-1">
-                <input
-                  type="text"
-                  value={theme.layout?.radius || '1rem'}
-                  onChange={(e) => updateLayout({ radius: e.target.value })}
-                  className="w-full text-sm border-0 p-0 focus:ring-0 text-slate-850"
-                />
-              </div>
-            </div>
+          {/* Right: Edit mode + Undo/Redo + Publish */}
+          <div className="flex items-center gap-1.5">
+            <button onClick={() => setIframeKey(k => k + 1)} title="Refresh preview"
+              className="p-1.5 rounded text-slate-600 hover:text-slate-300 hover:bg-[#1f1f1f] transition-all">
+              <RefreshCw size={13} />
+            </button>
+            <div className="h-4 w-px bg-[#1f1f1f]" />
+            <button onClick={undo} disabled={!canUndo} title="Undo"
+              className="p-1.5 rounded text-slate-600 hover:text-slate-300 hover:bg-[#1f1f1f] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+              <Undo2 size={14} />
+            </button>
+            <button onClick={redo} disabled={!canRedo} title="Redo"
+              className="p-1.5 rounded text-slate-600 hover:text-slate-300 hover:bg-[#1f1f1f] disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+              <Redo2 size={14} />
+            </button>
+            <div className="h-4 w-px bg-[#1f1f1f]" />
+            <button onClick={toggleEnabled}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${
+                enabled ? 'bg-blue-600 text-white' : 'bg-[#1f1f1f] text-slate-400 hover:text-slate-200'
+              }`}>
+              {enabled ? <MousePointer2 size={12} /> : <Eye size={12} />}
+              {enabled ? 'Editing' : 'Preview'}
+            </button>
+            <button onClick={handlePublish} disabled={isSaving}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-[11px] font-bold transition-all">
+              {isSaving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+              {isSaving ? 'Saving…' : 'Publish'}
+            </button>
+            {!rightOpen && (
+              <button onClick={() => setRightOpen(true)} className="p-1.5 rounded hover:bg-[#1f1f1f] text-slate-500 hover:text-slate-300 transition-all ml-1">
+                <PanelRight size={14} />
+              </button>
+            )}
           </div>
+        </header>
 
-          {/* Colors */}
-          <div className="space-y-3 border-t border-slate-100 pt-4">
-            <h3 className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Colors</h3>
-            <div className="space-y-2">
-              {Object.entries(theme.colors).map(([key, value]) => (
-                <div key={key} className="flex items-center justify-between">
-                  <label className="text-sm text-slate-600 capitalize">{key}</label>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400 uppercase w-16">{value}</span>
-                    <input 
-                      type="color" 
-                      value={value}
-                      onChange={(e) => updateColors({ [key]: e.target.value })}
-                      className="w-8 h-8 rounded cursor-pointer border-0 p-0"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Action Bar */}
-        <div className="p-4 border-t border-slate-200 bg-white">
-          <button 
-            onClick={handlePublish}
-            disabled={isSaving}
-            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-colors shadow-sm"
+        {/* Canvas Area */}
+        <div className="flex-1 overflow-auto bg-[#080808] flex items-start justify-center p-6"
+          style={{ backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+          <div
+            className="relative bg-white shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_32px_80px_rgba(0,0,0,0.8)] overflow-hidden transition-all duration-300"
+            style={{
+              width: canvasWidth,
+              maxWidth: canvasMaxWidth,
+              minHeight: '100%',
+              borderRadius: device === 'mobile' ? '28px' : '8px',
+            }}
           >
-            {isSaving ? 'Publishing...' : 'Publish Theme'}
-          </button>
-        </div>
-      </div>
-
-      {/* Live Preview Canvas */}
-      <div className="flex-1 bg-slate-950 p-4 lg:p-8 flex items-center justify-center overflow-hidden">
-        <div className="w-full h-full max-w-[1280px] bg-white rounded-xl shadow-2xl overflow-hidden relative ring-1 ring-white/10 flex flex-col">
-          {/* Browser Bar Mockup */}
-          <div className="h-10 bg-slate-100 border-b border-slate-200 flex items-center px-4 gap-2 shrink-0">
-            <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-red-400" />
-              <div className="w-3 h-3 rounded-full bg-amber-400" />
-              <div className="w-3 h-3 rounded-full bg-green-400" />
-            </div>
-            <div className="mx-auto h-6 w-1/2 bg-white rounded-md border border-slate-200 shadow-sm flex items-center px-3 text-[10px] text-slate-400 justify-center">
-              Live Preview
-            </div>
+            {/* Device chrome for mobile */}
+            {device === 'mobile' && (
+              <div className="absolute top-0 inset-x-0 flex justify-center z-10 pointer-events-none">
+                <div className="h-6 w-24 bg-black rounded-b-2xl" />
+              </div>
+            )}
+            <iframe
+              key={iframeKey}
+              ref={iframeRef}
+              src="/?preview=1"
+              onLoad={handleIframeLoad}
+              className="w-full border-0"
+              style={{
+                height: device === 'mobile' ? '812px' : device === 'tablet' ? '1024px' : '100vh',
+                minHeight: '600px',
+              }}
+              title="Design OS Preview"
+            />
           </div>
-          <iframe
-            ref={iframeRef}
-            src="/?preview=1"
-            onLoad={handleIframeLoad}
-            className="w-full h-full border-0 bg-white"
-            title="Theme Preview"
-          />
         </div>
-      </div>
+
+        {/* Status Bar */}
+        <footer className="flex items-center justify-between px-4 h-6 bg-[#0d0d0d] border-t border-[#1f1f1f] shrink-0">
+          <div className="flex items-center gap-3 text-[9px] text-slate-600">
+            <span>{device === 'desktop' ? 'Full Width' : `${deviceWidth}px`}</span>
+            {selected && (
+              <>
+                <span>·</span>
+                <span className="text-blue-400">{selected.name}</span>
+                <span>·</span>
+                <span className="capitalize text-slate-500">{selected.kind}</span>
+              </>
+            )}
+          </div>
+          <div className="flex items-center gap-3 text-[9px] text-slate-600">
+            <span>{enabled ? '● Edit mode' : '○ Preview mode'}</span>
+            {enabled && <span className="text-blue-400 animate-pulse">Click any element to select</span>}
+          </div>
+        </footer>
+      </main>
+
+      {/* ── RIGHT PANEL — Inspector ── */}
+      {rightOpen && (
+        <aside className="w-72 bg-[#0f0f0f] border-l border-[#1f1f1f] flex flex-col shrink-0 z-20">
+          {/* Tab Bar */}
+          <div className="flex items-center border-b border-[#1f1f1f] px-1 pt-1 gap-0.5 shrink-0">
+            {RIGHT_TABS.map(({ id, icon: Icon, label, color }) => (
+              <button key={id} onClick={() => setActiveTab(id)}
+                className={`flex-1 flex flex-col items-center gap-0.5 py-2 rounded-t transition-all text-[9px] font-bold uppercase tracking-wider ${
+                  activeTab === id
+                    ? 'bg-[#1a1a1a] ' + color
+                    : 'text-slate-600 hover:text-slate-400'
+                }`}>
+                <Icon size={12} />
+                {label}
+              </button>
+            ))}
+            <button onClick={() => setRightOpen(false)} className="ml-auto px-2 pb-1 text-slate-700 hover:text-slate-400 transition-colors self-start mt-1">
+              <X size={12} />
+            </button>
+          </div>
+
+          {/* Selected element inspector bar */}
+          {selected && enabled && (
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-[#1f1f1f] bg-blue-600/10">
+              <div className="h-2 w-2 rounded-full bg-blue-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-semibold text-blue-300 truncate">{selected.name}</p>
+                <p className="text-[9px] text-slate-500 capitalize">{selected.kind}</p>
+              </div>
+              <button onClick={() => setSelected(null)} className="text-slate-600 hover:text-slate-400 transition-colors">
+                <X size={11} />
+              </button>
+            </div>
+          )}
+
+          {/* Panel Content */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-1">
+            {/* When an element is selected in edit mode, show inline Inspector */}
+            {selected && enabled ? (
+              <Inspector />
+            ) : (
+              <>
+                {activeTab === 'theme' && <ThemePanel />}
+                {activeTab === 'structure' && <StructurePanel />}
+                {activeTab === 'motion' && <ScrollStudio />}
+                {activeTab === 'scraper' && <ScraperPanel />}
+              </>
+            )}
+          </div>
+        </aside>
+      )}
     </div>
   );
 }

@@ -39,7 +39,7 @@ function App() {
 
   return (
     <>
-      {faviconUrl && (
+      {faviconUrl && typeof faviconUrl === 'string' && faviconUrl.startsWith('http') && (
         <Helmet>
           <link rel="icon" href={faviconUrl} />
           <link rel="shortcut icon" href={faviconUrl} />

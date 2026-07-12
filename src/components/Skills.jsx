@@ -147,16 +147,17 @@ const Skills = () => {
 
 
       {/* Marquee ticker */}
-      {isVisible('ticker') && ticker.length > 0 && (
-      <div className="mt-16 relative overflow-hidden border-y border-line py-5 [mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent)]">
-        <div className="flex whitespace-nowrap animate-marquee">
-          {[...ticker, ...ticker].map((t, i) => (
-            <span key={i} className="mx-6 font-display font-semibold text-2xl sm:text-3xl text-ink/25 hover:text-accent transition-colors">
-              {t} <span className="text-accent">✦</span>
-            </span>
-          ))}
+      {isVisible('ticker') && ticker.length > 0 && settings.theme?.layout?.scrollStyle !== 'none' && (
+        <div className="mt-20 border-y border-line bg-surface/50 backdrop-blur py-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+          <div className={settings.theme?.layout?.scrollStyle === 'vertical' ? "flex flex-col h-20 animate-marquee-vertical" : "flex w-max animate-marquee"}>
+            {[...ticker, ...ticker].map((t, i) => (
+              <span key={i} className={`mx-8 inline-flex items-center gap-8 text-sm font-mono uppercase tracking-widest text-ink-soft ${settings.theme?.layout?.scrollStyle === 'vertical' ? 'py-1' : ''}`}>
+                {t}
+                <span className="h-1.5 w-1.5 rounded-full bg-accent/50" />
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
       )}
 
       {/* Certificate lightbox — click a card to view the image / PDF */}
