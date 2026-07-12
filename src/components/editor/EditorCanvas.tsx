@@ -64,7 +64,7 @@ const NodeRenderer: React.FC<{ node: EditorNode }> = ({ node }) => {
     const duration = node.animation?.duration || 0.5;
     const delay = node.animation?.delay || 0;
 
-    const transition = { duration, delay, ease: [0.16, 1, 0.3, 1] }; // Default smooth ease
+    const transition = { duration, delay, ease: 'easeOut' as const }; // Default smooth ease
 
     switch (preset) {
       case 'fade':
@@ -102,7 +102,7 @@ const NodeRenderer: React.FC<{ node: EditorNode }> = ({ node }) => {
     // We cast to any because Framer Motion has specific types like motion.h1, motion.p
     // But we are using dynamic tags. `motion.div` fallback isn't great.
     // Instead we use a custom motion component if needed, or just motion(Tag).
-    const MotionTag = motion.create(Tag as keyof JSX.IntrinsicElements) as any;
+    const MotionTag = motion.create(Tag as keyof React.JSX.IntrinsicElements) as any;
 
     return (
       <MotionTag {...commonProps} {...motionProps} style={{ ...commonProps.style, ...fontStyle }}>

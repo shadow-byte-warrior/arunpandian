@@ -1,9 +1,9 @@
 import React from 'react';
 import { Palette, RotateCcw } from 'lucide-react';
 import { useThemeStore } from '../../../theme/store';
-import { presets, SITE_FONTS, EFFECT_STYLES, CURSOR_STYLES } from '../../../theme/presets';
+import { presets, SITE_FONTS, EFFECT_STYLES, CURSOR_STYLES, type ThemeState } from '../../../theme/presets';
 
-const COLOR_FIELDS: { key: keyof NonNullable<ReturnType<typeof useThemeStore>['theme']['colors']>; label: string }[] = [
+const COLOR_FIELDS: { key: Extract<keyof ThemeState['colors'], string>; label: string }[] = [
   { key: 'primary', label: 'Accent' },
   { key: 'background', label: 'Background' },
   { key: 'surface', label: 'Surface' },
