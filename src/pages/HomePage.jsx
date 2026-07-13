@@ -258,7 +258,20 @@ export default function HomePage() {
                 <span data-edit-id="projects.label" data-edit-name="Projects · Eyebrow" data-edit-kind="text" data-edit-path="sections.projects.label" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{projectsSection.label || '04 — Work'}</span>
                 <h2 data-edit-id="projects.title" data-edit-name="Projects · Title" data-edit-kind="heading" data-edit-path="sections.projects.title" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{projectsSection.title || 'Selected Projects'}</h2>
               </div>
-              <p data-edit-id="projects.subtitle" data-edit-name="Projects · Subtitle" data-edit-kind="text" data-edit-path="sections.projects.subtitle" className="text-sm text-ink-soft max-w-xs">{projectsSection.subtitle || 'A selection of things I have built.'}</p>
+              <div className="flex items-center gap-4">
+                <p data-edit-id="projects.subtitle" data-edit-name="Projects · Subtitle" data-edit-kind="text" data-edit-path="sections.projects.subtitle" className="text-sm text-ink-soft max-w-xs">{projectsSection.subtitle || 'A selection of things I have built.'}</p>
+                {projectsScroll === 'horizontal' && projects?.length > 2 && (
+                  <motion.div
+                    animate={{ x: [0, 8, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+                    className="hidden sm:flex items-center gap-1.5 text-xs font-mono text-ink-soft/60 select-none shrink-0"
+                  >
+                    <span>Scroll</span>
+                    <ChevronRight size={14} className="text-accent" />
+                    <ChevronRight size={14} className="text-accent/50 -ml-2" />
+                  </motion.div>
+                )}
+              </div>
             </div>
           </Parallax>
 
@@ -285,28 +298,53 @@ export default function HomePage() {
             </div>
           ) : (
             /* Standard / horizontal carousel / vertical track */
-            <div className={`
-              ${projectsScroll === 'horizontal' ? 'flex overflow-x-auto gap-6 lg:gap-8 pb-8 snap-x snap-mandatory hide-scrollbar' : ''}
-              ${projectsScroll === 'vertical' ? 'flex flex-col overflow-y-auto max-h-[85vh] gap-8 pb-8 snap-y snap-mandatory hide-scrollbar' : ''}
-              ${projectsScroll === 'grid' || !projectsScroll ? 'grid md:grid-cols-2 gap-6 lg:gap-8' : ''}
-            `}>
-              {projects?.map((project, i) => (
-                <div key={project._id || project.title} className={`
-                  ${projectsScroll === 'horizontal' ? 'w-[85vw] sm:w-[60vw] md:w-[45vw] shrink-0 snap-center' : ''}
-                  ${projectsScroll === 'vertical' ? 'w-full shrink-0 snap-start' : ''}
-                `}>
-                  <SliceReveal delay={(i % 2) * 0.12}>
-                    {/* depoluxe.xyz — cinematic roman-numeral index on each work */}
-                    {animationStyle === 'depoluxe' && (
-                      <div className="mb-2 flex items-baseline gap-3 font-display text-accent">
-                        <span className="text-2xl tracking-[0.2em]">{toRoman(i + 1)}</span>
-                        <span className="h-px flex-1 bg-line" />
-                      </div>
-                    )}
-                    <ProjectCard project={project} index={i} />
-                  </SliceReveal>
-                </div>
-              ))}
+            <div className={`relative ${
+              projectsScroll === 'horizontal' ? '' :
+              projectsScroll === 'vertical' ? '' : ''
+            }`}>
+              <div className={`
+                ${projectsScroll === 'horizontal' ? 'flex overflow-x-auto gap-6 lg:gap-8 pb-8 snap-x snap-mandatory hide-scrollbar -mx-5 sm:-mx-8 px-5 sm:px-8' : ''}
+                ${projectsScroll === 'vertical' ? 'flex flex-col overflow-y-auto max-h-[85vh] gap-8 pb-8 snap-y snap-mandatory hide-scrollbar' : ''}
+                ${projectsScroll === 'grid' || !projectsScroll ? 'grid md:grid-cols-2 gap-6 lg:gap-8' : ''}
+              `}>
+                {projects?.map((project, i) => (
+                  <div key={project._id || project.title} className={`
+                    ${projectsScroll === 'horizontal' ? 'w-[85vw] sm:w-[60vw] md:w-[45vw] shrink-0 snap-center' : ''}
+                    ${projectsScroll === 'vertical' ? 'w-full shrink-0 snap-start' : ''}
+                  `}>
+                    <SliceReveal delay={(i % 2) * 0.12}>
+                      {/* depoluxe.xyz — cinematic roman-numeral index on each work */}
+                      {animationStyle === 'depoluxe' && (
+                        <div className="mb-2 flex items-baseline gap-3 font-display text-accent">
+                          <span className="text-2xl tracking-[0.2em]">{toRoman(i + 1)}</span>
+                          <span className="h-px flex-1 bg-line" />
+                        </div>
+                      )}
+                      <ProjectCard project={project} index={i} />
+                    </SliceReveal>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right-edge arrow guide — only on horizontal, fades after scroll */}
+              {projectsScroll === 'horizontal' && projects?.length > 2 && (
+                <motion.div
+                  initial={{ opacity: 1 }}
+                  whileInView={{ opacity: 0 }}
+                  viewport={{ once: true, amount: 0.8 }}
+                  transition={{ delay: 2.5, duration: 0.6 }}
+                  className="pointer-events-none absolute right-0 top-0 bottom-8 w-28 flex items-center justify-end pr-3"
+                  style={{ background: 'linear-gradient(to right, transparent, var(--color-background) 85%)' }}
+                >
+                  <motion.div
+                    animate={{ x: [0, 7, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
+                    className="flex items-center gap-0.5 text-accent"
+                  >
+                    <ArrowRight size={22} strokeWidth={2} />
+                  </motion.div>
+                </motion.div>
+              )}
             </div>
           )}
         </div>
