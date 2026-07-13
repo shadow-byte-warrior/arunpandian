@@ -27,6 +27,7 @@ export interface ThemeState {
     footerStyle?: 'karolbinkowski' | 'pelizzari' | 'russellnumo' | 'studiomodular' | 'default';
     scrollStyle?: 'vertical' | 'horizontal' | 'none';
     projectsScroll?: 'grid' | 'horizontal' | 'vertical' | 'masonry' | 'bento';
+    blogScroll?: 'grid' | 'horizontal' | 'masonry';
   };
 }
 

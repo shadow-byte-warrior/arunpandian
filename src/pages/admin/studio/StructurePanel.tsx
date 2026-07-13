@@ -109,6 +109,18 @@ export default function StructurePanel() {
       <PresetGrid label="Card Style" value={layout.cardStyle || 'default'} options={CARD_OPTIONS} onChange={(v) => updateLayout({ cardStyle: v })} />
       <PresetGrid label="Projects Layout" value={layout.projectsScroll || 'grid'} options={PROJECTS_SCROLL_OPTIONS} onChange={(v) => updateLayout({ projectsScroll: v })} />
 
+      <SectionHeader>Blog</SectionHeader>
+      <PresetGrid
+        label="Blog Layout"
+        value={layout.blogScroll || 'horizontal'}
+        options={[
+          { value: 'horizontal' as const, label: 'Horizontal Carousel', description: 'Snap-scroll with arrow guide (default)' },
+          { value: 'grid' as const, label: '3-Column Grid', description: 'Classic equal-width grid' },
+          { value: 'masonry' as const, label: 'Masonry Columns', description: 'Pinterest-style variable height' },
+        ]}
+        onChange={(v) => updateLayout({ blogScroll: v as any })}
+      />
+
       <SectionHeader>Footer</SectionHeader>
       <PresetGrid label="Footer Design" value={layout.footerStyle || 'default'} options={FOOTER_OPTIONS} onChange={(v) => updateLayout({ footerStyle: v })} />
 
@@ -117,3 +129,4 @@ export default function StructurePanel() {
     </div>
   );
 }
+

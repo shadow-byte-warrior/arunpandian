@@ -87,9 +87,24 @@ const Skills = () => {
         {/* Certifications - Now rendering as complex objects with images */}
         {isVisible('certifications') && certifications.length > 0 && (
         <div className="mt-12">
-          <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">Certifications & Credentials</span>
-          <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {certifications.map((c, idx) => (
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-mono tracking-[0.25em] text-accent uppercase">Certifications &amp; Credentials</span>
+            {certifications.length > 3 && (
+              <motion.div
+                animate={{ x: [0, 7, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                className="hidden sm:flex items-center gap-1.5 text-xs font-mono text-ink-soft/60 select-none"
+              >
+                <span>{certifications.length - 3} more</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent/50 -ml-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </motion.div>
+            )}
+          </div>
+
+          {/* First 3 — always in a 3-col grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {certifications.slice(0, 3).map((c, idx) => (
               <button
                 key={idx}
                 type="button"
@@ -120,6 +135,61 @@ const Skills = () => {
               </button>
             ))}
           </div>
+
+          {/* Remaining certs (4+) — horizontal scroll with arrow guide */}
+          {certifications.length > 3 && (
+            <div className="relative mt-5">
+              <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar -mx-5 sm:-mx-8 px-5 sm:px-8">
+                {certifications.slice(3).map((c, idx) => (
+                  <button
+                    key={idx + 3}
+                    type="button"
+                    onClick={() => setActiveCert(c)}
+                    className="group flex w-[80vw] sm:w-[52vw] md:w-[36vw] lg:w-[28vw] shrink-0 snap-center items-start gap-4 p-5 rounded-2xl border border-line bg-surface text-left hover:shadow-lg hover:border-ink/20 transition-all duration-300 cursor-pointer"
+                  >
+                    {c.image && isImage(c.image) ? (
+                      <img src={c.image} alt={c.name} className="h-12 w-12 rounded-lg object-cover shrink-0" />
+                    ) : c.image ? (
+                      (() => {
+                        const FileKindIcon = CERT_FILE_ICON[getFileKind(c.image)] || FileIcon;
+                        return (
+                          <div className="h-12 w-12 rounded-lg bg-accent-soft flex items-center justify-center text-accent shrink-0">
+                            <FileKindIcon size={22} strokeWidth={1.75} />
+                          </div>
+                        );
+                      })()
+                    ) : (
+                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-ink-soft shrink-0 font-bold text-lg">
+                        {c.name ? c.name.substring(0, 1) : 'C'}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-ink text-sm sm:text-base group-hover:text-accent transition-colors line-clamp-2">{c.name}</h4>
+                      <p className="text-xs text-ink-soft mt-1">{c.issuer} {c.issueDate && `• ${c.issueDate}`}</p>
+                      {c.credentialId && <p className="text-[10px] text-ink-soft mt-1 font-mono">ID: {c.credentialId}</p>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+              {/* Animated right-arrow scroll guide — fades after scroll */}
+              <motion.div
+                initial={{ opacity: 1 }}
+                whileInView={{ opacity: 0 }}
+                viewport={{ once: true, amount: 0.9 }}
+                transition={{ delay: 2, duration: 0.6 }}
+                className="pointer-events-none absolute right-0 top-0 bottom-4 w-20 flex items-center justify-end pr-2"
+                style={{ background: 'linear-gradient(to right, transparent, var(--color-background) 85%)' }}
+              >
+                <motion.div
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.1, ease: 'easeInOut' }}
+                  className="text-accent"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </motion.div>
+              </motion.div>
+            </div>
+          )}
         </div>
         )}
 

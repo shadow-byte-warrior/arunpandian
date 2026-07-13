@@ -12,7 +12,7 @@ import Welcome from '../components/Welcome';
 import Parallax from '../components/Parallax';
 import SliceReveal from '../components/SliceReveal';
 import Logo from '../components/Logo';
-import { ArrowUp, Lock } from 'lucide-react';
+import { ArrowUp, Lock, ArrowRight, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useContent } from '../context/ContentProvider';
 import CanvasRuntime from '../editor/CanvasRuntime';
@@ -33,6 +33,7 @@ export default function HomePage() {
   const animationStyle = theme?.layout?.animationStyle || 'default';
   const footerStyle = theme?.layout?.footerStyle || 'default';
   const projectsScroll = theme?.layout?.projectsScroll || 'grid';
+  const blogScroll = theme?.layout?.blogScroll || 'horizontal';
 
   const [loadComplete, setLoadComplete] = useState(animationStyle !== 'juliencalot');
   const [intro, setIntro] = useState(!isPreview);
@@ -316,17 +317,76 @@ export default function HomePage() {
       <section id="blog" className="py-24 sm:py-32 bg-surface border-y border-line">
         <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <Parallax speed={26} className="mb-14">
-             <span data-edit-id="blog.label" data-edit-name="Writing · Eyebrow" data-edit-kind="text" data-edit-path="sections.blog.label" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{blogSection.label || '05 — Writing'}</span>
-             <h2 data-edit-id="blog.title" data-edit-name="Writing · Title" data-edit-kind="heading" data-edit-path="sections.blog.title" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{blogSection.title || 'Latest Articles'}</h2>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <span data-edit-id="blog.label" data-edit-name="Writing · Eyebrow" data-edit-kind="text" data-edit-path="sections.blog.label" className="text-xs font-mono tracking-[0.25em] text-accent uppercase">{blogSection.label || '05 — Writing'}</span>
+                <h2 data-edit-id="blog.title" data-edit-name="Writing · Title" data-edit-kind="heading" data-edit-path="sections.blog.title" className="mt-3 font-display font-extrabold text-3xl sm:text-5xl text-ink tracking-tight">{blogSection.title || 'Latest Articles'}</h2>
+              </div>
+              {/* Scroll mode toggle hint */}
+              {blogScroll === 'horizontal' && blogs?.length > 2 && (
+                <motion.div
+                  animate={{ x: [0, 8, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+                  className="hidden sm:flex items-center gap-2 text-xs font-mono text-ink-soft/60 select-none"
+                >
+                  <span>Scroll</span>
+                  <ChevronRight size={14} className="text-accent" />
+                  <ChevronRight size={14} className="text-accent/50 -ml-2" />
+                </motion.div>
+              )}
+            </div>
           </Parallax>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {blogs?.map((blog, i) => (
-              <SliceReveal key={blog._id || blog.title} delay={(i % 3) * 0.12} className="h-full">
-                <BlogCard blog={blog} />
-              </SliceReveal>
-            ))}
-          </div>
+          {blogScroll === 'horizontal' ? (
+            /* Horizontal carousel — snap scrolling with right-arrow guide */
+            <div className="relative">
+              <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory hide-scrollbar -mx-5 sm:-mx-8 px-5 sm:px-8">
+                {blogs?.map((blog, i) => (
+                  <div key={blog._id || blog.title} className="w-[85vw] sm:w-[50vw] md:w-[36vw] lg:w-[30vw] shrink-0 snap-center">
+                    <SliceReveal delay={i * 0.07} className="h-full">
+                      <BlogCard blog={blog} />
+                    </SliceReveal>
+                  </div>
+                ))}
+              </div>
+              {/* Right-edge arrow guide — fades out after first scroll */}
+              {blogs?.length > 2 && (
+                <motion.div
+                  initial={{ opacity: 1 }}
+                  whileInView={{ opacity: 0 }}
+                  viewport={{ once: true, amount: 0.8 }}
+                  transition={{ delay: 2.5, duration: 0.6 }}
+                  className="pointer-events-none absolute right-0 top-0 bottom-6 w-24 flex items-center justify-end pr-2"
+                  style={{ background: 'linear-gradient(to right, transparent, var(--color-surface) 85%)' }}
+                >
+                  <motion.div
+                    animate={{ x: [0, 6, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
+                    className="flex items-center gap-0.5 text-accent"
+                  >
+                    <ArrowRight size={20} strokeWidth={2} />
+                  </motion.div>
+                </motion.div>
+              )}
+            </div>
+          ) : blogScroll === 'masonry' ? (
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
+              {blogs?.map((blog, i) => (
+                <SliceReveal key={blog._id || blog.title} delay={(i % 3) * 0.08}>
+                  <BlogCard blog={blog} />
+                </SliceReveal>
+              ))}
+            </div>
+          ) : (
+            /* Default 3-column grid */
+            <div className="grid md:grid-cols-3 gap-6">
+              {blogs?.map((blog, i) => (
+                <SliceReveal key={blog._id || blog.title} delay={(i % 3) * 0.12} className="h-full">
+                  <BlogCard blog={blog} />
+                </SliceReveal>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
