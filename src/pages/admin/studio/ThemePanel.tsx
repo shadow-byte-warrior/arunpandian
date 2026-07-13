@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Palette, RotateCcw, ChevronDown, Check, Pipette, Type, Sliders } from 'lucide-react';
+import { Palette, RotateCcw, ChevronDown, Check, Type, Sliders } from 'lucide-react';
 import { useThemeStore } from '../../../theme/store';
 import { presets, SITE_FONTS, EFFECT_STYLES, CURSOR_STYLES, type ThemeState } from '../../../theme/presets';
 
@@ -10,7 +10,7 @@ function isValidHex(hex: string) {
 }
 
 function contrastColor(hex: string): string {
-  if (!isValidHex(hex)) return '#ffffff';
+  if (!isValidHex(hex)) return '#000000';
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
@@ -44,7 +44,6 @@ function ColorRow({ label, hint, value, onChange }: ColorRowProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const colorRef = useRef<HTMLInputElement>(null);
 
-  // Keep draft in sync when value changes externally (preset switch)
   useEffect(() => {
     if (!editing) setDraft(value);
   }, [value, editing]);
@@ -55,7 +54,7 @@ function ColorRow({ label, hint, value, onChange }: ColorRowProps) {
       onChange(normalized);
       setDraft(normalized);
     } else {
-      setDraft(value); // revert
+      setDraft(value);
     }
     setEditing(false);
   };
@@ -66,11 +65,11 @@ function ColorRow({ label, hint, value, onChange }: ColorRowProps) {
   };
 
   return (
-    <div className="group flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors">
-      {/* Color swatch + native color picker trigger */}
+    <div className="group flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">
+      {/* Color swatch */}
       <button
         onClick={() => colorRef.current?.click()}
-        className="relative h-7 w-7 shrink-0 rounded-md border border-white/10 shadow-sm transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+        className="relative h-7 w-7 shrink-0 rounded-lg border border-slate-200 shadow-sm transition-transform hover:scale-110 active:scale-95 cursor-pointer"
         style={{ background: isValidHex(value) ? value : '#888' }}
         title={`Pick ${label}`}
       >
@@ -86,7 +85,7 @@ function ColorRow({ label, hint, value, onChange }: ColorRowProps) {
 
       {/* Label + hex input */}
       <div className="flex-1 min-w-0">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 leading-none mb-0.5">{label}</div>
+        <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 leading-none mb-0.5">{label}</div>
         {editing ? (
           <input
             ref={inputRef}
@@ -95,31 +94,24 @@ function ColorRow({ label, hint, value, onChange }: ColorRowProps) {
             onChange={(e) => setDraft(e.target.value)}
             onBlur={commitDraft}
             onKeyDown={handleKeyDown}
-            className="w-full text-[11px] font-mono text-slate-200 bg-[#111] border border-blue-500 rounded px-1 py-0.5 outline-none"
+            className="w-full text-[11px] font-mono text-slate-700 bg-white border border-blue-400 rounded px-1 py-0.5 outline-none shadow-sm"
             autoFocus
           />
         ) : (
           <button
             onClick={() => { setEditing(true); setDraft(value); }}
-            className="text-[11px] font-mono text-slate-400 hover:text-slate-200 transition-colors text-left"
+            className="text-[11px] font-mono text-slate-500 hover:text-slate-800 transition-colors text-left"
             title={hint}
           >
             {isValidHex(value) ? value.toUpperCase() : value}
           </button>
         )}
       </div>
-
-      {/* Mini preview chip showing how accent looks on bg */}
-      <div
-        className="shrink-0 h-5 w-5 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
-        style={{ background: value }}
-        title={hint}
-      />
     </div>
   );
 }
 
-// ── Mini BG preview bar ───────────────────────────────────────────────────────
+// ── BG preview ────────────────────────────────────────────────────────────────
 
 function BgPreview({ colors }: { colors: ThemeState['colors'] }) {
   const bg = colors.background || '#fff';
@@ -131,57 +123,35 @@ function BgPreview({ colors }: { colors: ThemeState['colors'] }) {
 
   return (
     <div
-      className="w-full rounded-xl overflow-hidden border border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.4)] mb-3"
+      className="w-full rounded-xl overflow-hidden border border-slate-200 shadow-sm mb-3"
       style={{ background: bg }}
     >
-      {/* Simulated navbar */}
-      <div
-        className="flex items-center justify-between px-3 py-2"
-        style={{ background: surface, borderBottom: `1px solid ${border}` }}
-      >
+      {/* Navbar */}
+      <div className="flex items-center justify-between px-3 py-2" style={{ background: surface, borderBottom: `1px solid ${border}` }}>
         <div className="flex items-center gap-1.5">
           <div className="h-2.5 w-2.5 rounded-full" style={{ background: primary }} />
           <div className="h-1.5 w-12 rounded-full" style={{ background: muted, opacity: 0.4 }} />
         </div>
-        <div
-          className="px-2.5 py-0.5 rounded-full text-[8px] font-bold"
-          style={{
-            background: primary,
-            color: contrastColor(primary),
-            fontSize: '7px',
-          }}
-        >
+        <div className="px-2.5 py-0.5 rounded-full font-bold" style={{ background: primary, color: contrastColor(primary), fontSize: '7px' }}>
           CTA
         </div>
       </div>
 
-      {/* Simulated hero content */}
+      {/* Hero */}
       <div className="px-4 py-3 space-y-1.5">
         <div className="h-2 w-3/4 rounded-full" style={{ background: text, opacity: 0.85 }} />
         <div className="h-1.5 w-1/2 rounded-full" style={{ background: muted, opacity: 0.5 }} />
         <div className="h-1.5 w-2/3 rounded-full" style={{ background: muted, opacity: 0.35 }} />
         <div className="flex gap-1.5 pt-1">
-          <div
-            className="h-5 w-12 rounded-md"
-            style={{ background: primary }}
-          />
-          <div
-            className="h-5 w-12 rounded-md border"
-            style={{ borderColor: border, background: surface }}
-          />
+          <div className="h-5 w-12 rounded-md" style={{ background: primary }} />
+          <div className="h-5 w-12 rounded-md border" style={{ borderColor: border, background: surface }} />
         </div>
       </div>
 
-      {/* Simulated card strip */}
-      <div
-        className="flex gap-2 px-4 pb-3"
-      >
+      {/* Cards */}
+      <div className="flex gap-2 px-4 pb-3">
         {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="flex-1 rounded-lg p-2 space-y-1"
-            style={{ background: surface, border: `1px solid ${border}` }}
-          >
+          <div key={i} className="flex-1 rounded-lg p-2 space-y-1" style={{ background: surface, border: `1px solid ${border}` }}>
             <div className="h-1.5 rounded-full w-full" style={{ background: text, opacity: 0.6 }} />
             <div className="h-1 rounded-full w-3/4" style={{ background: muted, opacity: 0.4 }} />
           </div>
@@ -207,35 +177,26 @@ function PresetCard({ name, preset, isActive, onApply }: {
       title={name}
       className={`group relative flex items-center gap-2 px-2.5 py-2 rounded-lg border transition-all text-left ${
         isActive
-          ? 'border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/30'
-          : 'border-[#2a2a2a] hover:border-[#404040] hover:bg-white/[0.03]'
+          ? 'border-blue-400 bg-blue-50 ring-1 ring-blue-200 shadow-sm'
+          : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
       }`}
     >
-      {/* Color dots */}
       <div className="flex gap-0.5 shrink-0">
         {colors.map((c, i) => (
-          <span
-            key={i}
-            className="h-3.5 w-3.5 rounded-full border border-black/20 shadow-sm"
-            style={{ background: c }}
-          />
+          <span key={i} className="h-3.5 w-3.5 rounded-full border border-black/10 shadow-sm" style={{ background: c }} />
         ))}
       </div>
-
       <span className={`text-[10px] truncate leading-tight transition-colors ${
-        isActive ? 'text-blue-300 font-semibold' : 'text-slate-400 group-hover:text-slate-200'
+        isActive ? 'text-blue-600 font-semibold' : 'text-slate-500 group-hover:text-slate-800'
       }`}>
         {name.split(' (')[0]}
       </span>
-
-      {isActive && (
-        <Check size={10} className="ml-auto shrink-0 text-blue-400" />
-      )}
+      {isActive && <Check size={10} className="ml-auto shrink-0 text-blue-500" />}
     </button>
   );
 }
 
-// ── Section divider ───────────────────────────────────────────────────────────
+// ── Section header ────────────────────────────────────────────────────────────
 
 function SectionHeader({ children, icon: Icon, action }: {
   children: React.ReactNode;
@@ -243,9 +204,9 @@ function SectionHeader({ children, icon: Icon, action }: {
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-2 pt-4 pb-1.5 border-t border-white/[0.06] first:border-0 first:pt-0">
-      {Icon && <Icon size={10} className="text-slate-600 shrink-0" />}
-      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500 flex-1">{children}</span>
+    <div className="flex items-center gap-2 pt-4 pb-1.5 border-t border-slate-100 first:border-0 first:pt-0">
+      {Icon && <Icon size={10} className="text-slate-400 shrink-0" />}
+      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 flex-1">{children}</span>
       {action}
     </div>
   );
@@ -258,7 +219,7 @@ function FontSelect({ value, onChange }: { value: string; onChange: (v: string) 
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full text-[11px] border border-[#2a2a2a] rounded-lg px-2 py-1.5 bg-[#151515] text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+      className="w-full text-[11px] border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:border-blue-400 transition-colors shadow-sm"
     >
       {!SITE_FONTS.some((g) => g.fonts.some((f) => f.stack === value)) && value && (
         <option value={value}>{value.split(',')[0]}</option>
@@ -280,9 +241,9 @@ function FontSelect({ value, onChange }: { value: string; onChange: (v: string) 
 
 type PanelTab = 'colors' | 'type' | 'effects';
 const PANEL_TABS: { id: PanelTab; label: string; icon: any }[] = [
-  { id: 'colors', label: 'Colors', icon: Palette },
-  { id: 'type',   label: 'Type',   icon: Type },
-  { id: 'effects',label: 'Effects',icon: Sliders },
+  { id: 'colors',  label: 'Colors',  icon: Palette },
+  { id: 'type',    label: 'Type',    icon: Type },
+  { id: 'effects', label: 'Effects', icon: Sliders },
 ];
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -292,7 +253,6 @@ export default function ThemePanel() {
   const [activeTab, setActiveTab] = useState<PanelTab>('colors');
   const [presetsOpen, setPresetsOpen] = useState(true);
 
-  // Find which preset (if any) is currently active
   const activePreset = Object.entries(presets).find(([, p]) =>
     p.colors.primary === theme.colors.primary &&
     p.colors.background === theme.colors.background
@@ -305,16 +265,16 @@ export default function ThemePanel() {
   return (
     <div className="text-sm flex flex-col h-full">
 
-      {/* ── Inner Tab bar ── */}
-      <div className="flex gap-0.5 p-1.5 bg-[#111] rounded-xl mb-3 border border-[#1f1f1f]">
+      {/* Inner Tab bar */}
+      <div className="flex gap-0.5 p-1 bg-slate-100 rounded-xl mb-3 border border-slate-200">
         {PANEL_TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-semibold uppercase tracking-wider transition-all ${
               activeTab === id
-                ? 'bg-[#1f1f1f] text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-400'
+                ? 'bg-white text-slate-800 shadow-sm border border-slate-200'
+                : 'text-slate-400 hover:text-slate-600'
             }`}
           >
             <Icon size={10} />
@@ -326,25 +286,23 @@ export default function ThemePanel() {
       {/* ── COLORS TAB ── */}
       {activeTab === 'colors' && (
         <div className="space-y-0.5">
-
-          {/* BG + color live preview */}
           <BgPreview colors={theme.colors} />
 
-          {/* Preset toggle header */}
+          {/* Presets toggle */}
           <button
             onClick={() => setPresetsOpen((v) => !v)}
             className="flex items-center gap-2 w-full py-1.5 group"
           >
-            <Palette size={10} className="text-slate-600" />
-            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500 flex-1 text-left">Color Presets</span>
+            <Palette size={10} className="text-slate-400" />
+            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 flex-1 text-left">Color Presets</span>
             <ChevronDown
               size={12}
-              className={`text-slate-600 transition-transform duration-200 ${presetsOpen ? '' : '-rotate-90'}`}
+              className={`text-slate-400 transition-transform duration-200 ${presetsOpen ? '' : '-rotate-90'}`}
             />
           </button>
 
           {presetsOpen && (
-            <div className="grid grid-cols-2 gap-1.5 pb-3 border-b border-white/[0.06]">
+            <div className="grid grid-cols-2 gap-1.5 pb-3 border-b border-slate-100">
               {Object.entries(presets).map(([name, preset]) => (
                 <PresetCard
                   key={name}
@@ -363,7 +321,7 @@ export default function ThemePanel() {
               <button
                 onClick={handleReset}
                 title="Reset to Default"
-                className="flex items-center gap-1 text-[9px] text-slate-600 hover:text-slate-400 transition-colors"
+                className="flex items-center gap-1 text-[9px] text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <RotateCcw size={9} /> Reset
               </button>
@@ -372,7 +330,7 @@ export default function ThemePanel() {
             Colors
           </SectionHeader>
 
-          <div className="space-y-0.5 bg-[#111] rounded-xl border border-[#1a1a1a] p-1.5">
+          <div className="space-y-0.5 bg-slate-50 rounded-xl border border-slate-200 p-1.5">
             {COLOR_FIELDS.map(({ key, label, hint }) => (
               <ColorRow
                 key={key}
@@ -390,72 +348,72 @@ export default function ThemePanel() {
       {activeTab === 'type' && (
         <div className="space-y-3">
           {/* Heading font */}
-          <div className="bg-[#111] rounded-xl border border-[#1a1a1a] p-3 space-y-2.5">
-            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Heading Font</div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-3 space-y-2.5">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Heading Font</div>
             <FontSelect
               value={theme.typography.headingFont}
               onChange={(v) => updateTypography({ headingFont: v })}
             />
             <div
-              className="text-2xl font-bold text-slate-100 leading-tight truncate"
+              className="text-2xl font-bold text-slate-800 leading-tight truncate"
               style={{ fontFamily: theme.typography.headingFont, fontWeight: theme.typography.headingWeight }}
             >
               Hello World
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <div className="text-[9px] text-slate-600 uppercase tracking-wider font-semibold">Weight</div>
+                <div className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Weight</div>
                 <select
                   value={theme.typography.headingWeight}
                   onChange={(e) => updateTypography({ headingWeight: e.target.value })}
-                  className="w-full text-[11px] border border-[#2a2a2a] rounded-lg px-2 py-1.5 bg-[#151515] text-slate-200 focus:outline-none focus:border-blue-500"
+                  className="w-full text-[11px] border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:border-blue-400 shadow-sm"
                 >
                   {['400','500','600','700','800','900'].map(w => <option key={w}>{w}</option>)}
                 </select>
               </div>
               <div className="space-y-1">
-                <div className="text-[9px] text-slate-600 uppercase tracking-wider font-semibold">Size</div>
+                <div className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Size</div>
                 <input
                   type="text"
                   value={theme.typography.headingSize}
                   onChange={(e) => updateTypography({ headingSize: e.target.value })}
-                  className="w-full text-[11px] border border-[#2a2a2a] rounded-lg px-2 py-1.5 bg-[#151515] text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                  className="w-full text-[11px] border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:border-blue-400 font-mono shadow-sm"
                 />
               </div>
             </div>
           </div>
 
           {/* Body font */}
-          <div className="bg-[#111] rounded-xl border border-[#1a1a1a] p-3 space-y-2.5">
-            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Body Font</div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-3 space-y-2.5">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Body Font</div>
             <FontSelect
               value={theme.typography.fontFamily}
               onChange={(v) => updateTypography({ fontFamily: v })}
             />
             <div
-              className="text-sm text-slate-400 leading-relaxed"
+              className="text-sm text-slate-600 leading-relaxed"
               style={{ fontFamily: theme.typography.fontFamily, fontWeight: theme.typography.bodyWeight }}
             >
               The quick brown fox jumps over the lazy dog.
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <div className="text-[9px] text-slate-600 uppercase tracking-wider font-semibold">Weight</div>
+                <div className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Weight</div>
                 <select
                   value={theme.typography.bodyWeight}
                   onChange={(e) => updateTypography({ bodyWeight: e.target.value })}
-                  className="w-full text-[11px] border border-[#2a2a2a] rounded-lg px-2 py-1.5 bg-[#151515] text-slate-200 focus:outline-none focus:border-blue-500"
+                  className="w-full text-[11px] border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:border-blue-400 shadow-sm"
                 >
                   {['300','400','500','600','700'].map(w => <option key={w}>{w}</option>)}
                 </select>
               </div>
               <div className="space-y-1">
-                <div className="text-[9px] text-slate-600 uppercase tracking-wider font-semibold">Size</div>
+                <div className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Size</div>
                 <input
                   type="text"
                   value={theme.typography.bodySize}
                   onChange={(e) => updateTypography({ bodySize: e.target.value })}
-                  className="w-full text-[11px] border border-[#2a2a2a] rounded-lg px-2 py-1.5 bg-[#151515] text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                  className="w-full text-[11px] border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:border-blue-400 font-mono shadow-sm"
                 />
               </div>
             </div>
@@ -467,37 +425,33 @@ export default function ThemePanel() {
       {activeTab === 'effects' && (
         <div className="space-y-3">
 
-          {/* Animation */}
-          <div className="bg-[#111] rounded-xl border border-[#1a1a1a] p-3 space-y-2">
-            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Animation Package</div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-3 space-y-2">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Animation Package</div>
             <select
               value={theme.layout?.animationStyle || 'default'}
               onChange={(e) => updateLayout({ animationStyle: e.target.value as any })}
-              className="w-full text-[11px] border border-[#2a2a2a] rounded-lg px-2 py-1.5 bg-[#151515] text-slate-200 focus:outline-none focus:border-blue-500"
+              className="w-full text-[11px] border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:border-blue-400 shadow-sm"
             >
               {EFFECT_STYLES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
           </div>
 
-          {/* Cursor */}
-          <div className="bg-[#111] rounded-xl border border-[#1a1a1a] p-3 space-y-2">
-            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Custom Cursor</div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-3 space-y-2">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Custom Cursor</div>
             <select
               value={theme.layout?.cursorStyle || 'default'}
               onChange={(e) => updateLayout({ cursorStyle: e.target.value as any })}
-              className="w-full text-[11px] border border-[#2a2a2a] rounded-lg px-2 py-1.5 bg-[#151515] text-slate-200 focus:outline-none focus:border-blue-500"
+              className="w-full text-[11px] border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:border-blue-400 shadow-sm"
             >
               {CURSOR_STYLES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           </div>
 
-          {/* Corner Radius + Border style */}
-          <div className="bg-[#111] rounded-xl border border-[#1a1a1a] p-3 space-y-3">
-            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Shape</div>
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-3 space-y-3">
+            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Shape</div>
 
-            {/* Radius presets */}
             <div className="space-y-1.5">
-              <div className="text-[9px] text-slate-600 font-semibold uppercase">Corner Radius</div>
+              <div className="text-[9px] text-slate-400 font-semibold uppercase">Corner Radius</div>
               <div className="flex gap-1.5 flex-wrap">
                 {['0px', '4px', '8px', '1rem', '1.5rem', '2rem'].map((r) => (
                   <button
@@ -505,8 +459,8 @@ export default function ThemePanel() {
                     onClick={() => updateLayout({ radius: r })}
                     className={`px-2 py-1 text-[10px] rounded border transition-all ${
                       theme.layout?.radius === r
-                        ? 'border-blue-500 text-blue-300 bg-blue-500/10'
-                        : 'border-[#2a2a2a] text-slate-500 hover:border-[#404040] hover:text-slate-300'
+                        ? 'border-blue-400 text-blue-600 bg-blue-50 shadow-sm'
+                        : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700'
                     }`}
                     style={{ borderRadius: r === '0px' ? '2px' : r }}
                   >
@@ -518,23 +472,22 @@ export default function ThemePanel() {
                 type="text"
                 value={theme.layout?.radius || '1rem'}
                 onChange={(e) => updateLayout({ radius: e.target.value })}
-                className="w-full text-[11px] border border-[#2a2a2a] rounded-lg px-2 py-1.5 bg-[#151515] text-slate-200 focus:outline-none focus:border-blue-500 font-mono"
+                className="w-full text-[11px] border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:border-blue-400 font-mono shadow-sm"
                 placeholder="e.g. 1rem, 8px"
               />
             </div>
 
-            {/* Scroll style */}
             <div className="space-y-1.5">
-              <div className="text-[9px] text-slate-600 font-semibold uppercase">Projects Scroll</div>
-              <div className="flex gap-1.5">
+              <div className="text-[9px] text-slate-400 font-semibold uppercase">Projects Scroll</div>
+              <div className="flex gap-1 flex-wrap">
                 {(['grid', 'horizontal', 'vertical', 'masonry', 'bento'] as const).map((s) => (
                   <button
                     key={s}
                     onClick={() => updateLayout({ projectsScroll: s })}
                     className={`flex-1 py-1 text-[9px] rounded border capitalize transition-all ${
                       theme.layout?.projectsScroll === s
-                        ? 'border-blue-500 text-blue-300 bg-blue-500/10'
-                        : 'border-[#2a2a2a] text-slate-600 hover:text-slate-300 hover:border-[#404040]'
+                        ? 'border-blue-400 text-blue-600 bg-blue-50 shadow-sm'
+                        : 'border-slate-200 text-slate-500 hover:text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     {s}

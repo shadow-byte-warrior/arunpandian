@@ -1,14 +1,14 @@
 import React from 'react';
-import { Layout, Monitor } from 'lucide-react';
+import { Layout } from 'lucide-react';
 import { useThemeStore } from '../../../theme/store';
 
 const Label = ({ children }: { children: React.ReactNode }) => (
-  <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">{children}</label>
+  <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{children}</label>
 );
 
 const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-center gap-2 pt-4 pb-2 border-t border-[#1f1f1f] first:border-0 first:pt-0">
-    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{children}</span>
+  <div className="flex items-center gap-2 pt-4 pb-2 border-t border-slate-100 first:border-0 first:pt-0">
+    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{children}</span>
   </div>
 );
 
@@ -22,13 +22,13 @@ const PresetGrid = <T extends string>({
         <button key={opt.value} onClick={() => onChange(opt.value)}
           className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border text-left transition-all text-[11px] ${
             value === opt.value
-              ? 'border-blue-500 bg-blue-500/10 text-blue-300'
-              : 'border-[#2a2a2a] hover:border-[#3a3a3a] text-slate-400 hover:text-slate-200'
+              ? 'border-blue-400 bg-blue-50 text-blue-700 shadow-sm'
+              : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 hover:text-slate-800'
           }`}>
-          <div className={`h-2 w-2 rounded-full shrink-0 ${value === opt.value ? 'bg-blue-400' : 'bg-[#333]'}`} />
+          <div className={`h-2 w-2 rounded-full shrink-0 ${value === opt.value ? 'bg-blue-500' : 'bg-slate-300'}`} />
           <div>
             <div className="font-medium">{opt.label}</div>
-            {opt.description && <div className="text-[10px] text-slate-500 mt-0.5">{opt.description}</div>}
+            {opt.description && <div className="text-[10px] text-slate-400 mt-0.5">{opt.description}</div>}
           </div>
         </button>
       ))}
