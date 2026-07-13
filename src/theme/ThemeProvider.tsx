@@ -36,6 +36,24 @@ function normalizeTheme(raw: any, current: ThemeState): ThemeState | null {
   return null;
 }
 
+// ── Load a Google Font by name into the document head ──────────────────────
+function loadGoogleFont(fontName: string, id: string) {
+  if (!fontName) return;
+  const clean = fontName.split(',')[0].replace(/['"]/g, '').trim();
+  if (!clean || clean.toLowerCase().startsWith('system') || clean.toLowerCase().startsWith('arial')) return;
+  const linkId = `theme-gfont-${id}`;
+  let el = document.getElementById(linkId) as HTMLLinkElement | null;
+  const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(clean)}:wght@300;400;500;600;700;800;900&display=swap`;
+  if (!el) {
+    el = document.createElement('link');
+    el.id = linkId;
+    el.rel = 'stylesheet';
+    document.head.appendChild(el);
+  }
+  if (el.href !== href) el.href = href;
+  return `'${clean}', system-ui, sans-serif`;
+}
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { theme, setTheme } = useThemeStore();
   const { settings } = useContent() as any;
@@ -64,11 +82,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings?.theme, setTheme]);
 
-  // Apply the active theme to CSS variables on <html>.
+  // Apply the active theme to CSS variables on <html> — including font loading.
   useEffect(() => {
     const root = document.documentElement;
 
-    // Standard variables
+    // ── Color tokens ──────────────────────────────────────────────────────
     root.style.setProperty('--color-primary', theme.colors.primary);
     root.style.setProperty('--color-background', theme.colors.background);
     root.style.setProperty('--color-surface', theme.colors.surface);
@@ -83,14 +101,32 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     root.style.setProperty('--color-ink-soft', theme.colors.muted);
     root.style.setProperty('--color-line', theme.colors.border);
 
-    root.style.setProperty('--font-primary', theme.typography.fontFamily);
-    root.style.setProperty('--font-heading', theme.typography.headingFont);
+    // ── Typography tokens ─────────────────────────────────────────────────
+    // Load Google Fonts and resolve font stacks
+    const bodyStack = loadGoogleFont(theme.typography.fontFamily, 'body') || theme.typography.fontFamily;
+    const headingStack = loadGoogleFont(theme.typography.headingFont, 'heading') || theme.typography.headingFont;
+
+    root.style.setProperty('--font-primary', bodyStack);
+    root.style.setProperty('--font-sans', bodyStack);
+    root.style.setProperty('--font-heading', headingStack);
+    root.style.setProperty('--font-display', headingStack);
     root.style.setProperty('--font-size-base', theme.typography.bodySize);
     root.style.setProperty('--font-size-heading', theme.typography.headingSize);
     root.style.setProperty('--font-weight-base', theme.typography.bodyWeight);
     root.style.setProperty('--font-weight-heading', theme.typography.headingWeight);
 
-    root.style.setProperty('--radius-base', theme.layout.radius);
+    // ── Layout tokens ─────────────────────────────────────────────────────
+    root.style.setProperty('--radius-base', theme.layout.radius || '1rem');
+
+    // ── Animation preset class ────────────────────────────────────────────
+    // Remove any previous preset class then apply the current one so that
+    // awwwards-preset-* CSS rules in HomePage activate instantly.
+    const animClass = `awwwards-preset-${theme.layout?.animationStyle || 'default'}`;
+    const body = document.body;
+    Array.from(body.classList)
+      .filter((c) => c.startsWith('awwwards-preset-'))
+      .forEach((c) => body.classList.remove(c));
+    body.classList.add(animClass);
   }, [theme]);
 
   // Live sync from the Theme Studio (postMessage across the iframe boundary).

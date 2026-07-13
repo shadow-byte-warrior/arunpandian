@@ -113,19 +113,23 @@ export default function HomePage() {
     if (!theme) return;
     const root = document.documentElement;
     const colors = theme.colors || {};
+    const typography = theme.typography || {};
     const themeLayout = theme.layout || {};
 
+    // Color tokens
     const vars = {
-      '--color-primary': colors.primary || theme.accentColor || '#2563EB',
-      '--color-background': colors.background || theme.bgColor || '#FAFAFA',
-      '--color-surface': colors.surface || theme.surfaceColor || '#FFFFFF',
-      '--color-text': colors.text || theme.inkColor || '#09090B',
+      '--color-primary': colors.primary || '#2563EB',
+      '--color-background': colors.background || '#FAFAFA',
+      '--color-surface': colors.surface || '#FFFFFF',
+      '--color-text': colors.text || '#09090B',
       '--color-muted': colors.muted || '#71717A',
       '--color-border': colors.border || '#E4E4E7',
-      '--color-accent': colors.accent || colors.primary || theme.accentColor || '#2563EB',
-      '--color-ink': colors.text || theme.inkColor || '#09090B',
-      '--color-bg': colors.background || theme.bgColor || '#FAFAFA',
-      '--radius-base': themeLayout.radius || theme.radius || '1rem',
+      '--color-accent': colors.primary || '#2563EB',
+      '--color-ink': colors.text || '#09090B',
+      '--color-bg': colors.background || '#FAFAFA',
+      '--color-ink-soft': colors.muted || '#71717A',
+      '--color-line': colors.border || '#E4E4E7',
+      '--radius-base': themeLayout.radius || '1rem',
       '--border-custom': themeLayout.borderStyle || 'none',
     };
 
@@ -133,10 +137,11 @@ export default function HomePage() {
       if (v) root.style.setProperty(k, v);
     }
 
-    // Dynamic Google Fonts Loader (Body and Heading fonts)
-    const loadFont = (fontName, elementId, cssVarName1, cssVarName2, fallbackStack) => {
-      if (!fontName) return;
+    // Dynamic Google Fonts Loader — reads from theme.typography (modern shape)
+    const loadFont = (fontName, elementId, ...cssVarNames) => {
+      if (!fontName) return null;
       const cleanFont = fontName.split(',')[0].replace(/['"]/g, '').trim();
+      if (!cleanFont || cleanFont.toLowerCase().startsWith('system')) return null;
       const id = `theme-font-${elementId}`;
       let link = document.getElementById(id);
       const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(cleanFont)}:wght@300;400;500;600;700;800;900&display=swap`;
@@ -147,20 +152,30 @@ export default function HomePage() {
         document.head.appendChild(link);
       }
       if (link.href !== href) link.href = href;
-      root.style.setProperty(cssVarName1, `'${cleanFont}', ${fallbackStack}`);
-      root.style.setProperty(cssVarName2, `'${cleanFont}', ${fallbackStack}`);
+      const stack = `'${cleanFont}', system-ui, sans-serif`;
+      cssVarNames.forEach((v) => root.style.setProperty(v, stack));
+      return stack;
     };
 
-    if (theme.fontFamily) {
-      loadFont(theme.fontFamily, 'body', '--font-sans', '--font-primary', 'system-ui, sans-serif');
+    // Body font (theme.typography.fontFamily)
+    loadFont(typography.fontFamily, 'body', '--font-sans', '--font-primary');
+
+    // Heading font (theme.typography.headingFont)
+    if (typography.headingFont) {
+      loadFont(typography.headingFont, 'heading', '--font-display', '--font-heading');
+    } else if (typography.fontFamily) {
+      // Fall back to body font for headings
+      const cleanBody = typography.fontFamily.split(',')[0].replace(/['"]/g, '').trim();
+      const stack = `'${cleanBody}', system-ui, sans-serif`;
+      root.style.setProperty('--font-display', stack);
+      root.style.setProperty('--font-heading', stack);
     }
-    if (theme.headingFont) {
-      loadFont(theme.headingFont, 'heading', '--font-display', '--font-heading', 'system-ui, sans-serif');
-    } else if (theme.fontFamily) {
-      const cleanBody = theme.fontFamily.split(',')[0].replace(/['"]/g, '').trim();
-      root.style.setProperty('--font-display', `'${cleanBody}', system-ui, sans-serif`);
-      root.style.setProperty('--font-heading', `'${cleanBody}', system-ui, sans-serif`);
-    }
+
+    // Typography weight / size tokens
+    if (typography.bodyWeight) root.style.setProperty('--font-weight-base', typography.bodyWeight);
+    if (typography.headingWeight) root.style.setProperty('--font-weight-heading', typography.headingWeight);
+    if (typography.bodySize) root.style.setProperty('--font-size-base', typography.bodySize);
+    if (typography.headingSize) root.style.setProperty('--font-size-heading', typography.headingSize);
 
     return () => {
       Object.keys(vars).forEach((k) => root.style.removeProperty(k));
