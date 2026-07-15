@@ -17,13 +17,47 @@ interface DesignBlueprint {
   spacing: string;
 }
 
-// ── Lightweight CSS-metadata extractor (client side via CORS proxy) ──
+// ── Lightweight CSS-metadata extractor (client side via CORS proxies) ──
+async function fetchWithFallbacks(url: string): Promise<string> {
+  const proxies = [
+    // 1. corsproxy.io (returns raw HTML)
+    (u: string) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    // 2. codetabs proxy (returns raw HTML)
+    (u: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    // 3. allOrigins proxy (returns JSON with contents)
+    (u: string) => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+  ];
+
+  let lastError: any = null;
+  for (const getProxyUrl of proxies) {
+    try {
+      const proxyUrl = getProxyUrl(url);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
+      if (!res.ok) throw new Error(`Proxy returned ${res.status}`);
+      
+      const contentType = res.headers.get('content-type') || '';
+      
+      // allOrigins returns JSON { contents: "..." }
+      if (contentType.includes('application/json')) {
+        const json = await res.json();
+        if (json.contents) return json.contents;
+      }
+      
+      // corsproxy.io and codetabs return raw HTML
+      const html = await res.text();
+      if (html) return html;
+    } catch (e) {
+      lastError = e;
+      continue; // Try the next proxy
+    }
+  }
+  
+  throw new Error(lastError?.message || 'Network error: All scraper proxies failed to fetch the URL.');
+}
+
 async function analyzeUrl(url: string): Promise<DesignBlueprint> {
-  // Use allOrigins CORS proxy to fetch the HTML
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
-  const json = await res.json();
-  const html: string = json.contents || '';
+  // Use advanced fallback scraper
+  const html = await fetchWithFallbacks(url);
 
   // ── Parse meta colors from HTML/CSS ──
   const colorMatches = html.match(/#[0-9a-fA-F]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)/g) || [];
