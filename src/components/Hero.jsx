@@ -35,6 +35,10 @@ const Hero = () => {
   React.useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = isMuted;
+      if (!isMuted) {
+        videoRef.current.volume = 1;
+        videoRef.current.play().catch(() => {});
+      }
     }
   }, [isMuted]);
   const hero = settings.hero || {};
@@ -410,7 +414,7 @@ const Hero = () => {
           />
           <button 
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
-            className="absolute bottom-6 right-6 p-3 rounded-full bg-white/10 backdrop-blur text-white hover:bg-white/20 transition-colors pointer-events-auto z-50 flex items-center justify-center"
+            className="absolute bottom-6 right-6 p-3 rounded-full bg-white/10 backdrop-blur text-white hover:bg-white/20 transition-colors pointer-events-auto z-50 flex items-center justify-center cursor-pointer shadow-lg"
             title={isMuted ? "Unmute" : "Mute"}
           >
             {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -517,7 +521,7 @@ const Hero = () => {
               />
               <button 
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
-                className="absolute bottom-4 right-4 p-2 rounded bg-[#F3D016] text-black opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center justify-center"
+                className="absolute bottom-4 right-4 p-2 rounded bg-[#F3D016] text-black transition-opacity z-50 flex items-center justify-center cursor-pointer shadow-md"
                 title={isMuted ? "Unmute" : "Mute"}
               >
                 {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
@@ -633,7 +637,7 @@ const Hero = () => {
                 <video ref={videoRef} src={hero.videoSrc || '/hero-animation.mp4'} autoPlay muted={isMuted} loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                 <button 
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
-                  className="absolute inset-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20"
+                  className="absolute inset-0 w-full h-full flex items-center justify-center transition-opacity bg-black/10 hover:bg-black/20 cursor-pointer"
                 >
                   <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-full flex items-center justify-center border border-white/40 text-white">
                     {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -745,7 +749,7 @@ const Hero = () => {
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <button 
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
-                  className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 hover:bg-red-500 transition-all duration-300 pointer-events-auto text-white"
+                  className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 hover:bg-red-500 transition-all duration-300 pointer-events-auto text-white cursor-pointer"
                   title={isMuted ? "Unmute" : "Mute"}
                 >
                    {isMuted ? <VolumeX size={32} /> : <Volume2 size={32} />}
@@ -890,7 +894,7 @@ const Hero = () => {
                 />
                 <button 
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
-                  className="absolute top-6 right-6 p-2 rounded-full bg-surface/80 backdrop-blur text-ink shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center justify-center border border-line"
+                  className="absolute top-6 right-6 p-2 rounded-full bg-surface/80 backdrop-blur text-ink shadow-md transition-opacity z-50 flex items-center justify-center border border-line cursor-pointer"
                   title={isMuted ? "Unmute" : "Mute"}
                 >
                   {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
