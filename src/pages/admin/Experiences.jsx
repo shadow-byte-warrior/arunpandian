@@ -14,7 +14,7 @@ export default function Experiences() {
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOption, setSortOption] = useState('Latest Roles');
+  const [sortOption, setSortOption] = useState('Custom Order');
   const [viewMode, setViewMode] = useState('list');
 
   // Modal state
@@ -204,7 +204,11 @@ export default function Experiences() {
       if (sortOption === 'Alphabetical') {
         return a.company.localeCompare(b.company);
       }
-      return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      if (sortOption === 'Latest Roles') {
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      }
+      // Custom Order
+      return a.sort_order - b.sort_order;
     });
 
   if (loading && experiences.length === 0) {
@@ -240,6 +244,7 @@ export default function Experiences() {
             onChange={(e) => setSortOption(e.target.value)}
             className="px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 outline-none focus:border-teal-500 cursor-pointer"
           >
+            <option>Custom Order</option>
             <option>Latest Roles</option>
             <option>Alphabetical</option>
           </select>
