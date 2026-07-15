@@ -874,7 +874,9 @@ const Hero = () => {
             </div>
             <div className="absolute bottom-8 left-8 z-10">
               <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-black text-[clamp(2.5rem,4vw,3.5rem)] text-white leading-tight">
-                {hero.headline?.join('\\n') || 'Your\\nData\\nSpeaks.'}
+                {(hero.headline || ['Your', 'Data', 'Speaks.']).map((line, i) => (
+                  <span key={i} className="block">{line}</span>
+                ))}
               </h1>
             </div>
             {isVisible('primaryCta') && (
@@ -911,7 +913,7 @@ const Hero = () => {
                   <ArrowUpRight size={16} />
                 </div>
                 <div data-edit-id="hero.katerioSub1" data-edit-name="Card Subtitle" data-edit-kind="text" data-edit-path="hero.katerioSub1" className="font-mono text-sm lg:text-lg opacity-80">{hero.katerioSub1 || 'Deep Dive!'}</div>
-                <div data-edit-id="hero.katerioSub2" data-edit-name="Card Title" data-edit-kind="text" data-edit-path="hero.katerioSub2" className="font-display font-black text-2xl lg:text-3xl" dangerouslySetInnerHTML={{ __html: hero.katerioSub2 || 'Predictive<br/>Models' }} />
+                <div data-edit-id="hero.katerioSub2" data-edit-name="Card Title" data-edit-kind="text" data-edit-path="hero.katerioSub2" className="font-display font-black text-2xl lg:text-3xl whitespace-pre-wrap">{hero.katerioSub2 || 'Predictive\nModels'}</div>
               </div>
               {gallery.length >= 2 ? (
                 <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group cursor-pointer">
