@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { 
   Loader2, Plus, Edit2, Trash2, Search, Filter, 
-  List, Grid, RefreshCw, Download, Eye, EyeOff 
+  List, Grid, RefreshCw, Download, Eye, EyeOff,
+  ChevronUp, ChevronDown
 } from 'lucide-react';
+import ImageUpload from '../../components/admin/ui/ImageUpload';
 import Modal from '../../components/admin/Modal';
 import ConfirmModal from '../../components/admin/ConfirmModal';
 import toast from 'react-hot-toast';
@@ -31,7 +33,9 @@ export default function Experiences() {
     type: 'Full-time',
     impact: '',
     published: true,
-    sort_order: 0
+    sort_order: 0,
+    media_url: '',
+    company_website: ''
   });
 
   useEffect(() => {
@@ -107,7 +111,9 @@ export default function Experiences() {
         type: exp.type || 'Full-time',
         impact: exp.impact || '',
         published: exp.published,
-        sort_order: exp.sort_order || 0
+        sort_order: exp.sort_order || 0,
+        media_url: exp.media_url || '',
+        company_website: exp.company_website || ''
       });
     } else {
       setEditingExperience(null);
@@ -118,10 +124,48 @@ export default function Experiences() {
         type: 'Full-time',
         impact: '',
         published: true,
-        sort_order: experiences.length > 0 ? Math.max(...experiences.map(e => e.sort_order)) + 1 : 0
+        sort_order: experiences.length > 0 ? Math.max(...experiences.map(e => e.sort_order)) + 1 : 0,
+        media_url: '',
+        company_website: ''
       });
     }
     setIsModalOpen(true);
+  };
+
+  const handleMoveUp = async (exp) => {
+    const sorted = [...experiences].sort((a,b) => a.sort_order - b.sort_order);
+    const index = sorted.findIndex(e => e.id === exp.id);
+    if (index > 0) {
+      const prevExp = sorted[index - 1];
+      const tempOrder = exp.sort_order;
+      try {
+        await Promise.all([
+          supabase.from('experiences').update({ sort_order: prevExp.sort_order }).eq('id', exp.id),
+          supabase.from('experiences').update({ sort_order: tempOrder }).eq('id', prevExp.id)
+        ]);
+        fetchExperiences();
+      } catch (err) {
+        toast.error('Error reordering: ' + err.message);
+      }
+    }
+  };
+
+  const handleMoveDown = async (exp) => {
+    const sorted = [...experiences].sort((a,b) => a.sort_order - b.sort_order);
+    const index = sorted.findIndex(e => e.id === exp.id);
+    if (index < sorted.length - 1) {
+      const nextExp = sorted[index + 1];
+      const tempOrder = exp.sort_order;
+      try {
+        await Promise.all([
+          supabase.from('experiences').update({ sort_order: nextExp.sort_order }).eq('id', exp.id),
+          supabase.from('experiences').update({ sort_order: tempOrder }).eq('id', nextExp.id)
+        ]);
+        fetchExperiences();
+      } catch (err) {
+        toast.error('Error reordering: ' + err.message);
+      }
+    }
   };
 
   const handleSave = async (e) => {
@@ -287,6 +331,20 @@ export default function Experiences() {
                       </td>
                       <td className="px-6 py-4 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
+                          onClick={() => handleMoveUp(exp)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors" 
+                          aria-label="Move Up"
+                        >
+                          <ChevronUp size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleMoveDown(exp)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors" 
+                          aria-label="Move Down"
+                        >
+                          <ChevronDown size={16} />
+                        </button>
+                        <button 
                           onClick={() => handleTogglePublish(exp)}
                           className={`p-1.5 rounded-lg transition-colors ${exp.published ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-400 hover:text-teal-600 hover:bg-teal-50'}`}
                           aria-label={exp.published ? "Hide" : "Publish"}
@@ -329,6 +387,12 @@ export default function Experiences() {
                     {exp.company.substring(0, 2).toUpperCase()}
                   </div>
                   <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => handleMoveUp(exp)} className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+                      <ChevronUp size={16} />
+                    </button>
+                    <button onClick={() => handleMoveDown(exp)} className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+                      <ChevronDown size={16} />
+                    </button>
                     <button onClick={() => handleTogglePublish(exp)} className={`p-2 rounded-xl transition-colors ${exp.published ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-400 hover:text-teal-600 hover:bg-teal-50'}`}>
                       {exp.published ? <Eye size={16} /> : <EyeOff size={16} />}
                     </button>
@@ -414,6 +478,27 @@ export default function Experiences() {
                 <option value="Part-time">Part-time</option>
                 <option value="Contract">Contract</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Company Website (Optional)</label>
+              <input
+                type="url"
+                value={formData.company_website}
+                onChange={e => setFormData({...formData, company_website: e.target.value})}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
+                placeholder="https://..."
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <ImageUpload
+                label="Media / Certificate (Optional PDF, Image, etc.)"
+                url={formData.media_url}
+                onUpload={(url) => setFormData({ ...formData, media_url: url })}
+                folder="experiences"
+                accept="*"
+              />
             </div>
 
             <div className="md:col-span-2">
