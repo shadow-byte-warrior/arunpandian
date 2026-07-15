@@ -795,8 +795,8 @@ const Hero = () => {
   if (heroStyle === 'puremoda') {
     return (
       <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-white text-black p-4 md:p-8 pt-24 md:pt-32 overflow-hidden">
-        <div className="w-full max-w-[1400px] mx-auto h-[calc(100vh-8rem)] min-h-[600px] grid lg:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-4 h-full">
+        <div className="w-full max-w-[1400px] mx-auto lg:h-[calc(100vh-8rem)] lg:min-h-[600px] grid lg:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4 h-full min-h-[500px] lg:min-h-0">
             <div className="bg-[#e4e2de] rounded-3xl p-8 lg:p-12 flex flex-col justify-between flex-1 relative overflow-hidden group">
               <div>
                 <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-black text-[clamp(2.5rem,5vw,5rem)] leading-[0.9] uppercase tracking-tighter">
@@ -834,7 +834,7 @@ const Hero = () => {
               </div>
             )}
           </div>
-          <div className="h-full bg-slate-100 rounded-3xl overflow-hidden relative group">
+          <div className="h-full min-h-[500px] lg:min-h-0 bg-slate-100 rounded-3xl overflow-hidden relative group">
             <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             {isVisible('primaryCta') && (
@@ -862,8 +862,8 @@ const Hero = () => {
   if (heroStyle === 'katerio') {
     return (
       <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-[#90939c] text-black p-4 md:p-8 pt-24 md:pt-32 overflow-hidden">
-        <div className="w-full max-w-[1400px] mx-auto h-[calc(100vh-8rem)] min-h-[600px] bg-white rounded-[2rem] p-4 flex flex-col lg:flex-row gap-4 shadow-2xl">
-          <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group">
+        <div className="w-full max-w-[1400px] mx-auto lg:h-[calc(100vh-8rem)] lg:min-h-[600px] bg-white rounded-[2rem] p-4 flex flex-col lg:flex-row gap-4 shadow-2xl">
+          <div className="flex-1 min-h-[400px] lg:min-h-0 bg-slate-200 rounded-3xl overflow-hidden relative group">
             <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div data-edit-id="hero.katerioBadge1" data-edit-name="Badge 1" data-edit-kind="text" data-edit-path="hero.katerioBadge1" className="absolute top-6 left-6 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
@@ -886,7 +886,7 @@ const Hero = () => {
               {hero.katerioShop || 'EXPLORE'}
             </div>
           </div>
-          <div className="flex-1 flex flex-col gap-4">
+          <div className="flex-1 flex flex-col gap-4 min-h-[500px] lg:min-h-0">
             <div className="bg-[#b5decb] rounded-3xl p-8 flex-1 flex flex-col justify-between relative overflow-hidden">
               <h2 data-edit-id="hero.katerioHeadline" data-edit-name="Subheadline" data-edit-kind="text" data-edit-path="hero.katerioHeadline" className="font-display font-black text-[clamp(1.5rem,3vw,2.5rem)] text-[#1a2f24] leading-tight uppercase max-w-sm relative z-10">
                 {hero.katerioHeadline || 'UNLEASH YOUR BUSINESS POTENTIAL WITH DATA DRIVEN INSIGHTS'}
