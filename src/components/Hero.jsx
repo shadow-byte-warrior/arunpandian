@@ -744,6 +744,199 @@ const Hero = () => {
     );
   }
 
+  // ─── HERO STYLE: STREAMING (Fan Carousel) ───
+  if (heroStyle === 'streaming') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-[90vh] flex flex-col justify-center bg-[#eaeaea] text-black pt-32 pb-24 overflow-hidden">
+        <div className="absolute top-6 right-8 bg-[#e50914] text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-red-700 transition cursor-pointer shadow-lg z-20">
+           Save
+        </div>
+        <div className="w-full max-w-7xl mx-auto px-6 text-center relative z-10 flex flex-col items-center">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="font-bold text-2xl tracking-tight">Profile</span>
+          </div>
+          <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-bold text-[clamp(2rem,3vw,3rem)] leading-tight mb-12">
+            {hero.headline?.join(' ') || 'Discover Unlimited Content'}
+          </h1>
+          
+          <div className="relative w-full max-w-2xl h-[400px] flex justify-center items-center mt-8">
+            {gallery.length === 1 && (
+               <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10" />
+            )}
+            {gallery.length === 2 && (
+               <>
+                 <img src={gallery[0]?.url} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10 -rotate-6 -translate-x-12" />
+                 <img src={gallery[1]?.url} className="absolute w-64 h-96 object-cover rounded-xl shadow-xl z-0 rotate-6 translate-x-12 opacity-80" />
+               </>
+            )}
+            {gallery.length >= 3 && (
+               <>
+                 <img src={gallery[1]?.url || arunProfile} className="absolute w-56 h-80 object-cover rounded-xl shadow-lg z-0 -rotate-12 -translate-x-32 opacity-60 grayscale hover:grayscale-0 transition" />
+                 {gallery.length >= 5 && (
+                   <img src={gallery[3]?.url || arunProfile} className="absolute w-48 h-72 object-cover rounded-xl shadow-md -z-10 -rotate-12 -translate-x-56 opacity-40 grayscale hover:grayscale-0 transition" />
+                 )}
+                 <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-20 hover:scale-105 transition-transform duration-300 ring-2 ring-yellow-500 ring-offset-4 ring-offset-[#eaeaea]" />
+                 <img src={gallery[2]?.url || arunProfile} className="absolute w-56 h-80 object-cover rounded-xl shadow-lg z-0 rotate-12 translate-x-32 opacity-60 grayscale hover:grayscale-0 transition" />
+                 {gallery.length >= 5 && (
+                   <img src={gallery[4]?.url || arunProfile} className="absolute w-48 h-72 object-cover rounded-xl shadow-md -z-10 rotate-12 translate-x-56 opacity-40 grayscale hover:grayscale-0 transition" />
+                 )}
+               </>
+            )}
+            {gallery.length === 0 && (
+               <img src={arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10 ring-2 ring-yellow-500 ring-offset-4 ring-offset-[#eaeaea]" />
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: PUREMODA (Fashion Bento) ───
+  if (heroStyle === 'puremoda') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-white text-black p-4 md:p-8 overflow-hidden">
+        <div className="w-full max-w-[1400px] mx-auto h-[calc(100vh-4rem)] min-h-[600px] grid lg:grid-cols-2 gap-4 pt-16">
+          <div className="flex flex-col gap-4 h-full">
+            <div className="bg-[#e4e2de] rounded-3xl p-8 lg:p-12 flex flex-col justify-between flex-1 relative overflow-hidden group">
+              <div>
+                <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-black text-[clamp(2.5rem,5vw,5rem)] leading-[0.9] uppercase tracking-tighter">
+                  {(hero.headline || []).map((line, i) => (
+                    <span key={i} className="block">{line}</span>
+                  ))}
+                  <ArrowRight size={48} strokeWidth={1} className="inline-block ml-4 -mt-4 text-black/50 group-hover:translate-x-4 transition-transform" />
+                </h1>
+              </div>
+              {isVisible('subtitle') && (
+                <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="text-black/70 text-sm max-w-sm leading-relaxed mt-12">
+                  {hero.subtitle?.replace(/<[^>]*>/g, '')}
+                </p>
+              )}
+            </div>
+            {(gallery.length >= 2) && (
+              <div className="h-1/3 flex gap-4">
+                {gallery.length === 2 ? (
+                  <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
+                    <img src={gallery[1]?.url} className="w-full h-full object-cover" />
+                    <div className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">#FEATURED</div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
+                      <img src={gallery[1]?.url} className="w-full h-full object-cover" />
+                      <div className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">#RIP STOP</div>
+                    </div>
+                    <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
+                      <img src={gallery[2]?.url} className="w-full h-full object-cover" />
+                      <div className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">#INSULATED</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="h-full bg-slate-100 rounded-3xl overflow-hidden relative group">
+            <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            {isVisible('primaryCta') && (
+              <a href={hero.primaryCta?.href || '#projects'} className="absolute top-[60%] right-[10%] w-24 h-24 rounded-full border border-white text-white flex items-center justify-center font-semibold text-xs tracking-widest text-center hover:bg-white hover:text-black transition-colors backdrop-blur-sm">
+                SHOP NOW
+              </a>
+            )}
+            <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center bg-white/20 backdrop-blur-md rounded-full p-2 border border-white/30 text-white">
+              <span className="px-6 text-sm font-semibold tracking-wider hidden sm:block">LEARN MORE</span>
+              <span className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center">
+                <ArrowDownRight size={18} />
+              </span>
+              <span className="px-6 text-sm font-semibold tracking-wider ml-auto border-l border-white/30 hidden sm:block">CONTACT US</span>
+              <span className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center">
+                <Mail size={16} />
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: KATERIO (Retro Split Grid) ───
+  if (heroStyle === 'katerio') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-[#90939c] text-black p-4 md:p-8 overflow-hidden">
+        <div className="w-full max-w-[1400px] mx-auto h-[calc(100vh-4rem)] min-h-[600px] bg-white rounded-[2rem] p-4 flex flex-col pt-16 lg:flex-row gap-4 shadow-2xl">
+          <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group">
+            <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+            <div className="absolute top-6 left-6 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
+              New Collection Was Unveiled!
+            </div>
+            <div className="absolute top-6 left-1/2 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
+              2023 Spring
+            </div>
+            <div className="absolute bottom-8 left-8 z-10">
+              <h1 className="font-display font-black text-[clamp(2.5rem,4vw,3.5rem)] text-white leading-tight">
+                Your<br/>Style<br/>Speaks.
+              </h1>
+            </div>
+            {isVisible('primaryCta') && (
+               <a href={hero.primaryCta?.href || '#projects'} className="absolute bottom-8 right-8 bg-[#c4e4d4] text-[#1c2e25] px-6 py-3 rounded-full font-bold flex items-center gap-4 hover:bg-white transition-colors z-10">
+                 NEXT UP <ArrowRight size={16} />
+               </a>
+            )}
+            <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-24 h-24 rounded-full border border-white/40 text-white flex items-center justify-center font-semibold text-xs tracking-widest text-center hover:bg-white hover:text-black transition-colors backdrop-blur-md shadow-lg z-10 cursor-pointer">
+              SHOP NOW
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col gap-4">
+            <div className="bg-[#b5decb] rounded-3xl p-8 flex-1 flex flex-col justify-between relative overflow-hidden">
+              <h2 className="font-display font-black text-[clamp(1.5rem,3vw,2.5rem)] text-[#1a2f24] leading-tight uppercase max-w-sm relative z-10">
+                UNLEASH YOUR STREET STYLE WITH OUR RETRO NEW COLLECTION
+              </h2>
+              <div className="absolute top-12 right-12 text-[#1a2f24] opacity-50 z-0">
+                <svg width="120" height="120" viewBox="0 0 100 100" className="animate-[spin_20s_linear_infinite]"><path d="M50 10 C 20 10, 10 40, 10 60 C 10 80, 40 90, 70 80 C 90 70, 90 40, 70 20" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
+              </div>
+              <div className="flex justify-between items-center gap-2 lg:gap-4 z-10 mt-12 flex-wrap">
+                 <div className="flex-1 min-w-[160px] bg-white/40 backdrop-blur rounded-full px-4 py-2 flex justify-between items-center font-semibold text-xs text-[#1a2f24]">
+                   LEARN MORE
+                   <span className="bg-[#1a2f24] text-white rounded-full p-1"><ArrowDownRight size={14} /></span>
+                 </div>
+                 <div className="flex-1 min-w-[160px] bg-[#1a2f24]/10 rounded-full px-4 py-2 flex justify-between items-center font-semibold text-xs text-[#1a2f24]">
+                   CONTACT US
+                   <span className="bg-white text-[#1a2f24] rounded-full p-1"><Mail size={14} /></span>
+                 </div>
+              </div>
+            </div>
+            <div className="h-1/2 flex gap-4">
+              <div className="flex-1 bg-[#1c1c1c] rounded-3xl p-8 relative flex flex-col justify-between text-white group cursor-pointer">
+                <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition">
+                  <ArrowUpRight size={16} />
+                </div>
+                <div className="font-mono text-sm lg:text-lg opacity-80">New Surprise!</div>
+                <div className="font-display font-black text-2xl lg:text-3xl">Retro<br/>Outfit</div>
+              </div>
+              {gallery.length >= 2 ? (
+                <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group cursor-pointer">
+                  <img src={gallery[1]?.url} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-white backdrop-blur group-hover:bg-black transition z-10">
+                    <ArrowUpRight size={16} />
+                  </div>
+                  <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 text-white text-[10px] lg:text-xs font-mono opacity-80 leading-relaxed z-10 hidden sm:block">
+                    We are challenging conventional retail, putting an end to dead stock, unconventional waste and more fantastic.
+                  </div>
+                  <div className="absolute bottom-6 left-6 text-white font-black text-sm lg:text-xl tracking-wider z-10">#TRENDING 2023</div>
+                </div>
+              ) : (
+                <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group hidden sm:block">
+                  <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400 text-sm">Upload more photos</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // ─── HERO STYLE: VIDEO STREAMING (Side-by-side Video) ───
   if (heroStyle === 'videostreaming') {
     return (

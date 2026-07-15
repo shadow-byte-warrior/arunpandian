@@ -23,7 +23,7 @@ export interface ThemeState {
     cursorStyle?: 'dot' | 'bubble' | 'invert' | 'crosshair' | 'none' | 'default';
     navbarStyle?: 'capsule' | 'minimal' | 'karolbinkowski' | 'pelizzari' | 'vividmotion' | 'studiomodular' | 'default';
     cardStyle?: 'minimal' | 'editorial' | 'karolbinkowski' | 'pelizzari' | 'russellnumo' | 'vividmotion' | 'glass' | 'gradient' | 'magazine' | 'bento' | 'masonry' | 'flip' | 'magnetic' | 'default';
-    heroStyle?: 'karolbinkowski' | 'pelizzari' | 'russellnumo' | 'vividmotion' | 'konnect' | 'loveandrespect' | 'logoipsum' | 'videostreaming' | 'default';
+    heroStyle?: 'karolbinkowski' | 'pelizzari' | 'russellnumo' | 'vividmotion' | 'konnect' | 'loveandrespect' | 'logoipsum' | 'videostreaming' | 'streaming' | 'puremoda' | 'katerio' | 'default';
     footerStyle?: 'karolbinkowski' | 'pelizzari' | 'russellnumo' | 'studiomodular' | 'default';
     scrollStyle?: 'vertical' | 'horizontal' | 'none';
     projectsScroll?: 'grid' | 'horizontal' | 'vertical' | 'masonry' | 'bento';

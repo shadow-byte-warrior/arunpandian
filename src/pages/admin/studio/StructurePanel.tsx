@@ -56,6 +56,9 @@ const HERO_OPTIONS = [
   { value: 'loveandrespect' as const, label: 'Love & Respect Grid', description: 'Text left, video/image grid right' },
   { value: 'logoipsum' as const, label: 'Rounded Collage', description: 'Split layout with rounded image collage' },
   { value: 'videostreaming' as const, label: 'Video Streaming', description: 'Large video preview side-by-side' },
+  { value: 'streaming' as const, label: 'Fan Carousel', description: 'Movie poster fan spread' },
+  { value: 'puremoda' as const, label: 'Fashion Bento', description: 'Clean asymmetrical bento boxes' },
+  { value: 'katerio' as const, label: 'Retro Split Grid', description: 'Modern streetwear grid' },
 ];
 
 const CARD_OPTIONS = [
