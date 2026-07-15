@@ -937,6 +937,57 @@ const Hero = () => {
     );
   }
 
+  // ─── HERO STYLE: RETRO PORTFOLIO (Han Nguyen) ───
+  if (heroStyle === 'retro-portfolio') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-[90vh] flex flex-col justify-start bg-[#3b4936] text-[#f2e9d8] pt-24 overflow-hidden z-0">
+        <div className="absolute top-1/4 left-0 w-full overflow-hidden flex flex-col items-center pointer-events-none select-none z-0">
+          <div className="font-display font-black text-[clamp(4rem,10vw,12rem)] leading-[0.8] tracking-tighter text-[#f2e9d8]">
+            {hero.headline?.join(' ') || 'PORTFOLIO'}
+          </div>
+          {[...Array(3)].map((_, i) => (
+             <div key={i} className="font-display font-black text-[clamp(4rem,10vw,12rem)] leading-[0.8] tracking-tighter" style={{ WebkitTextStroke: '2px #f2e9d8', color: 'transparent', opacity: 1 - (i * 0.2) }}>
+               {hero.headline?.join(' ') || 'PORTFOLIO'}
+             </div>
+          ))}
+        </div>
+        
+        <div className="w-full max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-8 relative z-10 h-full mt-12 pb-24">
+           <div className="md:col-span-7 lg:col-span-8 relative">
+              <div className="absolute -top-12 -left-8 text-[#ffb000]">
+                 <Sparkles size={48} fill="currentColor" />
+              </div>
+              <div className="absolute bottom-12 right-0 lg:right-12 text-[#ffb000]">
+                 <Sparkles size={32} fill="currentColor" />
+              </div>
+              <div className="w-full max-w-md bg-black/20 rounded-xl overflow-hidden aspect-[3/4] mix-blend-luminosity relative shadow-2xl">
+                 <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover sepia-[0.3]" />
+              </div>
+              {isVisible('subtitle') && (
+                <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="text-[#f2e9d8]/80 text-sm max-w-sm leading-relaxed mt-6 font-mono absolute bottom-0 left-0 bg-[#3b4936]/80 backdrop-blur p-4 rounded-xl shadow-lg">
+                  {hero.subtitle?.replace(/<[^>]*>/g, '')}
+                </p>
+              )}
+           </div>
+           
+           <div className="md:col-span-5 lg:col-span-4 flex flex-col justify-center gap-4 mt-24 md:mt-0 items-start md:items-end font-mono text-[#f2e9d8]">
+              {credentials.slice(0, 3).map((cred, i) => (
+                 <div key={i} className="text-sm md:text-base lg:text-lg tracking-wide bg-black/20 px-4 py-2 rounded backdrop-blur">
+                   <span className="opacity-60">{cred.label}:</span> {cred.value}
+                 </div>
+              ))}
+           </div>
+        </div>
+
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-20">
+           <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-[#ffb000] text-[#3b4936] flex items-center justify-center font-bold text-center leading-tight shadow-xl border-4 border-[#3b4936] cursor-pointer hover:scale-110 transition-transform">
+             Scroll<br/>down
+           </div>
+        </div>
+      </section>
+    );
+  }
+
   // ─── HERO STYLE: VIDEO STREAMING (Side-by-side Video) ───
   if (heroStyle === 'videostreaming') {
     return (

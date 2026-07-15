@@ -59,6 +59,7 @@ const HERO_OPTIONS = [
   { value: 'streaming' as const, label: 'Fan Carousel', description: 'Movie poster fan spread' },
   { value: 'puremoda' as const, label: 'Fashion Bento', description: 'Clean asymmetrical bento boxes' },
   { value: 'katerio' as const, label: 'Retro Split Grid', description: 'Modern streetwear grid' },
+  { value: 'retro-portfolio' as const, label: 'Retro Portfolio', description: 'Dark green editorial layout' },
 ];
 
 const CARD_OPTIONS = [
