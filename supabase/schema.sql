@@ -238,3 +238,14 @@ CREATE PUBLICATION supabase_realtime FOR TABLE site_settings, projects, blogs, e
 
 
 
+
+
+CREATE TABLE design_scrapes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  url TEXT NOT NULL,
+  colors JSONB,
+  fonts JSONB,
+  metrics JSONB,
+  components JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

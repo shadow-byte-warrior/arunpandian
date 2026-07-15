@@ -2,130 +2,31 @@ import React, { useState } from 'react';
 import { Search, Loader2, Globe, CheckCircle2, AlertCircle, Link, Palette, Type, Grid, Wand2 } from 'lucide-react';
 import { useThemeStore } from '../../../theme/store';
 
-// ── Design pattern categories returned from the scraper ──
+import { supabase } from '../../../lib/supabaseClient';
+
+// ── Design pattern categories returned from the scraper API ──
 interface DesignBlueprint {
   url: string;
-  colors: { bg: string; accent: string; text: string; surface: string }[];
-  fonts: { heading: string; body: string }[];
-  navbarStyle: string;
-  heroLayout: string;
-  cardStyle: string;
-  scrollEffect: string;
-  animationStyle: string;
-  components: string[];
-  borderRadius: string;
-  spacing: string;
+  colors: { dominant: string[]; accent: string[] };
+  fonts: string[];
+  metrics: { symmetry: number; density: number; complexity: number; economy: number };
+  components: { type: string; html: string; css: string }[];
 }
 
-// ── Lightweight CSS-metadata extractor (client side via CORS proxies) ──
-async function fetchWithFallbacks(url: string): Promise<string> {
-  const proxies = [
-    // 1. corsproxy.io (returns raw HTML)
-    (u: string) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    // 2. codetabs proxy (returns raw HTML)
-    (u: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-    // 3. allOrigins proxy (returns JSON with contents)
-    (u: string) => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-  ];
-
-  let lastError: any = null;
-  for (const getProxyUrl of proxies) {
-    try {
-      const proxyUrl = getProxyUrl(url);
-      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
-      if (!res.ok) throw new Error(`Proxy returned ${res.status}`);
-      
-      const contentType = res.headers.get('content-type') || '';
-      
-      // allOrigins returns JSON { contents: "..." }
-      if (contentType.includes('application/json')) {
-        const json = await res.json();
-        if (json.contents) return json.contents;
-      }
-      
-      // corsproxy.io and codetabs return raw HTML
-      const html = await res.text();
-      if (html) return html;
-    } catch (e) {
-      lastError = e;
-      continue; // Try the next proxy
-    }
-  }
-  
-  throw new Error(lastError?.message || 'Network error: All scraper proxies failed to fetch the URL.');
-}
-
+// ── Call the local Node.js / Playwright API ──
 async function analyzeUrl(url: string): Promise<DesignBlueprint> {
-  // Use advanced fallback scraper
-  const html = await fetchWithFallbacks(url);
+  const res = await fetch('http://localhost:3001/api/design-scrape', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url })
+  });
 
-  // ── Parse meta colors from HTML/CSS ──
-  const colorMatches = html.match(/#[0-9a-fA-F]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)/g) || [];
-  const uniqueColors = [...new Set(colorMatches)].slice(0, 12);
-  const bgColor = uniqueColors.find(c => /f[a-f0-9]{5}/i.test(c)) || '#ffffff';
-  const accentColor = uniqueColors.find(c => !/fff|000|eee|ddd|ccc/i.test(c)) || '#2563eb';
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `Server returned ${res.status}. Is the scraper API running?`);
+  }
 
-  // ── Detect font families ──
-  const fontMatches = html.match(/font-family:\s*['"]?([^;'"]+)/g) || [];
-  const fonts = fontMatches.map(f => f.replace('font-family:', '').replace(/['"]/g, '').trim()).filter(Boolean);
-  const headingFont = fonts[0] || 'Inter, sans-serif';
-  const bodyFont = fonts[1] || fonts[0] || 'Inter, sans-serif';
-
-  // ── Detect navbar type ──
-  const hasFixedNav = /position:\s*fixed|position:\s*sticky/.test(html);
-  const hasGlassNav = /backdrop-filter|blur\(/.test(html);
-  const navbarStyle = hasGlassNav ? 'Glassy (vividmotion-style)' : hasFixedNav ? 'Floating Fixed' : 'Standard Top';
-
-  // ── Detect grid / layout ──
-  const hasGrid = /display:\s*grid/.test(html);
-  const hasFlexbox = /display:\s*flex/.test(html);
-  const hasMasonry = /masonry|columns:\s*\d/.test(html);
-
-  // ── Detect animation patterns ──
-  const hasGsap = /gsap|ScrollTrigger/.test(html);
-  const hasFramer = /framer-motion|motion\.div/.test(html);
-  const hasLottie = /lottie/.test(html);
-  const hasThreeJs = /three\.js|THREE\.|@react-three/.test(html);
-  const animStyle = hasGsap ? 'GSAP ScrollTrigger' : hasFramer ? 'Framer Motion' : hasThreeJs ? 'Three.js 3D' : hasLottie ? 'Lottie' : 'CSS Animations';
-
-  // ── Detect border radius ──
-  const radiusMatch = html.match(/border-radius:\s*([\d.]+(?:px|rem|%|em))/);
-  const borderRadius = radiusMatch ? radiusMatch[1] : '8px';
-
-  // ── Detect scroll effects ──
-  const hasParallax = /parallax|translateY/.test(html);
-  const hasSnapScroll = /scroll-snap/.test(html);
-  const scrollEffect = hasSnapScroll ? 'Snap Scroll' : hasParallax ? 'Parallax Scroll' : 'Standard Scroll';
-
-  // ── Detect card components ──
-  const components: string[] = [];
-  if (/<nav/i.test(html)) components.push('Navbar');
-  if (/<section|<main/i.test(html)) components.push('Hero Section');
-  if (hasGrid || hasMasonry) components.push('Grid / Masonry Cards');
-  if (hasFlexbox) components.push('Flex Layout');
-  if (/<footer/i.test(html)) components.push('Footer');
-  if (/<form/i.test(html)) components.push('Contact Form');
-  if (/slider|swiper|carousel/i.test(html)) components.push('Slider / Carousel');
-  if (/<video/i.test(html)) components.push('Video Background');
-  if (hasThreeJs) components.push('3D Scene (Three.js)');
-  if (/cursor/i.test(html)) components.push('Custom Cursor');
-
-  return {
-    url,
-    colors: [
-      { bg: bgColor, accent: accentColor, text: '#111111', surface: '#f5f5f5' },
-      ...uniqueColors.slice(0, 3).map(c => ({ bg: c, accent: c, text: '#111', surface: '#fff' })),
-    ],
-    fonts: [{ heading: headingFont, body: bodyFont }],
-    navbarStyle,
-    heroLayout: hasThreeJs ? '3D Immersive Hero' : /parallax/i.test(html) ? 'Parallax Portrait' : 'Standard Hero',
-    cardStyle: hasMasonry ? 'Masonry' : hasGrid ? 'Grid Cards' : 'Flex Cards',
-    scrollEffect,
-    animationStyle: animStyle,
-    components,
-    borderRadius,
-    spacing: '1.5rem',
-  };
+  return await res.json();
 }
 
 export default function ScraperPanel() {
@@ -151,19 +52,39 @@ export default function ScraperPanel() {
     }
   };
 
-  const applyColor = (c: { bg: string; accent: string; text: string; surface: string }) => {
-    updateColors({ background: c.bg, primary: c.accent, text: c.text, surface: c.surface });
+  const applyColor = (bg: string, accent: string) => {
+    updateColors({ background: bg, primary: accent, text: '#111', surface: '#fff' });
   };
 
-  const applyFonts = (f: { heading: string; body: string }) => {
-    updateTypography({ headingFont: f.heading, fontFamily: f.body });
+  const applyFonts = (heading: string, body: string) => {
+    updateTypography({ headingFont: heading, fontFamily: body });
   };
 
   const applyAll = () => {
     if (!result) return;
-    if (result.colors[0]) applyColor(result.colors[0]);
-    if (result.fonts[0]) applyFonts(result.fonts[0]);
-    updateLayout({ radius: result.borderRadius });
+    if (result.colors.dominant[0]) applyColor(result.colors.dominant[0], result.colors.accent[0] || result.colors.dominant[0]);
+    if (result.fonts[0]) applyFonts(result.fonts[0], result.fonts[1] || result.fonts[0]);
+  };
+
+  const [saving, setSaving] = useState(false);
+  const saveToSupabase = async () => {
+    if (!result) return;
+    setSaving(true);
+    try {
+      const { error: dbError } = await supabase.from('design_scrapes').insert([{
+        url: result.url,
+        colors: result.colors,
+        fonts: result.fonts,
+        metrics: result.metrics,
+        components: result.components
+      }]);
+      if (dbError) throw dbError;
+      alert('Saved to Supabase successfully!');
+    } catch (e: any) {
+      alert('Failed to save: ' + e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -240,10 +161,16 @@ export default function ScraperPanel() {
               <CheckCircle2 size={13} className="text-emerald-400" />
               <span className="text-[11px] font-semibold text-slate-300">Blueprint extracted</span>
             </div>
-            <button onClick={applyAll}
-              className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition-colors">
-              Apply All
-            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={saveToSupabase} disabled={saving}
+                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-[#2a2a2a] hover:bg-[#3a3a3a] text-slate-300 transition-colors disabled:opacity-50">
+                {saving ? 'Saving...' : 'Save to DB'}
+              </button>
+              <button onClick={applyAll}
+                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition-colors">
+                Apply All
+              </button>
+            </div>
           </div>
 
           {/* Colors */}
@@ -253,13 +180,12 @@ export default function ScraperPanel() {
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Detected Colors</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {result.colors.slice(0, 4).map((c, i) => (
-                <button key={i} onClick={() => applyColor(c)}
+              {result.colors.dominant.map((bg, i) => (
+                <button key={i} onClick={() => applyColor(bg, result.colors.accent[i] || bg)}
                   className="flex items-center gap-2 px-2.5 py-2 rounded-lg border border-[#2a2a2a] hover:border-purple-500/50 transition-all">
                   <div className="flex gap-1">
-                    <span className="h-4 w-4 rounded-full border border-white/10" style={{ background: c.bg }} />
-                    <span className="h-4 w-4 rounded-full border border-white/10" style={{ background: c.accent }} />
-                    <span className="h-4 w-4 rounded-full border border-white/10" style={{ background: c.text }} />
+                    <span className="h-4 w-4 rounded-full border border-white/10" style={{ background: bg }} />
+                    <span className="h-4 w-4 rounded-full border border-white/10" style={{ background: result.colors.accent[i] || bg }} />
                   </div>
                   <span className="text-[10px] text-slate-500 hover:text-slate-300">Apply</span>
                 </button>
@@ -273,13 +199,10 @@ export default function ScraperPanel() {
               <Type size={11} className="text-slate-500" />
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Detected Fonts</span>
             </div>
-            {result.fonts.slice(0, 2).map((f, i) => (
-              <button key={i} onClick={() => applyFonts(f)}
+            {result.fonts.map((f, i) => (
+              <button key={i} onClick={() => applyFonts(f, f)}
                 className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-[#2a2a2a] hover:border-purple-500/50 text-left transition-all">
-                <div>
-                  <p className="text-[11px] text-slate-300">{f.heading.split(',')[0]}</p>
-                  <p className="text-[10px] text-slate-600">{f.body.split(',')[0]}</p>
-                </div>
+                <p className="text-[11px] text-slate-300">{f}</p>
                 <span className="text-[10px] text-purple-400">Apply</span>
               </button>
             ))}
@@ -289,26 +212,33 @@ export default function ScraperPanel() {
           <div className="space-y-2">
             <div className="flex items-center gap-1.5">
               <Grid size={11} className="text-slate-500" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Detected Components</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Extracted Components</span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {result.components.map((c) => (
-                <span key={c} className="px-2 py-1 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] text-[10px] text-slate-400">{c}</span>
-              ))}
+            <div className="flex flex-col gap-2">
+              {result.components.length === 0 ? (
+                <p className="text-[10px] text-slate-500">No recognizable components found.</p>
+              ) : (
+                result.components.map((c, i) => (
+                  <div key={i} className="p-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a]">
+                    <span className="text-[10px] text-slate-400 block mb-1">Type: {c.type}</span>
+                    <div className="text-[9px] font-mono text-slate-500 overflow-x-auto whitespace-nowrap pb-1">
+                      {c.css}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
           {/* Design Metadata */}
           <div className="space-y-1.5 p-3 rounded-lg bg-[#111] border border-[#1f1f1f]">
             {[
-              ['Navbar', result.navbarStyle],
-              ['Hero', result.heroLayout],
-              ['Cards', result.cardStyle],
-              ['Scroll', result.scrollEffect],
-              ['Animation', result.animationStyle],
-              ['Border Radius', result.borderRadius],
+              ['Symmetry Score', result.metrics.symmetry],
+              ['Density Score', result.metrics.density],
+              ['Complexity Score', result.metrics.complexity],
+              ['Economy Score', result.metrics.economy],
             ].map(([key, val]) => (
-              <div key={key} className="flex items-center justify-between text-[10px]">
+              <div key={key as string} className="flex items-center justify-between text-[10px]">
                 <span className="text-slate-600">{key}</span>
                 <span className="text-slate-300 font-mono">{val}</span>
               </div>
