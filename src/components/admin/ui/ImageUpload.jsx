@@ -38,11 +38,21 @@ export default function ImageUpload({ url, onUpload, folder = 'uploads', label =
   const handleFileProcess = async (file) => {
     if (!file) return;
 
-    if (imageOnly && !file.type.startsWith('image/')) {
+    // Supabase has strict file size limits, so we check on the client first
+    const maxMb = imageOnly ? 5 : 50;
+    if (file.size > maxMb * 1024 * 1024) {
+      toast.error(`File is too large (max ${maxMb}MB).`);
+      return;
+    }
+
+    const isImageFileCheck = file.type.startsWith('image/');
+    const isVideoFileCheck = file.type.startsWith('video/') || getFileKind(file.name) === 'video';
+
+    if (imageOnly && !isImageFileCheck) {
       toast.error('Only image files are allowed here.');
       return;
     }
-    if (acceptsVideo && !acceptsAny && !file.type.startsWith('video/') && !file.type.startsWith('image/')) {
+    if (acceptsVideo && !acceptsAny && !isVideoFileCheck && !isImageFileCheck) {
       toast.error('Only image or video files are allowed here.');
       return;
     }
@@ -128,7 +138,7 @@ export default function ImageUpload({ url, onUpload, folder = 'uploads', label =
       <input
         type="file"
         className="hidden"
-        accept={accept}
+        accept={accept === '*' ? undefined : accept}
         onChange={handleFileChange}
         disabled={uploading}
         ref={fileInputRef}
@@ -213,7 +223,7 @@ export default function ImageUpload({ url, onUpload, folder = 'uploads', label =
             <input
               type="file"
               className="hidden"
-              accept={accept}
+              accept={accept === '*' ? undefined : accept}
               onChange={handleFileChange}
               disabled={uploading}
             />

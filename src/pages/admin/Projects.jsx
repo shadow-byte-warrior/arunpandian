@@ -473,6 +473,7 @@ export default function Projects() {
               <ImageUpload
                 label="Project Image / Cover"
                 folder="projects"
+                accept="image/*,video/*"
                 url={formData.image_url}
                 onUpload={(url) => setFormData({ ...formData, image_url: url })}
               />
