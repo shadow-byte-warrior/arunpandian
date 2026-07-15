@@ -52,6 +52,10 @@ const HERO_OPTIONS = [
   { value: 'pelizzari' as const, label: 'Editorial Cinematic', description: 'Dark fullscreen editorial' },
   { value: 'russellnumo' as const, label: 'Monospace Grid', description: 'Structured info grid' },
   { value: 'vividmotion' as const, label: 'Soft Glassy', description: 'Glass card hero' },
+  { value: 'konnect' as const, label: 'Konnect Dark', description: 'Dark theme circular layout with floating avatars' },
+  { value: 'loveandrespect' as const, label: 'Love & Respect Grid', description: 'Text left, video/image grid right' },
+  { value: 'logoipsum' as const, label: 'Rounded Collage', description: 'Split layout with rounded image collage' },
+  { value: 'videostreaming' as const, label: 'Video Streaming', description: 'Large video preview side-by-side' },
 ];
 
 const CARD_OPTIONS = [

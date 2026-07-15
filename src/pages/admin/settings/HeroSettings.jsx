@@ -52,6 +52,9 @@ const heroSchema = z.object({
     value: z.string().min(1, 'Value is required'),
     label: z.string().min(1, 'Label is required')
   })),
+  gallery: z.array(z.object({
+    url: z.string()
+  })).default([]),
   hiddenFields: z.array(z.string()).default([]),
 });
 
@@ -92,7 +95,7 @@ export default function HeroSettings() {
       name: '', role: '', badge: '', headlineAccent: '', subtitle: '', profileImage: '',
       primaryCta: { label: '', href: '' }, secondaryCta: { label: '', href: '' },
       videoSrc: '', videoCaption: '', videoSubCaption: '',
-      story: [], credentials: [],
+      story: [], credentials: [], gallery: [],
       hiddenFields: []
     }
   });
@@ -125,6 +128,11 @@ export default function HeroSettings() {
   const { fields: credFields, append: appendCred, remove: removeCred, move: moveCred } = useFieldArray({
     control: form.control,
     name: "credentials"
+  });
+
+  const { fields: galleryFields, append: appendGallery, remove: removeGallery, move: moveGallery } = useFieldArray({
+    control: form.control,
+    name: "gallery"
   });
 
   useEffect(() => {
@@ -162,11 +170,12 @@ export default function HeroSettings() {
   const handleDragEnd = (event, type) => {
     const { active, over } = event;
     if (active.id !== over.id) {
-      const items = type === 'story' ? storyFields : credFields;
+      const items = type === 'story' ? storyFields : type === 'cred' ? credFields : galleryFields;
       const oldIndex = items.findIndex((i) => i.id === active.id);
       const newIndex = items.findIndex((i) => i.id === over.id);
       if (type === 'story') moveStory(oldIndex, newIndex);
-      else moveCred(oldIndex, newIndex);
+      else if (type === 'cred') moveCred(oldIndex, newIndex);
+      else moveGallery(oldIndex, newIndex);
     }
   };
 
@@ -303,6 +312,38 @@ export default function HeroSettings() {
                 </SortableItem>
               ))}
               {credFields.length === 0 && <p className="text-sm text-slate-500 text-center py-4">No stats added.</p>}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </SectionCard>
+
+      <SectionCard title="Hero Gallery (For Grid Layouts)" action={<>
+          <EyeToggle visible={isVisible('gallery')} onToggle={() => toggleVisibility('gallery')} label="gallery section" />
+          <button type="button" onClick={() => appendGallery({ url: '' })} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+            <Plus size={16} /> Add Image
+          </button></>}>
+        
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, 'gallery')}>
+          <SortableContext items={galleryFields.map(f => f.id)} strategy={verticalListSortingStrategy}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {galleryFields.map((field, index) => (
+                <SortableItem key={field.id} id={field.id}>
+                  <div className="flex gap-4 items-start w-full relative">
+                    <div className="flex-1 min-w-0">
+                      <ImageUpload 
+                        label={`Image ${index + 1}`}
+                        folder="hero_gallery"
+                        url={form.watch(`gallery.${index}.url`)}
+                        onUpload={(url) => form.setValue(`gallery.${index}.url`, url, { shouldDirty: true })}
+                      />
+                    </div>
+                    <button type="button" onClick={() => removeGallery(index)} className="absolute top-0 right-0 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors bg-white/90 shadow-sm border border-slate-100 m-2">
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </SortableItem>
+              ))}
+              {galleryFields.length === 0 && <p className="text-sm text-slate-500 py-4 col-span-full">No gallery images added.</p>}
             </div>
           </SortableContext>
         </DndContext>

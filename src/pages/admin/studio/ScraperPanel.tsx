@@ -71,6 +71,7 @@ export default function ScraperPanel() {
     if (!result) return;
     setSaving(true);
     try {
+      if (!supabase) throw new Error('Supabase client is not configured.');
       const { error: dbError } = await supabase.from('design_scrapes').insert([{
         url: result.url,
         colors: result.colors,

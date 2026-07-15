@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Mail, ArrowUpRight, ArrowDownRight, ArrowRight, Compass, ShieldAlert, Sparkles } from 'lucide-react';
+import { Mail, ArrowUpRight, ArrowDownRight, ArrowRight, Compass, ShieldAlert, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import MagneticButton from './MagneticButton';
 import Parallax from './Parallax';
 import arunProfile from '../assets/arun-profile.jpg';
@@ -29,6 +29,14 @@ const rise = {
 
 const Hero = () => {
   const { settings } = useContent();
+  const [isMuted, setIsMuted] = React.useState(true);
+  const videoRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
   const hero = settings.hero || {};
   const animationStyle = settings.theme?.layout?.animationStyle || 'default';
 
@@ -37,6 +45,7 @@ const Hero = () => {
   const ticker = hero.ticker || [];
   const socials = hero.socials || {};
   const hiddenFields = hero.hiddenFields || [];
+  const gallery = hero.gallery || [];
   const isVisible = (field) => !hiddenFields.includes(field);
 
   const heroStyle = settings.theme?.layout?.heroStyle || 'default';
@@ -392,12 +401,20 @@ const Hero = () => {
     return (
       <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-center items-center bg-[#0B0B0B] text-[#E8E4DC] px-5 py-24 text-center">
         {/* Fullscreen muted video background layer */}
-        <div className="absolute inset-0 pointer-events-none opacity-20 -z-10">
+        <div className="absolute inset-0 opacity-20 -z-10">
           <video
+            ref={videoRef}
             src={hero.videoSrc || '/hero-animation.mp4'}
-            autoPlay muted loop playsInline
-            className="w-full h-full object-cover"
+            autoPlay muted={isMuted} loop playsInline
+            className="w-full h-full object-cover pointer-events-none"
           />
+          <button 
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
+            className="absolute bottom-6 right-6 p-3 rounded-full bg-white/10 backdrop-blur text-white hover:bg-white/20 transition-colors pointer-events-auto z-50 flex items-center justify-center"
+            title={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          </button>
         </div>
 
         <div className="w-full max-w-5xl mx-auto flex flex-col items-center">
@@ -491,12 +508,255 @@ const Hero = () => {
               COORD: 54.3439°N 7.6321°W
             </div>
             
-            <div className="w-full max-w-sm aspect-square bg-[#111111] border-2 border-[#F3D016] p-2 relative">
+            <div className="w-full max-w-sm aspect-square bg-[#111111] border-2 border-[#F3D016] p-2 relative group">
               <video
+                ref={videoRef}
                 src={hero.videoSrc || '/hero-animation.mp4'}
-                autoPlay muted loop playsInline
+                autoPlay muted={isMuted} loop playsInline
                 className="w-full h-full object-cover filter grayscale contrast-125"
               />
+              <button 
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
+                className="absolute bottom-4 right-4 p-2 rounded bg-[#F3D016] text-black opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center justify-center"
+                title={isMuted ? "Unmute" : "Mute"}
+              >
+                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: KONNECT (Dark Theme Circular) ───
+  if (heroStyle === 'konnect') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-center bg-[#0d0e15] text-white pt-32 pb-12 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1d1f30] via-[#0d0e15] to-[#0d0e15] opacity-50 pointer-events-none -z-10" />
+        <div className="w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            {isVisible('badge') && (
+              <div data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="inline-block px-4 py-1.5 rounded-full bg-white/10 text-[#4c84ff] text-xs font-bold uppercase tracking-wider mb-6">
+                {hero.badge}
+              </div>
+            )}
+            <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-bold text-[clamp(2.5rem,5vw,4.5rem)] leading-tight mb-6">
+              {(hero.headline || []).map((line, i) => (
+                <span key={i} className="block">{line}</span>
+              ))}
+              {isVisible('headlineAccent') && (
+                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="text-[#4c84ff] block">{hero.headlineAccent}</span>
+              )}
+            </h1>
+            {isVisible('subtitle') && (
+              <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="text-white/60 text-lg max-w-lg mb-8 leading-relaxed">
+                {hero.subtitle?.replace(/<[^>]*>/g, '')}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-4">
+              {isVisible('primaryCta') && (
+                <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-8 py-3.5 bg-[#4c84ff] text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-[0_0_20px_rgba(76,132,255,0.4)]">
+                  {hero.primaryCta?.label}
+                </a>
+              )}
+              {isVisible('secondaryCta') && (
+                <a href={hero.secondaryCta?.href || '#about'} data-edit-id="hero.secondaryCta" data-edit-name="Hero · Secondary button" data-edit-kind="button" data-edit-path="hero.secondaryCta.label" className="px-8 py-3.5 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors">
+                  {hero.secondaryCta?.label}
+                </a>
+              )}
+            </div>
+          </div>
+          <div className="relative flex justify-center items-center h-full min-h-[500px]">
+             <div className="absolute w-[400px] h-[400px] rounded-full border border-white/10 flex items-center justify-center">
+               <div className="w-[300px] h-[300px] rounded-full bg-gradient-to-tr from-[#4c84ff] to-[#ff4c84] flex items-center justify-center overflow-hidden p-1 shadow-2xl">
+                 <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Profile" className="w-full h-full object-cover rounded-full bg-[#151722]" />
+               </div>
+             </div>
+             <div className="absolute top-[20%] right-[15%] w-16 h-16 rounded-full overflow-hidden border-2 border-[#151722] shadow-lg animate-[bounce_3s_ease-in-out_infinite]">
+                <img src={gallery[1]?.url || gallery[0]?.url || arunProfile} alt="Float" className="w-full h-full object-cover" />
+             </div>
+             <div className="absolute bottom-[25%] left-[10%] w-14 h-14 rounded-full overflow-hidden border-2 border-[#151722] shadow-lg animate-[bounce_4s_ease-in-out_infinite]">
+                <img src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Float" className="w-full h-full object-cover" />
+             </div>
+             {credentials.length > 0 && (
+               <div className="absolute top-[30%] left-[5%] bg-white/10 backdrop-blur border border-white/10 px-4 py-2 rounded-xl flex items-center gap-3">
+                 <span className="text-[#4c84ff] font-bold text-xl">{credentials[0]?.value}</span>
+                 <span className="text-white/70 text-xs uppercase">{credentials[0]?.label}</span>
+               </div>
+             )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: LOVE & RESPECT (Grid & Video) ───
+  if (heroStyle === 'loveandrespect') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-center bg-[#f7f5f2] text-[#2c2b29] pt-32 pb-12 overflow-hidden">
+        <div className="absolute left-[35%] top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none opacity-[0.03] -z-10">
+          <span className="font-serif text-[40rem] leading-none">&amp;</span>
+        </div>
+        <div className="w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center z-10">
+          <div className="max-w-lg">
+            <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-serif italic font-light text-5xl sm:text-7xl leading-[1.1] mb-8">
+              {(hero.headline || []).map((line, i) => (
+                <span key={i} className="block">{line}</span>
+              ))}
+              {isVisible('headlineAccent') && (
+                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="not-italic font-bold tracking-tight block">{hero.headlineAccent}</span>
+              )}
+            </h1>
+            {isVisible('subtitle') && (
+              <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="text-lg opacity-80 mb-10 leading-relaxed font-sans">
+                {hero.subtitle?.replace(/<[^>]*>/g, '')}
+              </p>
+            )}
+            {isVisible('primaryCta') && (
+              <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="inline-block border-b-2 border-[#2c2b29] pb-1 uppercase tracking-widest text-sm font-bold hover:opacity-60 transition-opacity">
+                {hero.primaryCta?.label}
+              </a>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-4 h-[600px]">
+            <div className="flex flex-col gap-4 h-full">
+              <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
+                <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Grid 1" className="w-full h-full object-cover filter grayscale" />
+              </div>
+              <div className="bg-[#e4e2de] rounded-sm overflow-hidden h-1/3 relative">
+                <img src={gallery[1]?.url || arunProfile} alt="Grid 2" className="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-4 h-full pt-12">
+              <div className="bg-[#2c2b29] rounded-sm overflow-hidden h-1/2 relative group">
+                <video ref={videoRef} src={hero.videoSrc || '/hero-animation.mp4'} autoPlay muted={isMuted} loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                <button 
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
+                  className="absolute inset-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20"
+                >
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-full flex items-center justify-center border border-white/40 text-white">
+                    {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  </div>
+                </button>
+              </div>
+              <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
+                <img src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Grid 3" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: LOGOIPSUM (Rounded Collage) ───
+  if (heroStyle === 'logoipsum') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-center bg-white text-slate-900 pt-32 pb-12 overflow-hidden">
+        <div className="absolute inset-y-0 right-0 w-full md:w-[45%] bg-[#fce044] -z-10 rounded-l-[100px] hidden md:block" />
+        <div className="w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+          <div className="max-w-xl">
+            <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-extrabold text-[clamp(2.5rem,4vw,3.5rem)] leading-[1.1] mb-6">
+              {(hero.headline || []).map((line, i) => (
+                <span key={i} className="block">{line}</span>
+              ))}
+              {isVisible('headlineAccent') && (
+                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-[#fce044] block mt-2">{hero.headlineAccent}</span>
+              )}
+            </h1>
+            {isVisible('subtitle') && (
+              <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="text-slate-500 text-lg mb-8 leading-relaxed">
+                {hero.subtitle?.replace(/<[^>]*>/g, '')}
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-6">
+              {isVisible('primaryCta') && (
+                <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-8 py-4 bg-slate-900 text-white rounded-[2rem] font-semibold hover:bg-slate-800 transition-colors shadow-lg">
+                  {hero.primaryCta?.label}
+                </a>
+              )}
+              {isVisible('secondaryCta') && (
+                <a href={hero.secondaryCta?.href || '#about'} data-edit-id="hero.secondaryCta" data-edit-name="Hero · Secondary button" data-edit-kind="button" data-edit-path="hero.secondaryCta.label" className="flex items-center gap-3 font-semibold text-slate-800 hover:text-slate-600 transition-colors">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md border border-slate-100 shrink-0">
+                    <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-slate-900 border-b-[5px] border-b-transparent ml-1" />
+                  </div>
+                  {hero.secondaryCta?.label || 'Watch Video'}
+                </a>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-6 h-[500px] justify-center lg:justify-end">
+            <div className="flex flex-col gap-6 pt-12 w-40 sm:w-48">
+              <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Collage 1" className="w-full h-[60%] object-cover rounded-full shadow-lg" />
+              <img src={gallery[1]?.url || arunProfile} alt="Collage 2" className="w-full h-[40%] object-cover rounded-[3rem] shadow-lg" />
+            </div>
+            <div className="flex flex-col gap-6 w-48 sm:w-56">
+              <img src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Collage 3" className="w-full h-[45%] object-cover rounded-[3rem] shadow-lg" />
+              <img src={gallery[3]?.url || gallery[0]?.url || arunProfile} alt="Collage 4" className="w-full h-[55%] object-cover rounded-full shadow-lg" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ─── HERO STYLE: VIDEO STREAMING (Side-by-side Video) ───
+  if (heroStyle === 'videostreaming') {
+    return (
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-center bg-[#0a0a0a] text-white pt-32 pb-12 overflow-hidden">
+        <div className="w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-5 max-w-xl">
+            {isVisible('badge') && (
+              <div data-edit-id="hero.badge" data-edit-name="Hero · Badge" data-edit-kind="text" data-edit-path="hero.badge" className="text-red-500 font-bold uppercase tracking-[0.2em] mb-4 text-xs flex items-center">
+                <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-2 animate-pulse" />
+                {hero.badge}
+              </div>
+            )}
+            <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-bold text-[clamp(2.5rem,4vw,3.5rem)] leading-tight mb-6">
+              {(hero.headline || []).map((line, i) => (
+                <span key={i} className="block">{line}</span>
+              ))}
+              {isVisible('headlineAccent') && (
+                <span data-edit-id="hero.accent" data-edit-name="Hero · Accent word" data-edit-kind="text" data-edit-path="hero.headlineAccent" className="text-white/40 block">{hero.headlineAccent}</span>
+              )}
+            </h1>
+            {isVisible('subtitle') && (
+              <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="text-white/60 text-lg mb-8 leading-relaxed">
+                {hero.subtitle?.replace(/<[^>]*>/g, '')}
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-4">
+              {isVisible('primaryCta') && (
+                <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-8 py-3.5 bg-white text-black font-semibold rounded-md hover:bg-slate-200 transition-colors">
+                  {hero.primaryCta?.label}
+                </a>
+              )}
+              {isVisible('secondaryCta') && (
+                <a href={hero.secondaryCta?.href || '#about'} data-edit-id="hero.secondaryCta" data-edit-name="Hero · Secondary button" data-edit-kind="button" data-edit-path="hero.secondaryCta.label" className="px-8 py-3.5 border border-white/20 text-white font-semibold rounded-md hover:bg-white/10 transition-colors">
+                  {hero.secondaryCta?.label}
+                </a>
+              )}
+            </div>
+          </div>
+          <div className="lg:col-span-7 relative group mt-12 lg:mt-0">
+            <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-slate-900 border border-white/10 aspect-[4/3] lg:aspect-video">
+              <video ref={videoRef} src={hero.videoSrc || '/hero-animation.mp4'} autoPlay muted={isMuted} loop playsInline className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <button 
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
+                  className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 hover:bg-red-500 transition-all duration-300 pointer-events-auto text-white"
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                   {isMuted ? <VolumeX size={32} /> : <Volume2 size={32} />}
+                </button>
+              </div>
+              {(isVisible('videoCaption') || isVisible('videoSubCaption')) && (
+                 <div className="absolute bottom-6 left-6 flex flex-col">
+                   {isVisible('videoCaption') && <span className="text-white font-bold text-xl drop-shadow-md">{hero.videoCaption}</span>}
+                   {isVisible('videoSubCaption') && <span className="text-white/80 text-sm drop-shadow-md">{hero.videoSubCaption}</span>}
+                 </div>
+              )}
             </div>
           </div>
         </div>
@@ -620,13 +880,21 @@ const Hero = () => {
           <motion.div initial={{ opacity: 0, scale: 0.94, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 1, ease, delay: 0.25 }}>
             <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="relative mx-auto max-w-md">
               <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-accent/25 via-indigo-300/20 to-transparent blur-3xl" />
-              <div className="relative rounded-[1.75rem] border border-line bg-surface p-2 shadow-[0_40px_90px_-30px_rgba(9,9,11,0.4)]">
+              <div className="relative rounded-[1.75rem] border border-line bg-surface p-2 shadow-[0_40px_90px_-30px_rgba(9,9,11,0.4)] group">
                 <video
+                  ref={videoRef}
                   data-edit-id="hero.videoSrc" data-edit-name="Hero · Video" data-edit-kind="image" data-edit-path="hero.videoSrc"
                   className="w-full rounded-[1.35rem] aspect-square object-cover bg-ink"
                   src={hero.videoSrc || '/hero-animation.mp4'}
-                  autoPlay muted loop playsInline preload="auto"
+                  autoPlay muted={isMuted} loop playsInline preload="auto"
                 />
+                <button 
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
+                  className="absolute top-6 right-6 p-2 rounded-full bg-surface/80 backdrop-blur text-ink shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center justify-center border border-line"
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                </button>
                 {(isVisible('videoCaption') || isVisible('videoSubCaption')) && (
                   <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between rounded-xl bg-surface/85 backdrop-blur px-4 py-2.5 border border-line">
                     {isVisible('videoCaption') && <span data-edit-id="hero.videoCaption" data-edit-name="Hero · Video caption" data-edit-kind="text" data-edit-path="hero.videoCaption" className="font-display font-semibold text-ink text-sm">{hero.videoCaption || 'Data · in motion'}</span>}
