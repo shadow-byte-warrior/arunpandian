@@ -415,8 +415,12 @@ export default function Experiences() {
                 <p className="text-xs text-slate-400 mb-4">{exp.period}</p>
                 
                 {exp.media_url && (
-                  <div className="mb-4 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 relative aspect-video flex-shrink-0">
-                    <img src={exp.media_url} alt="Certificate" className="w-full h-full object-cover" />
+                  <div 
+                    className="mb-4 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 relative aspect-video flex-shrink-0 cursor-pointer group hover:border-slate-300 transition-colors"
+                    onClick={() => window.open(exp.media_url, '_blank')}
+                    title="Click to view full certificate"
+                  >
+                    <img src={exp.media_url} alt="Certificate" className="w-full h-full object-contain p-2" />
                   </div>
                 )}
                 
