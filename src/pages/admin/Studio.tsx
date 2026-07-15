@@ -3,9 +3,11 @@ import {
   Monitor, Laptop, Tablet, Smartphone, Save,
   Palette, Layout, Zap, Wand2, Loader2,
   Grid3X3, RefreshCw, X, PanelLeft, PanelRight,
-  CheckCircle2, Sparkles, ChevronRight,
+  CheckCircle2, Sparkles, ChevronRight, MousePointer2, Eye
 } from 'lucide-react';
 import { useThemeStore } from '../../theme/store';
+import { useEditorStore } from '../../editor/editorStore';
+import { supabase } from '../../lib/supabaseClient';
 import { useSiteSettings } from '../../components/admin/hooks/useSiteSettings';
 import { useContent } from '../../context/ContentProvider';
 import { presets } from '../../theme/presets';
@@ -30,6 +32,18 @@ const RIGHT_TABS: { id: Tab; icon: any; label: string; activeClass: string }[] =
   { id: 'motion',    icon: Zap,      label: 'Motion',    activeClass: 'text-amber-600 border-amber-500' },
   { id: 'scraper',   icon: Wand2,    label: 'Scraper',   activeClass: 'text-emerald-600 border-emerald-500' },
 ];
+
+function isPlainObject(x: any) {
+  return x && typeof x === 'object' && !Array.isArray(x);
+}
+function deepMerge(base: any, over: any): any {
+  if (!isPlainObject(base) || !isPlainObject(over)) return over === undefined ? base : over;
+  const out = { ...base };
+  for (const k of Object.keys(over)) {
+    out[k] = isPlainObject(base[k]) && isPlainObject(over[k]) ? deepMerge(base[k], over[k]) : over[k];
+  }
+  return out;
+}
 
 // Animated publish toast
 function PublishToast({ onClose }: { onClose: () => void }) {
@@ -62,6 +76,11 @@ export default function Studio() {
   const [rightOpen, setRightOpen] = useState(true);
   const [iframeKey, setIframeKey] = useState(0);
 
+  const enabled = useEditorStore((s) => s.enabled);
+  const toggleEnabled = useEditorStore((s) => s.toggleEnabled);
+  const content = useEditorStore((s) => s.content);
+  const setContent = useEditorStore((s) => s.setContent);
+
   // Push the full theme to the iframe
   const pushTheme = useCallback(() => {
     iframeRef.current?.contentWindow?.postMessage(
@@ -73,21 +92,45 @@ export default function Studio() {
   // Push on every theme change (real-time)
   useEffect(() => { pushTheme(); }, [theme, pushTheme]);
 
-  // Listen for iframe ready signals
+  // Listen for iframe ready signals and content updates
   useEffect(() => {
     const handle = (e: MessageEvent) => {
       if (e.data?.type === 'THEME_STUDIO_READY') pushTheme();
+      else if (e.data?.type === 'EDITOR_CONTENT') setContent(e.data.path, e.data.value);
+      else if (e.data?.type === 'PREVIEW_READY' || e.data?.type === 'EDITOR_RUNTIME_READY') {
+        pushTheme();
+        iframeRef.current?.contentWindow?.postMessage({ type: 'EDITOR_MODE', enabled }, '*');
+      }
     };
     window.addEventListener('message', handle);
     return () => window.removeEventListener('message', handle);
-  }, [pushTheme]);
+  }, [pushTheme, enabled, setContent]);
 
-  const handleIframeLoad = () => pushTheme();
+  // Push editor mode when it changes
+  useEffect(() => {
+    iframeRef.current?.contentWindow?.postMessage({ type: 'EDITOR_MODE', enabled }, '*');
+  }, [enabled]);
+
+  const handleIframeLoad = () => {
+    pushTheme();
+    iframeRef.current?.contentWindow?.postMessage({ type: 'EDITOR_MODE', enabled }, '*');
+  };
 
   const handlePublish = async () => {
     setIsSaving(true);
     try {
       await saveSettings(theme);
+      
+      // Save content overrides if any
+      if (supabase && Object.keys(content).length > 0) {
+        const ops: Promise<any>[] = [];
+        for (const [key, partial] of Object.entries(content)) {
+          const merged = deepMerge(settings?.[key] || {}, partial);
+          ops.push(supabase.from('site_settings').upsert({ key, value: merged }) as any);
+        }
+        await Promise.all(ops);
+      }
+      
       setPublished(true);
     } finally {
       setIsSaving(false);
@@ -193,7 +236,7 @@ export default function Studio() {
 
         {/* Top Toolbar */}
         <header className="flex items-center gap-2 px-3 h-11 bg-white border-b border-slate-200/80 shrink-0 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
-          {/* Left — toggle sidebar */}
+          {/* Left — toggle sidebar & editing */}
           <div className="flex items-center gap-2">
             {!leftOpen && (
               <button
@@ -203,6 +246,17 @@ export default function Studio() {
                 <PanelLeft size={14} />
               </button>
             )}
+            {!leftOpen && <div className="h-4 w-px bg-slate-200 mx-1" />}
+            
+            <button
+              onClick={toggleEnabled}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                enabled ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800'
+              }`}
+            >
+              {enabled ? <MousePointer2 size={13} /> : <Eye size={13} />}
+              {enabled ? 'Editing' : 'Preview'}
+            </button>
           </div>
 
           {/* Center: Device switcher */}
