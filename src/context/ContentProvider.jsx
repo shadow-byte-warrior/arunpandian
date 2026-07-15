@@ -302,6 +302,9 @@ function mapExperience(row) {
     period: row.period,
     type: row.type,
     impact: row.impact,
+    media_url: row.media_url,
+    company_website: row.company_website,
+    sort_order: row.sort_order,
   };
 }
 
