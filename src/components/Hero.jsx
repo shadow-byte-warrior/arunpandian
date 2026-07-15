@@ -794,8 +794,8 @@ const Hero = () => {
   // ─── HERO STYLE: PUREMODA (Fashion Bento) ───
   if (heroStyle === 'puremoda') {
     return (
-      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-white text-black p-4 md:p-8 overflow-hidden">
-        <div className="w-full max-w-[1400px] mx-auto h-[calc(100vh-4rem)] min-h-[600px] grid lg:grid-cols-2 gap-4 pt-16">
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-white text-black p-4 md:p-8 pt-24 md:pt-32 overflow-hidden">
+        <div className="w-full max-w-[1400px] mx-auto h-[calc(100vh-8rem)] min-h-[600px] grid lg:grid-cols-2 gap-4">
           <div className="flex flex-col gap-4 h-full">
             <div className="bg-[#e4e2de] rounded-3xl p-8 lg:p-12 flex flex-col justify-between flex-1 relative overflow-hidden group">
               <div>
@@ -817,17 +817,17 @@ const Hero = () => {
                 {gallery.length === 2 ? (
                   <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
                     <img src={gallery[1]?.url} className="w-full h-full object-cover" />
-                    <div className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">#FEATURED</div>
+                    <div data-edit-id="hero.puremodaTag1" data-edit-name="Tag 1" data-edit-kind="text" data-edit-path="hero.puremodaTag1" className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">{hero.puremodaTag1 || '#ANALYTICS'}</div>
                   </div>
                 ) : (
                   <>
                     <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
                       <img src={gallery[1]?.url} className="w-full h-full object-cover" />
-                      <div className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">#RIP STOP</div>
+                      <div data-edit-id="hero.puremodaTag1" data-edit-name="Tag 1" data-edit-kind="text" data-edit-path="hero.puremodaTag1" className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">{hero.puremodaTag1 || '#MACHINE_LEARNING'}</div>
                     </div>
                     <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
                       <img src={gallery[2]?.url} className="w-full h-full object-cover" />
-                      <div className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">#INSULATED</div>
+                      <div data-edit-id="hero.puremodaTag2" data-edit-name="Tag 2" data-edit-kind="text" data-edit-path="hero.puremodaTag2" className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">{hero.puremodaTag2 || '#PREDICTIVE'}</div>
                     </div>
                   </>
                 )}
@@ -838,8 +838,8 @@ const Hero = () => {
             <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             {isVisible('primaryCta') && (
-              <a href={hero.primaryCta?.href || '#projects'} className="absolute top-[60%] right-[10%] w-24 h-24 rounded-full border border-white text-white flex items-center justify-center font-semibold text-xs tracking-widest text-center hover:bg-white hover:text-black transition-colors backdrop-blur-sm">
-                SHOP NOW
+              <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="absolute top-[60%] right-[10%] w-24 h-24 rounded-full border border-white text-white flex items-center justify-center font-semibold text-xs tracking-widest text-center hover:bg-white hover:text-black transition-colors backdrop-blur-sm">
+                {hero.primaryCta?.label || 'SHOP NOW'}
               </a>
             )}
             <div className="absolute bottom-6 left-6 right-6 flex justify-between items-center bg-white/20 backdrop-blur-md rounded-full p-2 border border-white/30 text-white">
@@ -861,35 +861,35 @@ const Hero = () => {
   // ─── HERO STYLE: KATERIO (Retro Split Grid) ───
   if (heroStyle === 'katerio') {
     return (
-      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-[#90939c] text-black p-4 md:p-8 overflow-hidden">
-        <div className="w-full max-w-[1400px] mx-auto h-[calc(100vh-4rem)] min-h-[600px] bg-white rounded-[2rem] p-4 flex flex-col pt-16 lg:flex-row gap-4 shadow-2xl">
+      <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-[#90939c] text-black p-4 md:p-8 pt-24 md:pt-32 overflow-hidden">
+        <div className="w-full max-w-[1400px] mx-auto h-[calc(100vh-8rem)] min-h-[600px] bg-white rounded-[2rem] p-4 flex flex-col lg:flex-row gap-4 shadow-2xl">
           <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group">
             <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            <div className="absolute top-6 left-6 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
-              New Collection Was Unveiled!
+            <div data-edit-id="hero.katerioBadge1" data-edit-name="Badge 1" data-edit-kind="text" data-edit-path="hero.katerioBadge1" className="absolute top-6 left-6 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
+              {hero.katerioBadge1 || 'New Insights Unveiled!'}
             </div>
-            <div className="absolute top-6 left-1/2 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
-              2023 Spring
+            <div data-edit-id="hero.katerioBadge2" data-edit-name="Badge 2" data-edit-kind="text" data-edit-path="hero.katerioBadge2" className="absolute top-6 left-1/2 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
+              {hero.katerioBadge2 || '2026 Q3 Analysis'}
             </div>
             <div className="absolute bottom-8 left-8 z-10">
-              <h1 className="font-display font-black text-[clamp(2.5rem,4vw,3.5rem)] text-white leading-tight">
-                Your<br/>Style<br/>Speaks.
+              <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-black text-[clamp(2.5rem,4vw,3.5rem)] text-white leading-tight">
+                {hero.headline?.join('\\n') || 'Your\\nData\\nSpeaks.'}
               </h1>
             </div>
             {isVisible('primaryCta') && (
-               <a href={hero.primaryCta?.href || '#projects'} className="absolute bottom-8 right-8 bg-[#c4e4d4] text-[#1c2e25] px-6 py-3 rounded-full font-bold flex items-center gap-4 hover:bg-white transition-colors z-10">
-                 NEXT UP <ArrowRight size={16} />
+               <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="absolute bottom-8 right-8 bg-[#c4e4d4] text-[#1c2e25] px-6 py-3 rounded-full font-bold flex items-center gap-4 hover:bg-white transition-colors z-10">
+                 {hero.primaryCta?.label || 'NEXT UP'} <ArrowRight size={16} />
                </a>
             )}
-            <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-24 h-24 rounded-full border border-white/40 text-white flex items-center justify-center font-semibold text-xs tracking-widest text-center hover:bg-white hover:text-black transition-colors backdrop-blur-md shadow-lg z-10 cursor-pointer">
-              SHOP NOW
+            <div data-edit-id="hero.katerioShop" data-edit-name="Action button" data-edit-kind="text" data-edit-path="hero.katerioShop" className="absolute top-1/2 right-[10%] -translate-y-1/2 w-24 h-24 rounded-full border border-white/40 text-white flex items-center justify-center font-semibold text-xs tracking-widest text-center hover:bg-white hover:text-black transition-colors backdrop-blur-md shadow-lg z-10 cursor-pointer">
+              {hero.katerioShop || 'EXPLORE'}
             </div>
           </div>
           <div className="flex-1 flex flex-col gap-4">
             <div className="bg-[#b5decb] rounded-3xl p-8 flex-1 flex flex-col justify-between relative overflow-hidden">
-              <h2 className="font-display font-black text-[clamp(1.5rem,3vw,2.5rem)] text-[#1a2f24] leading-tight uppercase max-w-sm relative z-10">
-                UNLEASH YOUR STREET STYLE WITH OUR RETRO NEW COLLECTION
+              <h2 data-edit-id="hero.katerioHeadline" data-edit-name="Subheadline" data-edit-kind="text" data-edit-path="hero.katerioHeadline" className="font-display font-black text-[clamp(1.5rem,3vw,2.5rem)] text-[#1a2f24] leading-tight uppercase max-w-sm relative z-10">
+                {hero.katerioHeadline || 'UNLEASH YOUR BUSINESS POTENTIAL WITH DATA DRIVEN INSIGHTS'}
               </h2>
               <div className="absolute top-12 right-12 text-[#1a2f24] opacity-50 z-0">
                 <svg width="120" height="120" viewBox="0 0 100 100" className="animate-[spin_20s_linear_infinite]"><path d="M50 10 C 20 10, 10 40, 10 60 C 10 80, 40 90, 70 80 C 90 70, 90 40, 70 20" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
@@ -910,8 +910,8 @@ const Hero = () => {
                 <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition">
                   <ArrowUpRight size={16} />
                 </div>
-                <div className="font-mono text-sm lg:text-lg opacity-80">New Surprise!</div>
-                <div className="font-display font-black text-2xl lg:text-3xl">Retro<br/>Outfit</div>
+                <div data-edit-id="hero.katerioSub1" data-edit-name="Card Subtitle" data-edit-kind="text" data-edit-path="hero.katerioSub1" className="font-mono text-sm lg:text-lg opacity-80">{hero.katerioSub1 || 'Deep Dive!'}</div>
+                <div data-edit-id="hero.katerioSub2" data-edit-name="Card Title" data-edit-kind="text" data-edit-path="hero.katerioSub2" className="font-display font-black text-2xl lg:text-3xl" dangerouslySetInnerHTML={{ __html: hero.katerioSub2 || 'Predictive<br/>Models' }} />
               </div>
               {gallery.length >= 2 ? (
                 <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group cursor-pointer">
@@ -920,10 +920,10 @@ const Hero = () => {
                   <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-white backdrop-blur group-hover:bg-black transition z-10">
                     <ArrowUpRight size={16} />
                   </div>
-                  <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 text-white text-[10px] lg:text-xs font-mono opacity-80 leading-relaxed z-10 hidden sm:block">
-                    We are challenging conventional retail, putting an end to dead stock, unconventional waste and more fantastic.
+                  <div data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="absolute inset-x-6 top-1/2 -translate-y-1/2 text-white text-[10px] lg:text-xs font-mono opacity-80 leading-relaxed z-10 hidden sm:block">
+                    {hero.subtitle?.replace(/<[^>]*>/g, '') || 'Challenging conventional decision-making, putting an end to guesswork and bringing precision.'}
                   </div>
-                  <div className="absolute bottom-6 left-6 text-white font-black text-sm lg:text-xl tracking-wider z-10">#TRENDING 2023</div>
+                  <div data-edit-id="hero.katerioTag" data-edit-name="Tag" data-edit-kind="text" data-edit-path="hero.katerioTag" className="absolute bottom-6 left-6 text-white font-black text-sm lg:text-xl tracking-wider z-10">{hero.katerioTag || '#DATA_MINING'}</div>
                 </div>
               ) : (
                 <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group hidden sm:block">

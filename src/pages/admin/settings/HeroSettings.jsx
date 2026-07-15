@@ -56,7 +56,7 @@ const heroSchema = z.object({
     url: z.string()
   })).default([]),
   hiddenFields: z.array(z.string()).default([]),
-});
+}).passthrough();
 
 function SortableItem(props) {
   const {
