@@ -105,6 +105,8 @@ CREATE TABLE IF NOT EXISTS experiences (
   period     TEXT NOT NULL,
   type       TEXT DEFAULT 'Internship',
   impact     TEXT,
+  media_url  TEXT,
+  company_website TEXT,
   sort_order INT NOT NULL DEFAULT 0,
   published  BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()

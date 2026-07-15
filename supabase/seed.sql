@@ -215,7 +215,7 @@ INSERT INTO blogs (title, slug, excerpt, content, tags, read_time, published, so
 
 -- ─── EXPERIENCES ────────────────────────────────────────────
 
-INSERT INTO experiences (role, company, period, type, impact, sort_order) VALUES
+INSERT INTO experiences (role, company, period, type, impact, media_url, company_website, sort_order) VALUES
 
 (
   'Software Engineer Intern',
@@ -223,6 +223,8 @@ INSERT INTO experiences (role, company, period, type, impact, sort_order) VALUES
   'Jan 2026 — Mar 2026',
   'Internship',
   'Built AI-powered data-processing and automation workflows in Python to support business decision-making, moving structured and unstructured data through analytical pipelines.',
+  NULL,
+  NULL,
   1
 ),
 (
@@ -231,5 +233,7 @@ INSERT INTO experiences (role, company, period, type, impact, sort_order) VALUES
   'Dec 2025 — Jan 2026',
   'Internship',
   'Built NLP data pipelines for automated text processing and n8n automation scripts across APIs and databases — reducing manual data-handling effort and improving workflow consistency.',
+  NULL,
+  NULL,
   2
 );
