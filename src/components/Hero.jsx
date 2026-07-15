@@ -577,10 +577,10 @@ const Hero = () => {
                  <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Profile" className="w-full h-full object-cover rounded-full bg-[#151722]" />
                </div>
              </div>
-             <div className="absolute top-[20%] right-[15%] w-16 h-16 rounded-full overflow-hidden border-2 border-[#151722] shadow-lg animate-[bounce_3s_ease-in-out_infinite]">
+             <div className="absolute top-[20%] right-[15%] w-16 h-16 rounded-full overflow-hidden border-2 border-[#151722] shadow-lg animate-[bounce_3s_ease-in-out_infinite]" style={{ opacity: gallery.length === 1 ? 0 : 1 }}>
                 <img src={gallery[1]?.url || gallery[0]?.url || arunProfile} alt="Float" className="w-full h-full object-cover" />
              </div>
-             <div className="absolute bottom-[25%] left-[10%] w-14 h-14 rounded-full overflow-hidden border-2 border-[#151722] shadow-lg animate-[bounce_4s_ease-in-out_infinite]">
+             <div className="absolute bottom-[25%] left-[10%] w-14 h-14 rounded-full overflow-hidden border-2 border-[#151722] shadow-lg animate-[bounce_4s_ease-in-out_infinite]" style={{ opacity: (gallery.length === 1 || gallery.length === 2) ? 0 : 1 }}>
                 <img src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Float" className="w-full h-full object-cover" />
              </div>
              {credentials.length > 0 && (
@@ -625,15 +625,25 @@ const Hero = () => {
           </div>
           <div className="grid grid-cols-2 gap-4 h-[600px]">
             <div className="flex flex-col gap-4 h-full">
-              <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
-                <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Grid 1" className="w-full h-full object-cover filter grayscale" />
-              </div>
-              <div className="bg-[#e4e2de] rounded-sm overflow-hidden h-1/3 relative">
-                <img src={gallery[1]?.url || arunProfile} alt="Grid 2" className="w-full h-full object-cover" />
-              </div>
+              {gallery.length <= 1 ? (
+                <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
+                  <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Grid 1" className="w-full h-full object-cover filter grayscale" />
+                </div>
+              ) : (
+                <>
+                  <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
+                    <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Grid 1" className="w-full h-full object-cover filter grayscale" />
+                  </div>
+                  {gallery.length >= 3 && (
+                    <div className="bg-[#e4e2de] rounded-sm overflow-hidden h-1/3 relative">
+                      <img src={gallery[1]?.url || arunProfile} alt="Grid 2" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </>
+              )}
             </div>
             <div className="flex flex-col gap-4 h-full pt-12">
-              <div className="bg-[#2c2b29] rounded-sm overflow-hidden h-1/2 relative group">
+              <div className={`bg-[#2c2b29] rounded-sm overflow-hidden relative group ${(gallery.length === 2 || gallery.length >= 3) ? 'h-1/2' : 'h-full flex-1'}`}>
                 <video ref={videoRef} src={hero.videoSrc || '/hero-animation.mp4'} autoPlay muted={isMuted} loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                 <button 
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
@@ -644,9 +654,11 @@ const Hero = () => {
                   </div>
                 </button>
               </div>
-              <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
-                <img src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Grid 3" className="w-full h-full object-cover" />
-              </div>
+              {(gallery.length === 2 || gallery.length >= 3 || !gallery.length) && (
+                <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
+                  <img src={gallery.length === 2 ? gallery[1]?.url : (gallery[2]?.url || gallery[0]?.url || arunProfile)} alt="Grid 3" className="w-full h-full object-cover" />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -691,14 +703,41 @@ const Hero = () => {
             </div>
           </div>
           <div className="flex gap-6 h-[500px] justify-center lg:justify-end">
-            <div className="flex flex-col gap-6 pt-12 w-40 sm:w-48">
-              <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Collage 1" className="w-full h-[60%] object-cover rounded-full shadow-lg" />
-              <img src={gallery[1]?.url || arunProfile} alt="Collage 2" className="w-full h-[40%] object-cover rounded-[3rem] shadow-lg" />
-            </div>
-            <div className="flex flex-col gap-6 w-48 sm:w-56">
-              <img src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Collage 3" className="w-full h-[45%] object-cover rounded-[3rem] shadow-lg" />
-              <img src={gallery[3]?.url || gallery[0]?.url || arunProfile} alt="Collage 4" className="w-full h-[55%] object-cover rounded-full shadow-lg" />
-            </div>
+            {gallery.length === 1 ? (
+              <div className="w-64 sm:w-80 h-full">
+                <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Collage 1" className="w-full h-full object-cover rounded-[3rem] shadow-lg" />
+              </div>
+            ) : gallery.length === 2 ? (
+              <>
+                <div className="w-48 sm:w-56 h-full pt-12">
+                  <img src={gallery[0]?.url} alt="Collage 1" className="w-full h-[80%] object-cover rounded-full shadow-lg" />
+                </div>
+                <div className="w-48 sm:w-56 h-full pb-12">
+                  <img src={gallery[1]?.url} alt="Collage 2" className="w-full h-[80%] object-cover rounded-[3rem] shadow-lg" />
+                </div>
+              </>
+            ) : gallery.length === 3 ? (
+              <>
+                <div className="flex flex-col gap-6 pt-12 w-40 sm:w-48">
+                  <img src={gallery[0]?.url} alt="Collage 1" className="w-full h-[50%] object-cover rounded-full shadow-lg" />
+                  <img src={gallery[1]?.url} alt="Collage 2" className="w-full h-[50%] object-cover rounded-[3rem] shadow-lg" />
+                </div>
+                <div className="w-48 sm:w-56 h-full">
+                  <img src={gallery[2]?.url} alt="Collage 3" className="w-full h-[90%] object-cover rounded-[3rem] shadow-lg mt-6" />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col gap-6 pt-12 w-40 sm:w-48">
+                  <img src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Collage 1" className="w-full h-[60%] object-cover rounded-full shadow-lg" />
+                  <img src={gallery[1]?.url || arunProfile} alt="Collage 2" className="w-full h-[40%] object-cover rounded-[3rem] shadow-lg" />
+                </div>
+                <div className="flex flex-col gap-6 w-48 sm:w-56">
+                  <img src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Collage 3" className="w-full h-[45%] object-cover rounded-[3rem] shadow-lg" />
+                  <img src={gallery[3]?.url || gallery[0]?.url || arunProfile} alt="Collage 4" className="w-full h-[55%] object-cover rounded-full shadow-lg" />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
