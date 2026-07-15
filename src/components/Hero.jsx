@@ -866,11 +866,13 @@ const Hero = () => {
           <div className="flex-1 min-h-[400px] lg:min-h-0 bg-slate-200 rounded-3xl overflow-hidden relative group">
             <img src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            <div data-edit-id="hero.katerioBadge1" data-edit-name="Badge 1" data-edit-kind="text" data-edit-path="hero.katerioBadge1" className="absolute top-6 left-6 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
-              {hero.katerioBadge1 || 'New Insights Unveiled!'}
-            </div>
-            <div data-edit-id="hero.katerioBadge2" data-edit-name="Badge 2" data-edit-kind="text" data-edit-path="hero.katerioBadge2" className="absolute top-6 left-1/2 bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
-              {hero.katerioBadge2 || '2026 Q3 Analysis'}
+            <div className="absolute top-6 left-6 right-6 flex flex-wrap gap-2 z-10">
+              <div data-edit-id="hero.katerioBadge1" data-edit-name="Badge 1" data-edit-kind="text" data-edit-path="hero.katerioBadge1" className="bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
+                {hero.katerioBadge1 || 'New Insights Unveiled!'}
+              </div>
+              <div data-edit-id="hero.katerioBadge2" data-edit-name="Badge 2" data-edit-kind="text" data-edit-path="hero.katerioBadge2" className="bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
+                {hero.katerioBadge2 || '2026 Q3 Analysis'}
+              </div>
             </div>
             <div className="absolute bottom-8 left-8 z-10">
               <h1 data-edit-id="hero.headline" data-edit-name="Hero · Headline" data-edit-kind="heading" className="font-display font-black text-[clamp(2.5rem,4vw,3.5rem)] text-white leading-tight">
