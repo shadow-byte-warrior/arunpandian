@@ -412,7 +412,15 @@ export default function Experiences() {
                 
                 <h3 className="font-bold text-slate-800 text-lg mb-1 line-clamp-1">{exp.role}</h3>
                 <p className="text-sm font-medium text-slate-500 mb-2">{exp.company}</p>
-                <p className="text-xs text-slate-400 mb-6 flex-1">{exp.period}</p>
+                <p className="text-xs text-slate-400 mb-4">{exp.period}</p>
+                
+                {exp.media_url && (
+                  <div className="mb-4 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 relative aspect-video flex-shrink-0">
+                    <img src={exp.media_url} alt="Certificate" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                
+                <div className="flex-1"></div>
                 
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-50">
                   <span className="text-xs font-semibold text-slate-500 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">{exp.type}</span>

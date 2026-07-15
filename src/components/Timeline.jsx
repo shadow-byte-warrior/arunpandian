@@ -34,16 +34,38 @@ const Timeline = () => {
                 data-edit-id={`exp.${exp.id || i}`}
                 data-edit-name={`Experience · ${exp.company || `Item ${i+1}`}`}
                 data-edit-kind="section"
-                className="rounded-2xl border border-line bg-bg p-6 hover:border-ink/20 hover:shadow-[0_20px_50px_-30px_rgba(9,9,11,0.4)] transition-all duration-300"
+                className="rounded-2xl border border-line bg-bg p-6 hover:border-ink/20 hover:shadow-[0_20px_50px_-30px_rgba(9,9,11,0.4)] transition-all duration-300 overflow-hidden"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                  <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-accent-soft text-accent">{exp.type}</span>
-                  <span className="flex items-center gap-1.5 text-xs text-ink-soft font-mono"><Calendar size={12} />{exp.period}</span>
+                <div className={`flex flex-col ${exp.media_url ? 'md:flex-row md:items-start md:gap-8' : ''}`}>
+                  <div className={`flex-1 ${exp.media_url ? 'mb-6 md:mb-0' : ''}`}>
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-accent-soft text-accent">{exp.type}</span>
+                      <span className="flex items-center gap-1.5 text-xs text-ink-soft font-mono"><Calendar size={12} />{exp.period}</span>
+                    </div>
+                    <h3 data-edit-id={`exp.${exp.id || i}.role`} data-edit-name={`Experience · ${exp.company} Role`} data-edit-kind="text" className="font-display font-bold text-lg sm:text-xl text-ink">
+                      {exp.role} 
+                      {exp.company_website ? (
+                        <a href={exp.company_website} target="_blank" rel="noopener noreferrer" className="text-ink-soft font-medium hover:text-accent transition-colors ml-1">· {exp.company}</a>
+                      ) : (
+                        <span className="text-ink-soft font-medium ml-1">· {exp.company}</span>
+                      )}
+                    </h3>
+                    <p data-edit-id={`exp.${exp.id || i}.impact`} data-edit-name={`Experience · ${exp.company} Impact`} data-edit-kind="text" className="mt-2.5 text-ink-soft leading-relaxed">{exp.impact}</p>
+                  </div>
+                  
+                  {exp.media_url && (
+                    <div className="w-full md:w-[40%] shrink-0">
+                      <div className="rounded-xl overflow-hidden border border-line bg-surface relative group">
+                        <img 
+                          src={exp.media_url} 
+                          alt={`${exp.role} Certificate`}
+                          className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                          onClick={() => window.open(exp.media_url, '_blank')}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <h3 data-edit-id={`exp.${exp.id || i}.role`} data-edit-name={`Experience · ${exp.company} Role`} data-edit-kind="text" className="font-display font-bold text-lg sm:text-xl text-ink">
-                  {exp.role} <span className="text-ink-soft font-medium">· {exp.company}</span>
-                </h3>
-                <p data-edit-id={`exp.${exp.id || i}.impact`} data-edit-name={`Experience · ${exp.company} Impact`} data-edit-kind="text" className="mt-2.5 text-ink-soft leading-relaxed">{exp.impact}</p>
               </div>
               </motion.div>
             ))}
