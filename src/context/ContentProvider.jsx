@@ -33,7 +33,7 @@ const fallbackSettings = {
     ticker: ['SQL', 'Python', 'Excel', 'Power BI', 'Power Query', 'Power Pivot', 'DAX', 'n8n', 'Pandas', 'Data Modelling', 'EDA', 'Automation'],
     socials: {
       github: 'https://github.com/shadow-byte-warrior',
-      linkedin: 'https://linkedin.com/in/arunpandiansh2030',
+      linkedin: 'https://linkedin.com/in/arunpandianp-dataanalyst',
       email: 'arunpandi47777@gmail.com',
     },
   },
@@ -105,7 +105,7 @@ const fallbackSettings = {
     name: 'Arun Pandian',
     tagline: 'Data Analyst — SQL · Python · Power BI. Turning raw data into decisions.',
     github: 'https://github.com/shadow-byte-warrior',
-    linkedin: 'https://linkedin.com/in/arunpandiansh2030',
+    linkedin: 'https://linkedin.com/in/arunpandianp-dataanalyst',
     email: 'arunpandi47777@gmail.com',
     copyright: 'Built with React · Three.js · Node/Express.',
     designYear: '2026',

@@ -4,6 +4,7 @@
   **A highly interactive, 3D web experience built for the modern web.**
   <br />
 
+  [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/arunpandianp-dataanalyst)
   [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
   [![Vite](https://img.shields.io/badge/Vite-8.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -117,5 +118,5 @@ This project is configured out-of-the-box for **Vercel** with the `vercel` CLI t
 
 <div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=06B6D4&height=100&section=footer" width="100%"/>
-  <p>Built with ❤️ by <b>Arun Pandian</b></p>
+  <p>Built with ❤️ by <a href="https://linkedin.com/in/arunpandianp-dataanalyst"><b>Arun Pandian</b></a></p>
 </div>
