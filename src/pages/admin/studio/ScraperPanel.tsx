@@ -15,7 +15,8 @@ interface DesignBlueprint {
 
 // ── Call the local Node.js / Playwright API ──
 async function analyzeUrl(url: string): Promise<DesignBlueprint> {
-  const res = await fetch('http://localhost:3001/api/design-scrape', {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const res = await fetch(`${apiUrl}/api/design-scrape`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ url })
