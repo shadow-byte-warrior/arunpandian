@@ -19,7 +19,7 @@ const BlogCard = ({ blog }) => {
       <div>
         {blog.cover_image && (
           <div className="w-full h-48 overflow-hidden bg-muted">
-            <img 
+            <img loading="lazy" 
               src={blog.cover_image} 
               alt={title} 
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

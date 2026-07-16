@@ -47,7 +47,7 @@ const ProjectCard = ({ project, index = 0 }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
         {project.image_url && (
           <div className="w-full h-52 overflow-hidden">
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
           </div>
         )}
         <div className="p-6 flex flex-col flex-1 relative z-10">
@@ -82,7 +82,7 @@ const ProjectCard = ({ project, index = 0 }) => {
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
         {project.image_url && (
           <div className="w-full h-48 overflow-hidden opacity-40 mix-blend-overlay">
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover" />
           </div>
         )}
         <div className="p-7 flex flex-col flex-1 relative z-10">
@@ -114,7 +114,7 @@ const ProjectCard = ({ project, index = 0 }) => {
           <div className={`overflow-hidden bg-muted flex-shrink-0 ${
             isFeature ? 'w-1/2 min-h-[320px]' : 'w-full h-56'
           }`}>
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
           </div>
         )}
         <div className="p-7 flex flex-col justify-between flex-1">
@@ -151,7 +151,7 @@ const ProjectCard = ({ project, index = 0 }) => {
       }`}>
         {project.image_url && (
           <div className={`w-full overflow-hidden bg-muted flex-shrink-0 ${isTall ? 'h-80' : 'h-44'}`}>
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           </div>
         )}
         <div className="p-5 flex flex-col flex-1">
@@ -176,7 +176,7 @@ const ProjectCard = ({ project, index = 0 }) => {
       <article className="group relative overflow-hidden rounded-xl border border-line bg-surface break-inside-avoid mb-6 hover:shadow-xl transition-all duration-500">
         {project.image_url && (
           <div className="w-full overflow-hidden bg-muted">
-            <img src={project.image_url} alt={title} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" style={{ aspectRatio: index % 2 === 0 ? '4/3' : '3/4' }} />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" style={{ aspectRatio: index % 2 === 0 ? '4/3' : '3/4' }} />
           </div>
         )}
         <div className="p-5">
@@ -205,7 +205,7 @@ const ProjectCard = ({ project, index = 0 }) => {
           {/* Front */}
           <div className="absolute inset-0 rounded-2xl border border-line bg-surface overflow-hidden [backface-visibility:hidden]">
             {project.image_url && (
-              <img src={project.image_url} alt={title} className="w-full h-1/2 object-cover" />
+              <img loading="lazy" src={project.image_url} alt={title} className="w-full h-1/2 object-cover" />
             )}
             <div className="p-6">
               <div className="flex flex-wrap gap-1.5 mb-3">{tags?.map((t) => <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent">{t}</span>)}</div>
@@ -247,7 +247,7 @@ const ProjectCard = ({ project, index = 0 }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         {project.image_url && (
           <div className="w-full h-52 overflow-hidden">
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
           </div>
         )}
         <div className="p-6 flex flex-col flex-1 relative z-10">
@@ -273,7 +273,7 @@ const ProjectCard = ({ project, index = 0 }) => {
       <article className="group relative flex flex-col border border-ink bg-bg transition-all duration-300 hover:shadow-[8px_8px_0px_var(--color-ink)] hover:-translate-y-1 hover:-translate-x-1">
         {project.image_url && (
           <div className="w-full h-56 border-b border-ink overflow-hidden bg-muted">
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
           </div>
         )}
         <div className="p-6 flex flex-col flex-1">
@@ -316,7 +316,7 @@ const ProjectCard = ({ project, index = 0 }) => {
       <article className="group relative flex flex-col border-[3px] border-ink bg-surface transition-all duration-300 hover:shadow-[12px_12px_0px_var(--color-accent)] hover:-translate-y-2 hover:-translate-x-2">
         {project.image_url && (
           <div className="w-full h-56 border-b-[3px] border-ink overflow-hidden bg-muted relative">
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300" />
             <div className="absolute inset-0 bg-accent mix-blend-color opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
         )}
@@ -360,7 +360,7 @@ const ProjectCard = ({ project, index = 0 }) => {
       <article className="group relative flex flex-col transition-all duration-700">
         <div className="w-full aspect-[3/4] overflow-hidden bg-muted mb-6">
           {project.image_url && (
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
           )}
         </div>
         <div className="flex flex-col flex-1 px-2">
@@ -402,7 +402,7 @@ const ProjectCard = ({ project, index = 0 }) => {
       <article className="group relative grid grid-cols-1 md:grid-cols-2 border border-ink bg-surface transition-colors hover:bg-line/20">
         {project.image_url && (
           <div className="w-full h-full min-h-[300px] border-b md:border-b-0 md:border-r border-ink overflow-hidden bg-muted">
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
           </div>
         )}
         <div className="p-6 sm:p-8 flex flex-col justify-between">
@@ -448,7 +448,7 @@ const ProjectCard = ({ project, index = 0 }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         {project.image_url && (
           <div className="w-full h-56 overflow-hidden bg-muted p-2">
-            <img src={project.image_url} alt={title} className="w-full h-full object-cover rounded-[1.5rem] transition-transform duration-700 group-hover:scale-[1.02]" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover rounded-[1.5rem] transition-transform duration-700 group-hover:scale-[1.02]" />
           </div>
         )}
         <div className="p-8 flex flex-col flex-1 relative z-10">
@@ -490,7 +490,7 @@ const ProjectCard = ({ project, index = 0 }) => {
       <article className="group relative flex flex-col rounded-sm overflow-hidden">
         <div className="w-full aspect-[4/3] overflow-hidden bg-muted relative">
           {project.image_url && (
-            <img src={project.image_url} alt={title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+            <img loading="lazy" src={project.image_url} alt={title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
           
@@ -547,7 +547,7 @@ const ProjectCard = ({ project, index = 0 }) => {
     >
       {project.image_url && (
         <div className="w-full h-48 overflow-hidden bg-muted" style={{ transform: 'translateZ(10px)' }}>
-          <img 
+          <img loading="lazy" 
             src={project.image_url} 
             alt={title} 
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

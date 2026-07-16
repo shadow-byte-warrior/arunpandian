@@ -112,7 +112,7 @@ const Skills = () => {
                 className="group flex w-full items-start gap-4 p-5 rounded-2xl border border-line bg-surface text-left hover:shadow-lg hover:border-ink/20 transition-all duration-300 cursor-pointer"
               >
                 {c.image && isImage(c.image) ? (
-                  <img src={c.image} alt={c.name} className="h-12 w-12 rounded-lg object-cover shrink-0" />
+                  <img loading="lazy" src={c.image} alt={c.name} className="h-12 w-12 rounded-lg object-cover shrink-0" />
                 ) : c.image ? (
                   (() => {
                     const FileKindIcon = CERT_FILE_ICON[getFileKind(c.image)] || FileIcon;
@@ -148,7 +148,7 @@ const Skills = () => {
                     className="group flex w-[80vw] sm:w-[52vw] md:w-[36vw] lg:w-[28vw] shrink-0 snap-center items-start gap-4 p-5 rounded-2xl border border-line bg-surface text-left hover:shadow-lg hover:border-ink/20 transition-all duration-300 cursor-pointer"
                   >
                     {c.image && isImage(c.image) ? (
-                      <img src={c.image} alt={c.name} className="h-12 w-12 rounded-lg object-cover shrink-0" />
+                      <img loading="lazy" src={c.image} alt={c.name} className="h-12 w-12 rounded-lg object-cover shrink-0" />
                     ) : c.image ? (
                       (() => {
                         const FileKindIcon = CERT_FILE_ICON[getFileKind(c.image)] || FileIcon;
@@ -210,7 +210,7 @@ const Skills = () => {
             if (el.kind === 'text') return <p {...commonProps} className={`${commonProps.className} text-sm sm:text-base text-ink-soft`}>{el.value}</p>;
             if (el.kind === 'button') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-ink text-white font-semibold hover:bg-accent text-xs sm:text-sm">{el.value}</a></div>;
             if (el.kind === 'link') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="text-xs sm:text-sm font-semibold text-accent hover:underline">{el.value}</a></div>;
-            if (el.kind === 'image') return <img key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
+            if (el.kind === 'image') return <img loading="lazy" key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
             return null;
           })}
       </div>
@@ -272,7 +272,7 @@ const Skills = () => {
               <div className="grid min-h-[300px] flex-1 place-items-center overflow-auto bg-bg p-2">
                 {media ? (
                   isImage(media) ? (
-                    <img src={media} alt={activeCert.name} className="max-h-[78vh] w-auto object-contain" />
+                    <img loading="lazy" src={media} alt={activeCert.name} className="max-h-[78vh] w-auto object-contain" />
                   ) : isPdf(media) ? (
                     <iframe src={media} title={activeCert.name} className="h-[75vh] w-full border-0 bg-white" />
                   ) : isOfficeDoc(media) ? (

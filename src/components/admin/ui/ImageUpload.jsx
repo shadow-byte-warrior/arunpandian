@@ -147,12 +147,12 @@ export default function ImageUpload({ url, onUpload, folder = 'uploads', label =
       {url ? (
         <div className="relative rounded-xl overflow-hidden border border-slate-200 group bg-slate-50">
           {isImageFile ? (
-            <img src={url} alt={label} className="w-full h-40 object-cover" />
+            <img loading="lazy" src={url} alt={label} className="w-full h-40 object-cover" />
           ) : isVideoFile ? (
             <video src={url} autoPlay muted loop playsInline className="w-full h-40 object-cover" />
           ) : (
             // Non-visual files (PDF, DOC, XLS, PPT, ...) get a labelled file card
-            // instead of a broken <img>.
+            // instead of a broken <img alt="" loading="lazy">.
             <div className="flex h-40 w-full items-center gap-4 px-5">
               <div className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-600 border border-teal-100">
                 <KindIcon size={30} strokeWidth={1.75} />

@@ -7,7 +7,7 @@ export default function Logo({ size = 30, className = '', title }) {
   const dynamicLogo = settings?.branding?.logoUrl;
 
   return (
-    <img
+    <img loading="lazy"
       data-edit-id="branding.logoUrl"
       data-edit-name="Branding · Logo"
       data-edit-kind="image"

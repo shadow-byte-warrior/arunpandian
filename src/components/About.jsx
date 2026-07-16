@@ -42,7 +42,7 @@ const About = () => {
                 custom={0} variants={rise} initial="hidden" whileInView="show" viewport={{ once: true }}
                 className="group relative h-full overflow-hidden rounded-3xl border border-line bg-ink"
               >
-                <img
+                <img loading="lazy"
                   data-edit-id="about.profileImage" data-edit-name="About · Profile image" data-edit-kind="image" data-edit-path="about.profileImage"
                   src={about.profileImage || arunProfile}
                   alt={about.profileCaption || 'Arun Pandian'}
@@ -92,7 +92,7 @@ const About = () => {
                   if (el.kind === 'text') return <p {...commonProps} className={`${commonProps.className} text-sm text-ink-soft`}>{el.value}</p>;
                   if (el.kind === 'button') return <div key={el.id} className="my-2"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-4 py-2 rounded-full bg-ink text-white font-semibold hover:bg-accent text-xs">{el.value}</a></div>;
                   if (el.kind === 'link') return <div key={el.id} className="my-2"><a href={el.href || '#'} {...commonProps} className="text-xs font-semibold text-accent hover:underline">{el.value}</a></div>;
-                  if (el.kind === 'image') return <img key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
+                  if (el.kind === 'image') return <img loading="lazy" key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
                   return null;
                 })}
             </motion.div>

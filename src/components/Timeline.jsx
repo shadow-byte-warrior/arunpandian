@@ -56,7 +56,7 @@ const Timeline = () => {
                   {exp.media_url && (
                     <div className="w-full md:w-[40%] shrink-0">
                       <div className="rounded-xl overflow-hidden border border-line bg-surface relative group">
-                        <img 
+                        <img loading="lazy" 
                           src={exp.media_url} 
                           alt={`${exp.role} Certificate`}
                           className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
@@ -87,7 +87,7 @@ const Timeline = () => {
                 if (el.kind === 'text') return <p {...commonProps} className={`${commonProps.className} text-sm sm:text-base text-ink-soft`}>{el.value}</p>;
                 if (el.kind === 'button') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="custom-element-button inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-ink text-white font-semibold hover:bg-accent text-xs sm:text-sm">{el.value}</a></div>;
                 if (el.kind === 'link') return <div key={el.id} className="my-3"><a href={el.href || '#'} {...commonProps} className="text-xs sm:text-sm font-semibold text-accent hover:underline">{el.value}</a></div>;
-                if (el.kind === 'image') return <img key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
+                if (el.kind === 'image') return <img loading="lazy" key={el.id} src={el.value} alt={el.name} {...commonProps} className={`${commonProps.className} max-w-full h-auto rounded-lg border border-line`} />;
                 return null;
               })}
           </div>
