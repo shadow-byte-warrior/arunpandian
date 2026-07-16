@@ -125,6 +125,7 @@ export default function StructurePanel() {
           { value: 'horizontal' as const, label: 'Horizontal Carousel', description: 'Snap-scroll with arrow guide (default)' },
           { value: 'grid' as const, label: '3-Column Grid', description: 'Classic equal-width grid' },
           { value: 'masonry' as const, label: 'Masonry Columns', description: 'Pinterest-style variable height' },
+          { value: 'bento' as const, label: 'Bento Grid', description: 'Alternating tall/wide tiles' },
         ]}
         onChange={(v) => updateLayout({ blogScroll: v as any })}
       />

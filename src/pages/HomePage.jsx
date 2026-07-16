@@ -460,6 +460,16 @@ export default function HomePage() {
                 </SliceReveal>
               ))}
             </div>
+          ) : blogScroll === 'bento' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-[minmax(220px,auto)]" style={{ gridAutoFlow: 'dense' }}>
+              {blogs?.map((blog, i) => (
+                <div key={blog._id || blog.title} className={i % 3 === 0 ? 'row-span-2' : ''}>
+                  <SliceReveal delay={(i % 3) * 0.08} className="h-full">
+                    <BlogCard blog={blog} />
+                  </SliceReveal>
+                </div>
+              ))}
+            </div>
           ) : (
             /* Default 3-column grid */
             <div className="grid md:grid-cols-3 gap-6">
