@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import { useContent } from './context/ContentProvider';
 import HomePage from './pages/HomePage';
 import ProjectDetails from './pages/ProjectDetails';
+import NotFound from './pages/NotFound';
 import AdminRoute from './components/admin/AdminRoute';
 
 // Admin bundle is code-split so public visitors never download it
@@ -77,8 +78,8 @@ function App() {
           <Route path="settings/seo" element={<SeoSettings />} />
         </Route>
         
-        {/* Catch all redirect to home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Catch all redirect to 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
     </BrowserRouter>

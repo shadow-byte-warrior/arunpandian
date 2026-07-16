@@ -101,6 +101,7 @@ const ProjectDetails = () => {
           <ArrowLeft size={16} /> Back to Projects
         </Link>
 
+        <article>
         {/* Header */}
         <header className="mb-12 md:mb-16">
           <div className="flex flex-wrap gap-2 mb-6">
@@ -136,7 +137,7 @@ const ProjectDetails = () => {
         )}
 
         {/* Case Study Content */}
-        <article className="grid grid-cols-1 md:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
           {/* Main sections */}
           <div className="md:col-span-8 space-y-12">
             
@@ -216,6 +217,7 @@ const ProjectDetails = () => {
               </ul>
             </div>
           </aside>
+        </div>
         </article>
 
       </main>
