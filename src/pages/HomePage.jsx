@@ -208,7 +208,7 @@ export default function HomePage() {
     setMeta('name', 'keywords', seo.keywords);
     setMeta('property', 'og:title', seo.metaTitle);
     setMeta('property', 'og:description', seo.metaDescription);
-    setMeta('property', 'og:image', seo.ogImage);
+    setMeta('property', 'og:image', seo.ogImage || projects?.[0]?.image_url);
     setMeta('name', 'twitter:site', seo.twitterHandle);
   }, [seo]);
 
@@ -263,29 +263,26 @@ export default function HomePage() {
 
       <Helmet>
         <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "Arun Pandian | Data Analyst Portfolio",
-              "url": "https://arunpandian.online/"
-            }
-          `}
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Arun Pandian | Data Analyst Portfolio",
+            "url": "https://arunpandian.online/"
+          })}
         </script>
         <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "Person",
-              "name": "Arun Pandian",
-              "jobTitle": "Data Analyst",
-              "url": "https://arunpandian.online/",
-              "sameAs": [
-                "https://github.com/shadow-byte-warrior",
-                "https://linkedin.com/in/arunpandiansh2030"
-              ]
-            }
-          `}
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Arun Pandian",
+            "jobTitle": "Data Analyst",
+            "url": "https://arunpandian.online/",
+            "image": projects?.map((p) => p.image_url).filter(Boolean) || [],
+            "sameAs": [
+              settings?.hero?.socials?.github || "https://github.com/shadow-byte-warrior",
+              settings?.hero?.socials?.linkedin || "https://linkedin.com/in/arunpandiansh2030"
+            ].filter(Boolean)
+          })}
         </script>
       </Helmet>
       
