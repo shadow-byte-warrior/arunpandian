@@ -43,7 +43,7 @@ const ProjectCard = ({ project, index = 0 }) => {
   // ── Glass Card ──
   if (cardStyle === 'glass') {
     return (
-      <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] transition-all duration-500">
+      <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] transition-[transform,filter,opacity] duration-500">
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
         {project.image_url && (
           <div className="w-full h-52 overflow-hidden">
@@ -78,7 +78,7 @@ const ProjectCard = ({ project, index = 0 }) => {
     ];
     const grad = gradients[index % gradients.length];
     return (
-      <article className={`group relative flex flex-col overflow-hidden rounded-3xl bg-gradient-to-br ${grad} shadow-2xl hover:-translate-y-2 transition-all duration-500`}>
+      <article className={`group relative flex flex-col overflow-hidden rounded-3xl bg-gradient-to-br ${grad} shadow-2xl hover:-translate-y-2 transition-[transform,filter,opacity] duration-500`}>
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-500" />
         {project.image_url && (
           <div className="w-full h-48 overflow-hidden opacity-40 mix-blend-overlay">
@@ -107,7 +107,7 @@ const ProjectCard = ({ project, index = 0 }) => {
   if (cardStyle === 'magazine') {
     const isFeature = index === 0;
     return (
-      <article className={`group relative overflow-hidden bg-surface border border-line hover:border-ink/30 transition-all duration-500 ${
+      <article className={`group relative overflow-hidden bg-surface border border-line hover:border-ink/30 transition-[transform,filter,opacity] duration-500 ${
         isFeature ? 'md:col-span-2 flex flex-row' : 'flex flex-col'
       }`}>
         {project.image_url && (
@@ -146,7 +146,7 @@ const ProjectCard = ({ project, index = 0 }) => {
     // Alternating tall/wide bento tiles
     const isTall = index % 3 === 0;
     return (
-      <article className={`group relative overflow-hidden rounded-2xl bg-surface border border-line hover:border-accent/40 hover:shadow-[0_0_30px_rgba(0,0,0,0.12)] transition-all duration-400 ${
+      <article className={`group relative overflow-hidden rounded-2xl bg-surface border border-line hover:border-accent/40 hover:shadow-[0_0_30px_rgba(0,0,0,0.12)] transition-[transform,filter,opacity] duration-400 ${
         isTall ? 'row-span-2 flex flex-col' : 'flex flex-col'
       }`}>
         {project.image_url && (
@@ -173,7 +173,7 @@ const ProjectCard = ({ project, index = 0 }) => {
   // ── Masonry Card ──
   if (cardStyle === 'masonry') {
     return (
-      <article className="group relative overflow-hidden rounded-xl border border-line bg-surface break-inside-avoid mb-6 hover:shadow-xl transition-all duration-500">
+      <article className="group relative overflow-hidden rounded-xl border border-line bg-surface break-inside-avoid mb-6 hover:shadow-xl transition-[transform,filter,opacity] duration-500">
         {project.image_url && (
           <div className="w-full overflow-hidden bg-muted">
             <img loading="lazy" src={project.image_url} alt={title} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" style={{ aspectRatio: index % 2 === 0 ? '4/3' : '3/4' }} />
@@ -270,10 +270,10 @@ const ProjectCard = ({ project, index = 0 }) => {
 
   if (cardStyle === 'minimal') {
     return (
-      <article className="group relative flex flex-col border border-ink bg-bg transition-all duration-300 hover:shadow-[8px_8px_0px_var(--color-ink)] hover:-translate-y-1 hover:-translate-x-1">
+      <article className="group relative flex flex-col border border-ink bg-bg transition-[transform,filter,opacity] duration-300 hover:shadow-[8px_8px_0px_var(--color-ink)] hover:-translate-y-1 hover:-translate-x-1">
         {project.image_url && (
           <div className="w-full h-56 border-b border-ink overflow-hidden bg-muted">
-            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-[transform,filter,opacity] duration-500" />
           </div>
         )}
         <div className="p-6 flex flex-col flex-1">
@@ -313,10 +313,10 @@ const ProjectCard = ({ project, index = 0 }) => {
 
   if (cardStyle === 'karolbinkowski') {
     return (
-      <article className="group relative flex flex-col border-[3px] border-ink bg-surface transition-all duration-300 hover:shadow-[12px_12px_0px_var(--color-accent)] hover:-translate-y-2 hover:-translate-x-2">
+      <article className="group relative flex flex-col border-[3px] border-ink bg-surface transition-[transform,filter,opacity] duration-300 hover:shadow-[12px_12px_0px_var(--color-accent)] hover:-translate-y-2 hover:-translate-x-2">
         {project.image_url && (
           <div className="w-full h-56 border-b-[3px] border-ink overflow-hidden bg-muted relative">
-            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-[transform,filter,opacity] duration-300" />
             <div className="absolute inset-0 bg-accent mix-blend-color opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
         )}
@@ -357,10 +357,10 @@ const ProjectCard = ({ project, index = 0 }) => {
 
   if (cardStyle === 'pelizzari') {
     return (
-      <article className="group relative flex flex-col transition-all duration-700">
+      <article className="group relative flex flex-col transition-[transform,filter,opacity] duration-700">
         <div className="w-full aspect-[3/4] overflow-hidden bg-muted mb-6">
           {project.image_url && (
-            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
+            <img loading="lazy" src={project.image_url} alt={title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-[transform,filter,opacity] duration-1000 group-hover:scale-105" />
           )}
         </div>
         <div className="flex flex-col flex-1 px-2">
@@ -444,7 +444,7 @@ const ProjectCard = ({ project, index = 0 }) => {
 
   if (cardStyle === 'vividmotion') {
     return (
-      <article className="group relative flex flex-col rounded-[2rem] border border-white/10 bg-surface/30 backdrop-blur-md overflow-hidden transition-all duration-500 hover:bg-surface/70 hover:shadow-2xl hover:border-line/50">
+      <article className="group relative flex flex-col rounded-[2rem] border border-white/10 bg-surface/30 backdrop-blur-md overflow-hidden transition-[transform,filter,opacity] duration-500 hover:bg-surface/70 hover:shadow-2xl hover:border-line/50">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         {project.image_url && (
           <div className="w-full h-56 overflow-hidden bg-muted p-2">

@@ -82,7 +82,7 @@ const Hero = () => {
             )}
             <div className="flex gap-4">
               {isVisible('primaryCta') && (
-                <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-8 py-4 bg-accent text-ink border-[3px] border-ink font-bold uppercase tracking-widest text-sm hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_var(--color-ink)] transition-all">
+                <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-8 py-4 bg-accent text-ink border-[3px] border-ink font-bold uppercase tracking-widest text-sm hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_var(--color-ink)] transition-transform">
                   {hero.primaryCta?.label}
                 </a>
               )}
@@ -99,7 +99,7 @@ const Hero = () => {
       <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen flex flex-col justify-end pb-24 px-6 text-bg">
         <div className="absolute inset-0 -z-10 bg-ink">
           {hero.profileImage && (
-            <img loading="lazy" src={hero.profileImage || arunProfile} alt="Hero" className="w-full h-full object-cover opacity-60" />
+            <img fetchPriority="high" src={hero.profileImage || arunProfile} alt="Hero" className="w-full h-full object-cover opacity-60" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
         </div>
@@ -207,7 +207,7 @@ const Hero = () => {
           )}
           <div className="mt-12 flex items-center justify-center gap-4">
             {isVisible('primaryCta') && (
-              <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-10 py-4 rounded-full bg-ink text-bg font-medium hover:scale-105 hover:shadow-xl transition-all">
+              <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="px-10 py-4 rounded-full bg-ink text-bg font-medium hover:scale-105 hover:shadow-xl transition-transform">
                 {hero.primaryCta?.label}
               </a>
             )}
@@ -260,7 +260,7 @@ const Hero = () => {
 
           {/* Visual Profile Avatar Bubble */}
           <div className="relative mt-10 w-44 h-44 rounded-full border-4 border-[#2C0E1E] shadow-[6px_6px_0px_#2C0E1E] overflow-hidden bg-white">
-            <img loading="lazy"
+            <img fetchPriority="high"
               data-edit-id="hero.profileImage" data-edit-name="Hero · Profile image" data-edit-kind="image" data-edit-path="hero.profileImage"
               src={hero.profileImage || arunProfile}
               alt={hero.name || 'Arun Pandian'}
@@ -274,7 +274,7 @@ const Hero = () => {
               <a
                 href={hero.primaryCta?.href || '#projects'}
                 data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label"
-                className="custom-element-button px-8 py-3.5 border-3 border-[#2C0E1E] text-black font-bold uppercase rounded-full shadow-[4px_4px_0px_#2C0E1E] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#2C0E1E] transition-all"
+                className="custom-element-button px-8 py-3.5 border-3 border-[#2C0E1E] text-black font-bold uppercase rounded-full shadow-[4px_4px_0px_#2C0E1E] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#2C0E1E] transition-transform"
               >
                 {hero.primaryCta?.label || 'View selected work'}
               </a>
@@ -328,7 +328,7 @@ const Hero = () => {
                   <a
                     href={hero.primaryCta?.href || '#projects'}
                     data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label"
-                    className="custom-element-button px-6 py-2.5 border border-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-all"
+                    className="custom-element-button px-6 py-2.5 border border-black uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-transform"
                   >
                     {hero.primaryCta?.label}
                   </a>
@@ -377,7 +377,7 @@ const Hero = () => {
                 <a
                   href={hero.primaryCta?.href || '#projects'}
                   data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A1A1A] text-white hover:bg-[#FF2A54] transition-all text-sm font-bold"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A1A1A] text-white hover:bg-[#FF2A54] transition-transform text-sm font-bold"
                 >
                   {hero.primaryCta?.label} <ArrowRight size={16} />
                 </a>
@@ -387,7 +387,7 @@ const Hero = () => {
 
           <div className="lg:col-span-5 flex justify-center">
             <div className="relative w-72 h-96 rounded-2xl overflow-hidden border border-black/10 shadow-2xl">
-              <img loading="lazy"
+              <img fetchPriority="high"
                 data-edit-id="hero.profileImage" data-edit-name="Hero · Profile image" data-edit-kind="image" data-edit-path="hero.profileImage"
                 src={hero.profileImage || arunProfile}
                 alt={hero.name || 'Arun Pandian'}
@@ -448,7 +448,7 @@ const Hero = () => {
               <a
                 href={hero.primaryCta?.href || '#projects'}
                 data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label"
-                className="custom-element-button px-10 py-4 border border-[#E8E4DC] text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#E8E4DC] hover:text-[#0B0B0B] transition-all"
+                className="custom-element-button px-10 py-4 border border-[#E8E4DC] text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#E8E4DC] hover:text-[#0B0B0B] transition-transform"
               >
                 {hero.primaryCta?.label}
               </a>
@@ -497,7 +497,7 @@ const Hero = () => {
                 <a
                   href={hero.primaryCta?.href || '#projects'}
                   data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label"
-                  className="custom-element-button inline-flex items-center gap-2 px-8 py-3.5 bg-accent text-bg font-bold uppercase hover:opacity-90 transition-all text-xs tracking-wider"
+                  className="custom-element-button inline-flex items-center gap-2 px-8 py-3.5 bg-accent text-bg font-bold uppercase hover:opacity-90 transition-transform text-xs tracking-wider"
                   style={{ boxShadow: '0 0 15px var(--color-accent)' }}
                 >
                   {hero.primaryCta?.label}
@@ -574,14 +574,14 @@ const Hero = () => {
           <div className="relative flex justify-center items-center h-full min-h-[500px]">
              <div className="absolute w-[400px] h-[400px] rounded-full border border-white/10 flex items-center justify-center">
                <div className="w-[300px] h-[300px] rounded-full bg-gradient-to-tr from-[#4c84ff] to-[#ff4c84] flex items-center justify-center overflow-hidden p-1 shadow-2xl">
-                 <img loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Profile" className="w-full h-full object-cover rounded-full bg-[#151722]" />
+                 <img fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Profile" className="w-full h-full object-cover rounded-full bg-[#151722]" />
                </div>
              </div>
              <div className="absolute top-[20%] right-[15%] w-16 h-16 rounded-full overflow-hidden border-2 border-[#151722] shadow-lg animate-[bounce_3s_ease-in-out_infinite]" style={{ opacity: gallery.length === 1 ? 0 : 1 }}>
-                <img loading="lazy" src={gallery[1]?.url || gallery[0]?.url || arunProfile} alt="Float" className="w-full h-full object-cover" />
+                <img fetchPriority="high" src={gallery[1]?.url || gallery[0]?.url || arunProfile} alt="Float" className="w-full h-full object-cover" />
              </div>
              <div className="absolute bottom-[25%] left-[10%] w-14 h-14 rounded-full overflow-hidden border-2 border-[#151722] shadow-lg animate-[bounce_4s_ease-in-out_infinite]" style={{ opacity: (gallery.length === 1 || gallery.length === 2) ? 0 : 1 }}>
-                <img loading="lazy" src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Float" className="w-full h-full object-cover" />
+                <img fetchPriority="high" src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Float" className="w-full h-full object-cover" />
              </div>
              {credentials.length > 0 && (
                <div className="absolute top-[30%] left-[5%] bg-white/10 backdrop-blur border border-white/10 px-4 py-2 rounded-xl flex items-center gap-3">
@@ -627,16 +627,16 @@ const Hero = () => {
             <div className="flex flex-col gap-4 h-full">
               {gallery.length <= 1 ? (
                 <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
-                  <img loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Grid 1" className="w-full h-full object-cover filter grayscale" />
+                  <img fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Grid 1" className="w-full h-full object-cover filter grayscale" />
                 </div>
               ) : (
                 <>
                   <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
-                    <img loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Grid 1" className="w-full h-full object-cover filter grayscale" />
+                    <img fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Grid 1" className="w-full h-full object-cover filter grayscale" />
                   </div>
                   {gallery.length >= 3 && (
                     <div className="bg-[#e4e2de] rounded-sm overflow-hidden h-1/3 relative">
-                      <img loading="lazy" src={gallery[1]?.url || arunProfile} alt="Grid 2" className="w-full h-full object-cover" />
+                      <img fetchPriority="high" src={gallery[1]?.url || arunProfile} alt="Grid 2" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </>
@@ -656,7 +656,7 @@ const Hero = () => {
               </div>
               {(gallery.length === 2 || gallery.length >= 3 || !gallery.length) && (
                 <div className="bg-[#e4e2de] rounded-sm overflow-hidden flex-1 relative">
-                  <img loading="lazy" src={gallery.length === 2 ? gallery[1]?.url : (gallery[2]?.url || gallery[0]?.url || arunProfile)} alt="Grid 3" className="w-full h-full object-cover" />
+                  <img fetchPriority="high" src={gallery.length === 2 ? gallery[1]?.url : (gallery[2]?.url || gallery[0]?.url || arunProfile)} alt="Grid 3" className="w-full h-full object-cover" />
                 </div>
               )}
             </div>
@@ -705,36 +705,36 @@ const Hero = () => {
           <div className="flex gap-6 h-[500px] justify-center lg:justify-end">
             {gallery.length === 1 ? (
               <div className="w-64 sm:w-80 h-full">
-                <img loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Collage 1" className="w-full h-full object-cover rounded-[3rem] shadow-lg" />
+                <img fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Collage 1" className="w-full h-full object-cover rounded-[3rem] shadow-lg" />
               </div>
             ) : gallery.length === 2 ? (
               <>
                 <div className="w-48 sm:w-56 h-full pt-12">
-                  <img loading="lazy" src={gallery[0]?.url} alt="Collage 1" className="w-full h-[80%] object-cover rounded-full shadow-lg" />
+                  <img fetchPriority="high" src={gallery[0]?.url} alt="Collage 1" className="w-full h-[80%] object-cover rounded-full shadow-lg" />
                 </div>
                 <div className="w-48 sm:w-56 h-full pb-12">
-                  <img loading="lazy" src={gallery[1]?.url} alt="Collage 2" className="w-full h-[80%] object-cover rounded-[3rem] shadow-lg" />
+                  <img fetchPriority="high" src={gallery[1]?.url} alt="Collage 2" className="w-full h-[80%] object-cover rounded-[3rem] shadow-lg" />
                 </div>
               </>
             ) : gallery.length === 3 ? (
               <>
                 <div className="flex flex-col gap-6 pt-12 w-40 sm:w-48">
-                  <img loading="lazy" src={gallery[0]?.url} alt="Collage 1" className="w-full h-[50%] object-cover rounded-full shadow-lg" />
-                  <img loading="lazy" src={gallery[1]?.url} alt="Collage 2" className="w-full h-[50%] object-cover rounded-[3rem] shadow-lg" />
+                  <img fetchPriority="high" src={gallery[0]?.url} alt="Collage 1" className="w-full h-[50%] object-cover rounded-full shadow-lg" />
+                  <img fetchPriority="high" src={gallery[1]?.url} alt="Collage 2" className="w-full h-[50%] object-cover rounded-[3rem] shadow-lg" />
                 </div>
                 <div className="w-48 sm:w-56 h-full">
-                  <img loading="lazy" src={gallery[2]?.url} alt="Collage 3" className="w-full h-[90%] object-cover rounded-[3rem] shadow-lg mt-6" />
+                  <img fetchPriority="high" src={gallery[2]?.url} alt="Collage 3" className="w-full h-[90%] object-cover rounded-[3rem] shadow-lg mt-6" />
                 </div>
               </>
             ) : (
               <>
                 <div className="flex flex-col gap-6 pt-12 w-40 sm:w-48">
-                  <img loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Collage 1" className="w-full h-[60%] object-cover rounded-full shadow-lg" />
-                  <img loading="lazy" src={gallery[1]?.url || arunProfile} alt="Collage 2" className="w-full h-[40%] object-cover rounded-[3rem] shadow-lg" />
+                  <img fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} alt="Collage 1" className="w-full h-[60%] object-cover rounded-full shadow-lg" />
+                  <img fetchPriority="high" src={gallery[1]?.url || arunProfile} alt="Collage 2" className="w-full h-[40%] object-cover rounded-[3rem] shadow-lg" />
                 </div>
                 <div className="flex flex-col gap-6 w-48 sm:w-56">
-                  <img loading="lazy" src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Collage 3" className="w-full h-[45%] object-cover rounded-[3rem] shadow-lg" />
-                  <img loading="lazy" src={gallery[3]?.url || gallery[0]?.url || arunProfile} alt="Collage 4" className="w-full h-[55%] object-cover rounded-full shadow-lg" />
+                  <img fetchPriority="high" src={gallery[2]?.url || gallery[0]?.url || arunProfile} alt="Collage 3" className="w-full h-[45%] object-cover rounded-[3rem] shadow-lg" />
+                  <img fetchPriority="high" src={gallery[3]?.url || gallery[0]?.url || arunProfile} alt="Collage 4" className="w-full h-[55%] object-cover rounded-full shadow-lg" />
                 </div>
               </>
             )}
@@ -761,29 +761,29 @@ const Hero = () => {
           
           <div className="relative w-full max-w-2xl h-[400px] flex justify-center items-center mt-8">
             {gallery.length === 1 && (
-               <img alt="" loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10" />
+               <img alt="" fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10" />
             )}
             {gallery.length === 2 && (
                <>
-                 <img alt="" loading="lazy" src={gallery[0]?.url} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10 -rotate-6 -translate-x-12" />
-                 <img alt="" loading="lazy" src={gallery[1]?.url} className="absolute w-64 h-96 object-cover rounded-xl shadow-xl z-0 rotate-6 translate-x-12 opacity-80" />
+                 <img alt="" fetchPriority="high" src={gallery[0]?.url} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10 -rotate-6 -translate-x-12" />
+                 <img alt="" fetchPriority="high" src={gallery[1]?.url} className="absolute w-64 h-96 object-cover rounded-xl shadow-xl z-0 rotate-6 translate-x-12 opacity-80" />
                </>
             )}
             {gallery.length >= 3 && (
                <>
-                 <img alt="" loading="lazy" src={gallery[1]?.url || arunProfile} className="absolute w-56 h-80 object-cover rounded-xl shadow-lg z-0 -rotate-12 -translate-x-32 opacity-60 grayscale hover:grayscale-0 transition" />
+                 <img alt="" fetchPriority="high" src={gallery[1]?.url || arunProfile} className="absolute w-56 h-80 object-cover rounded-xl shadow-lg z-0 -rotate-12 -translate-x-32 opacity-60 grayscale hover:grayscale-0 transition" />
                  {gallery.length >= 5 && (
-                   <img alt="" loading="lazy" src={gallery[3]?.url || arunProfile} className="absolute w-48 h-72 object-cover rounded-xl shadow-md -z-10 -rotate-12 -translate-x-56 opacity-40 grayscale hover:grayscale-0 transition" />
+                   <img alt="" fetchPriority="high" src={gallery[3]?.url || arunProfile} className="absolute w-48 h-72 object-cover rounded-xl shadow-md -z-10 -rotate-12 -translate-x-56 opacity-40 grayscale hover:grayscale-0 transition" />
                  )}
-                 <img alt="" loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-20 hover:scale-105 transition-transform duration-300 ring-2 ring-yellow-500 ring-offset-4 ring-offset-[#eaeaea]" />
-                 <img alt="" loading="lazy" src={gallery[2]?.url || arunProfile} className="absolute w-56 h-80 object-cover rounded-xl shadow-lg z-0 rotate-12 translate-x-32 opacity-60 grayscale hover:grayscale-0 transition" />
+                 <img alt="" fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-20 hover:scale-105 transition-transform duration-300 ring-2 ring-yellow-500 ring-offset-4 ring-offset-[#eaeaea]" />
+                 <img alt="" fetchPriority="high" src={gallery[2]?.url || arunProfile} className="absolute w-56 h-80 object-cover rounded-xl shadow-lg z-0 rotate-12 translate-x-32 opacity-60 grayscale hover:grayscale-0 transition" />
                  {gallery.length >= 5 && (
-                   <img alt="" loading="lazy" src={gallery[4]?.url || arunProfile} className="absolute w-48 h-72 object-cover rounded-xl shadow-md -z-10 rotate-12 translate-x-56 opacity-40 grayscale hover:grayscale-0 transition" />
+                   <img alt="" fetchPriority="high" src={gallery[4]?.url || arunProfile} className="absolute w-48 h-72 object-cover rounded-xl shadow-md -z-10 rotate-12 translate-x-56 opacity-40 grayscale hover:grayscale-0 transition" />
                  )}
                </>
             )}
             {gallery.length === 0 && (
-               <img alt="" loading="lazy" src={arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10 ring-2 ring-yellow-500 ring-offset-4 ring-offset-[#eaeaea]" />
+               <img alt="" fetchPriority="high" src={arunProfile} className="absolute w-64 h-96 object-cover rounded-xl shadow-2xl z-10 ring-2 ring-yellow-500 ring-offset-4 ring-offset-[#eaeaea]" />
             )}
           </div>
         </div>
@@ -816,17 +816,17 @@ const Hero = () => {
               <div className="h-1/3 flex gap-4">
                 {gallery.length === 2 ? (
                   <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
-                    <img alt="" loading="lazy" src={gallery[1]?.url} className="w-full h-full object-cover" />
+                    <img alt="" fetchPriority="high" src={gallery[1]?.url} className="w-full h-full object-cover" />
                     <div data-edit-id="hero.puremodaTag1" data-edit-name="Tag 1" data-edit-kind="text" data-edit-path="hero.puremodaTag1" className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">{hero.puremodaTag1 || '#ANALYTICS'}</div>
                   </div>
                 ) : (
                   <>
                     <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
-                      <img alt="" loading="lazy" src={gallery[1]?.url} className="w-full h-full object-cover" />
+                      <img alt="" fetchPriority="high" src={gallery[1]?.url} className="w-full h-full object-cover" />
                       <div data-edit-id="hero.puremodaTag1" data-edit-name="Tag 1" data-edit-kind="text" data-edit-path="hero.puremodaTag1" className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">{hero.puremodaTag1 || '#MACHINE_LEARNING'}</div>
                     </div>
                     <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative">
-                      <img alt="" loading="lazy" src={gallery[2]?.url} className="w-full h-full object-cover" />
+                      <img alt="" fetchPriority="high" src={gallery[2]?.url} className="w-full h-full object-cover" />
                       <div data-edit-id="hero.puremodaTag2" data-edit-name="Tag 2" data-edit-kind="text" data-edit-path="hero.puremodaTag2" className="absolute bottom-4 left-6 text-white font-black text-xl drop-shadow-md">{hero.puremodaTag2 || '#PREDICTIVE'}</div>
                     </div>
                   </>
@@ -835,7 +835,7 @@ const Hero = () => {
             )}
           </div>
           <div className="h-full min-h-[500px] lg:min-h-0 bg-slate-100 rounded-3xl overflow-hidden relative group">
-            <img alt="" loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
+            <img alt="" fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             {isVisible('primaryCta') && (
               <a href={hero.primaryCta?.href || '#projects'} data-edit-id="hero.primaryCta" data-edit-name="Hero · Primary button" data-edit-kind="button" data-edit-path="hero.primaryCta.label" className="absolute top-[60%] right-[10%] w-24 h-24 rounded-full border border-white text-white flex items-center justify-center font-semibold text-xs tracking-widest text-center hover:bg-white hover:text-black transition-colors backdrop-blur-sm">
@@ -864,7 +864,7 @@ const Hero = () => {
       <section id="hero" data-edit-id="hero.section" data-edit-name="Hero" data-edit-kind="section" className="relative min-h-screen bg-[#90939c] text-black p-4 md:p-8 pt-24 md:pt-32 overflow-hidden">
         <div className="w-full max-w-[1400px] mx-auto lg:h-[calc(100vh-8rem)] lg:min-h-[600px] bg-white rounded-[2rem] p-4 flex flex-col lg:flex-row gap-4 shadow-2xl">
           <div className="flex-1 min-h-[400px] lg:min-h-0 bg-slate-200 rounded-3xl overflow-hidden relative group">
-            <img alt="" loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
+            <img alt="" fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute top-6 left-6 right-6 flex flex-wrap gap-2 z-10">
               <div data-edit-id="hero.katerioBadge1" data-edit-name="Badge 1" data-edit-kind="text" data-edit-path="hero.katerioBadge1" className="bg-white/30 backdrop-blur-md border border-white/50 text-white text-[10px] sm:text-xs px-4 py-1.5 rounded-full uppercase tracking-wider font-semibold">
@@ -919,7 +919,7 @@ const Hero = () => {
               </div>
               {gallery.length >= 2 ? (
                 <div className="flex-1 bg-slate-200 rounded-3xl overflow-hidden relative group cursor-pointer">
-                  <img alt="" loading="lazy" src={gallery[1]?.url} className="w-full h-full object-cover" />
+                  <img alt="" fetchPriority="high" src={gallery[1]?.url} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/40" />
                   <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-white backdrop-blur group-hover:bg-black transition z-10">
                     <ArrowUpRight size={16} />
@@ -965,7 +965,7 @@ const Hero = () => {
                  <Sparkles size={32} fill="currentColor" />
               </div>
               <div className="w-full max-w-md bg-black/20 rounded-xl overflow-hidden aspect-[3/4] mix-blend-luminosity relative shadow-2xl">
-                 <img alt="" loading="lazy" src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover sepia-[0.3]" />
+                 <img alt="" fetchPriority="high" src={gallery[0]?.url || hero.profileImage || arunProfile} className="w-full h-full object-cover sepia-[0.3]" />
               </div>
               {isVisible('subtitle') && (
                 <p data-edit-id="hero.subtitle" data-edit-name="Hero · Subtitle" data-edit-kind="text" data-edit-path="hero.subtitle" className="text-[#f2e9d8]/80 text-sm max-w-sm leading-relaxed mt-6 font-mono absolute bottom-0 left-0 bg-[#3b4936]/80 backdrop-blur p-4 rounded-xl shadow-lg">
@@ -1036,7 +1036,7 @@ const Hero = () => {
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <button 
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMuted(!isMuted); }}
-                  className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 hover:bg-red-500 transition-all duration-300 pointer-events-auto text-white cursor-pointer"
+                  className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 hover:bg-red-500 transition-transform duration-300 pointer-events-auto text-white cursor-pointer"
                   title={isMuted ? "Unmute" : "Mute"}
                 >
                    {isMuted ? <VolumeX size={32} /> : <Volume2 size={32} />}
@@ -1198,7 +1198,7 @@ const Hero = () => {
                 <div className="absolute -top-5 -left-5 sm:-left-8 flex items-center gap-3 rounded-2xl bg-surface/90 backdrop-blur border border-line shadow-[0_20px_45px_-20px_rgba(9,9,11,0.5)] pl-2 pr-4 py-2">
                   <div className="relative shrink-0">
                     <div className="absolute -inset-[3px] rounded-full" style={{ background: 'conic-gradient(from 0deg, var(--color-primary), #6366F1, #a5b4fc, var(--color-primary))' }} />
-                    <img loading="lazy"
+                    <img fetchPriority="high"
                       data-edit-id="hero.profileImage" data-edit-name="Hero · Profile image" data-edit-kind="image" data-edit-path="hero.profileImage"
                       src={hero.profileImage || arunProfile}
                       alt={hero.name || 'Arun Pandian'}
