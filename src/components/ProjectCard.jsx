@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ExternalLink, FileText, ArrowUpRight } from 'lucide-react';
 import { useContent } from '../context/ContentProvider';
@@ -58,7 +59,7 @@ const ProjectCard = ({ project, index = 0 }) => {
               {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-white"><ExternalLink size={15} /></a>}
             </div>
           </div>
-          <h3 className="font-display font-bold text-xl text-white leading-snug mb-3">{title}</h3>
+          <Link to={`/project/${project.id}`}><h3 className={`hover:text-accent transition-colors font-display font-bold text-xl text-white leading-snug mb-3`}>{title}</h3></Link>
           {insight && <p className="text-sm text-white/60 leading-relaxed flex-1">{insight}</p>}
           <div className="mt-4 flex flex-wrap gap-1.5">
             {tags?.map((tag) => <span key={tag} className="px-2 py-0.5 text-[10px] rounded-full border border-white/15 text-white/50 bg-white/5">{tag}</span>)}
@@ -93,7 +94,7 @@ const ProjectCard = ({ project, index = 0 }) => {
               {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-white"><ExternalLink size={16} /></a>}
             </div>
           </div>
-          <h3 className="font-display font-black text-2xl text-white leading-tight mb-4">{title}</h3>
+          <Link to={`/project/${project.id}`}><h3 className={`hover:text-accent transition-colors font-display font-black text-2xl text-white leading-tight mb-4`}>{title}</h3></Link>
           {insight && <p className="text-sm text-white/80 leading-relaxed flex-1">{insight}</p>}
           <div className="mt-5 flex flex-wrap gap-1.5">
             {tags?.map((tag) => <span key={tag} className="px-2.5 py-1 text-[10px] font-semibold rounded-full bg-white/20 text-white">{tag}</span>)}
@@ -159,7 +160,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             <span className="h-2 w-2 rounded-full bg-accent shrink-0" />
             <span className="text-[10px] font-mono text-ink-soft">{tags?.[0]}</span>
           </div>
-          <h3 className="font-display font-bold text-ink text-lg leading-snug mb-2">{title}</h3>
+          <Link to={`/project/${project.id}`}><h3 className={`hover:text-accent transition-colors font-display font-bold text-ink text-lg leading-snug mb-2`}>{title}</h3></Link>
           {insight && <p className="text-xs text-ink-soft leading-relaxed flex-1 line-clamp-3">{insight}</p>}
           <div className="mt-4 flex gap-2">
             {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="text-ink-soft hover:text-ink"><GithubIcon size={14} /></a>}
@@ -183,7 +184,7 @@ const ProjectCard = ({ project, index = 0 }) => {
           <div className="flex items-center gap-2 mb-3">
             {tags?.slice(0,2).map((tag) => <span key={tag} className="px-2 py-0.5 text-[10px] rounded-full bg-accent/10 text-accent font-medium">{tag}</span>)}
           </div>
-          <h3 className="font-display font-bold text-ink text-lg leading-snug mb-2">{title}</h3>
+          <Link to={`/project/${project.id}`}><h3 className={`hover:text-accent transition-colors font-display font-bold text-ink text-lg leading-snug mb-2`}>{title}</h3></Link>
           {insight && <p className="text-sm text-ink-soft leading-relaxed">{insight}</p>}
           <div className="mt-4 flex gap-3 text-ink-soft">
             {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><GithubIcon size={15} /></a>}
@@ -209,7 +210,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             )}
             <div className="p-6">
               <div className="flex flex-wrap gap-1.5 mb-3">{tags?.map((t) => <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent">{t}</span>)}</div>
-              <h3 className="font-display font-bold text-xl text-ink leading-tight">{title}</h3>
+              <Link to={`/project/${project.id}`}><h3 className={`hover:text-accent transition-colors font-display font-bold text-xl text-ink leading-tight`}>{title}</h3></Link>
               <p className="text-xs text-ink-soft mt-3 font-mono uppercase tracking-wider">Hover to see details →</p>
             </div>
           </div>
@@ -219,7 +220,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             style={{ transform: 'rotateY(180deg)' }}
           >
             <div>
-              <h3 className="font-display font-bold text-2xl mb-4 text-bg">{title}</h3>
+              <Link to={`/project/${project.id}`}><h3 className={`hover:text-accent transition-colors font-display font-bold text-2xl mb-4 text-bg`}>{title}</h3></Link>
               {flow.map((f) => {
                 if (!project[f.key]) return null;
                 return <div key={f.key} className="mb-3"><p className="text-[10px] font-mono text-bg/50 uppercase tracking-wider mb-0.5">{f.label}</p><p className="text-sm text-bg/90">{project[f.key]}</p></div>;
@@ -227,7 +228,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             </div>
             <div className="flex gap-3 text-bg/60">
               {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="hover:text-bg"><GithubIcon size={16} /></a>}
-              {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" className="hover:text-bg"><FileText size={16} /></a>}
+              {project.id && <Link to={`/project/${project.id}`} target="_blank" rel="noopener noreferrer" className="hover:text-bg"><FileText size={16} /></Link>}
               {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-bg"><ExternalLink size={16} /></a>}
             </div>
           </div>
@@ -257,7 +258,7 @@ const ProjectCard = ({ project, index = 0 }) => {
               <ArrowUpRight size={18} />
             </motion.div>
           </div>
-          <h3 className="font-display font-bold text-xl text-ink leading-snug mb-3 flex-1">{title}</h3>
+          <Link to={`/project/${project.id}`}><h3 className={`hover:text-accent transition-colors font-display font-bold text-xl text-ink leading-snug mb-3 flex-1`}>{title}</h3></Link>
           {insight && <p className="text-sm text-ink-soft leading-relaxed line-clamp-2">{insight}</p>}
           <div className="mt-4 pt-4 border-t border-line flex gap-3 text-ink-soft">
             {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><GithubIcon size={15} /></a>}
@@ -283,7 +284,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             </span>
             <div className="flex items-center gap-3 text-ink">
               {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="hover:text-accent transition-colors"><GithubIcon /></a>}
-              {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" aria-label="Case study" className="hover:text-accent transition-colors"><FileText size={18} /></a>}
+              {project.id && <Link to={`/project/${project.id}`} target="_blank" rel="noopener noreferrer" aria-label="Case study" className="hover:text-accent transition-colors"><FileText size={18} /></Link>}
               {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" aria-label="Live demo" className="hover:text-accent transition-colors"><ExternalLink size={18} /></a>}
             </div>
           </div>
@@ -327,7 +328,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             </span>
             <div className="flex items-center gap-3 text-ink">
               {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="hover:text-accent"><GithubIcon /></a>}
-              {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" className="hover:text-accent"><FileText size={18} /></a>}
+              {project.id && <Link to={`/project/${project.id}`} target="_blank" rel="noopener noreferrer" className="hover:text-accent"><FileText size={18} /></Link>}
               {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-accent"><ExternalLink size={18} /></a>}
             </div>
           </div>
@@ -388,7 +389,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             </div>
             <div className="flex items-center gap-4 text-ink-soft shrink-0">
               {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><GithubIcon /></a>}
-              {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><FileText size={18} /></a>}
+              {project.id && <Link to={`/project/${project.id}`} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><FileText size={18} /></Link>}
               {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><ExternalLink size={18} /></a>}
             </div>
           </div>
@@ -413,7 +414,7 @@ const ProjectCard = ({ project, index = 0 }) => {
               </span>
               <div className="flex items-center gap-3 text-ink">
                 {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="hover:text-accent"><GithubIcon /></a>}
-                {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" className="hover:text-accent"><FileText size={18} /></a>}
+                {project.id && <Link to={`/project/${project.id}`} target="_blank" rel="noopener noreferrer" className="hover:text-accent"><FileText size={18} /></Link>}
                 {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-accent"><ExternalLink size={18} /></a>}
               </div>
             </div>
@@ -458,7 +459,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             </span>
             <div className="flex items-center gap-3 text-ink/60">
               {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors"><GithubIcon /></a>}
-              {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors"><FileText size={18} /></a>}
+              {project.id && <Link to={`/project/${project.id}`} target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors"><FileText size={18} /></Link>}
               {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors"><ExternalLink size={18} /></a>}
             </div>
           </div>
@@ -527,7 +528,7 @@ const ProjectCard = ({ project, index = 0 }) => {
             </div>
             <div className="flex items-center gap-4 text-ink-soft shrink-0">
               {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><GithubIcon /></a>}
-              {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><FileText size={18} /></a>}
+              {project.id && <Link to={`/project/${project.id}`} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><FileText size={18} /></Link>}
               {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" className="hover:text-ink"><ExternalLink size={18} /></a>}
             </div>
           </div>
@@ -563,7 +564,7 @@ const ProjectCard = ({ project, index = 0 }) => {
           </span>
           <div className="flex items-center gap-2.5 text-ink-soft shrink-0">
             {githubLink && <a href={githubLink} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="hover:text-ink transition-colors"><GithubIcon /></a>}
-            {caseStudyLink && <a href={caseStudyLink} target="_blank" rel="noopener noreferrer" aria-label="Case study" className="hover:text-ink transition-colors"><FileText size={18} /></a>}
+            {project.id && <Link to={`/project/${project.id}`} target="_blank" rel="noopener noreferrer" aria-label="Case study" className="hover:text-ink transition-colors"><FileText size={18} /></Link>}
             {demoLink && <a href={demoLink} target="_blank" rel="noopener noreferrer" aria-label="Live demo" className="hover:text-accent transition-colors"><ExternalLink size={18} /></a>}
           </div>
         </div>
@@ -600,9 +601,9 @@ const ProjectCard = ({ project, index = 0 }) => {
           ))}
         </div>
 
-        {(caseStudyLink || githubLink) && (
+        {(`/project/${project.id}`) && (
           <a
-            href={caseStudyLink || githubLink} target="_blank" rel="noopener noreferrer"
+            href={`/project/${project.id}`} target="_blank" rel="noopener noreferrer"
             className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink group-hover:text-accent transition-colors"
             style={{ transform: 'translateZ(30px)' }}
           >

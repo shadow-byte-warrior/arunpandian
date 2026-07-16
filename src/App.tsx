@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { useContent } from './context/ContentProvider';
 import HomePage from './pages/HomePage';
+import ProjectDetails from './pages/ProjectDetails';
 import AdminRoute from './components/admin/AdminRoute';
 
 // Admin bundle is code-split so public visitors never download it
@@ -52,6 +53,7 @@ function App() {
         <Routes>
         {/* Public Route */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/project/:id" element={<ProjectDetails />} />
 
         {/* Admin Login Route */}
         <Route path="/admin/login" element={<Login />} />

@@ -35,12 +35,12 @@ const Navbar = () => {
   }, []);
 
   const navLinks = navbar.links || [
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Experience', href: '#timeline' },
-    { name: 'Work', href: '#projects' },
-    { name: 'Writing', href: '#blog' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'About', href: '/#about' },
+    { name: 'Skills', href: '/#skills' },
+    { name: 'Experience', href: '/#timeline' },
+    { name: 'Work', href: '/#projects' },
+    { name: 'Writing', href: '/#blog' },
+    { name: 'Contact', href: '/#contact' },
   ];
   const ctaLabel = navbar.ctaLabel || 'Résumé';
   const ctaHref = navbar.ctaHref || '/resume.pdf';

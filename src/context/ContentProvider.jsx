@@ -7,17 +7,17 @@ const GH = 'https://github.com/shadow-byte-warrior';
 
 const fallbackSettings = {
   hero: {
-    badge: 'Open to Data Analyst roles · Fresher 2026',
-    headline: ['I turn raw', 'data into'],
+    badge: 'Arun Pandian · Data Analyst',
+    headline: ['Turning complex', 'datasets into'],
     headlineAccent: 'decisions.',
     subtitle:
-      "Hi, I'm Arun Pandian — an entry-level data analyst querying, modelling and story-telling with SQL, Python, Excel & Power BI.",
+      "Hi, I'm Arun Pandian — a Data Analyst specializing in SQL, Python, Excel & Power BI. I help businesses scale by extracting actionable intelligence from unstructured data.",
     name: 'Arun Pandian',
     role: 'Data Analyst',
-    primaryCta: { label: 'View selected work', href: '#projects' },
+    primaryCta: { label: 'Explore Featured Projects', href: '#projects' },
     secondaryCta: { label: 'Download résumé', href: '/resume.pdf' },
     videoSrc: '/hero-animation.mp4',
-    videoCaption: 'Data · in motion',
+    videoCaption: 'Data Analytics & Strategy',
     videoSubCaption: 'SQL · Python · BI',
     story: [
       { k: 'S', label: 'Messy, scattered data' },
@@ -83,12 +83,12 @@ const fallbackSettings = {
   },
   navbar: {
     links: [
-      { name: 'About', href: '#about' },
-      { name: 'Skills', href: '#skills' },
-      { name: 'Experience', href: '#timeline' },
-      { name: 'Work', href: '#projects' },
-      { name: 'Writing', href: '#blog' },
-      { name: 'Contact', href: '#contact' },
+      { name: 'About', href: '/#about' },
+      { name: 'Skills', href: '/#skills' },
+      { name: 'Experience', href: '/#timeline' },
+      { name: 'Work', href: '/#projects' },
+      { name: 'Writing', href: '/#blog' },
+      { name: 'Contact', href: '/#contact' },
     ],
     ctaLabel: 'Résumé',
     ctaHref: '/resume.pdf',
@@ -141,9 +141,9 @@ const fallbackSettings = {
     fontFamily: 'Space Grotesk',
   },
   seo: {
-    metaTitle: 'Arun Pandian — Data Analyst',
-    metaDescription: 'Entry-level data analyst turning raw data into decisions with SQL, Python, Excel & Power BI.',
-    keywords: 'data analyst, SQL, Python, Power BI, portfolio',
+    metaTitle: 'Arun Pandian | Data Analyst - SQL, Python, Power BI',
+    metaDescription: 'Arun Pandian is a Data Analyst specializing in SQL, Python, Excel & Power BI. View my portfolio of data analysis projects and case studies.',
+    keywords: 'data analyst, SQL, Python, Power BI, portfolio, data science, Arun Pandian',
     ogImage: '',
     twitterHandle: '',
   },

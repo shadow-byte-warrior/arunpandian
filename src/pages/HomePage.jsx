@@ -9,6 +9,8 @@ import ProjectCard from '../components/ProjectCard';
 import BlogCard from '../components/BlogCard';
 import ContactForm from '../components/ContactForm';
 import Welcome from '../components/Welcome';
+import FAQ from '../components/FAQ';
+import { Helmet } from 'react-helmet-async';
 import Parallax from '../components/Parallax';
 import SliceReveal from '../components/SliceReveal';
 import Logo from '../components/Logo';
@@ -259,10 +261,35 @@ export default function HomePage() {
 
       <Navbar />
 
+      <Helmet>
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Arun Pandian | Data Analyst Portfolio",
+              "url": "https://arunpandian.online/"
+            }
+          `}
+        </script>
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "name": "Arun Pandian",
+              "jobTitle": "Data Analyst",
+              "url": "https://arunpandian.online/",
+              "sameAs": [
+                "https://github.com/shadow-byte-warrior",
+                "https://linkedin.com/in/arunpandiansh2030"
+              ]
+            }
+          `}
+        </script>
+      </Helmet>
+      
       <Hero />
-      <About />
-      <Skills />
-      <Timeline />
 
       {/* Projects Section */}
       <section id="projects" className="py-24 sm:py-32 bg-bg">
@@ -365,6 +392,12 @@ export default function HomePage() {
         </div>
       </section>
 
+
+      <About />
+      <Skills />
+      <Timeline />
+      
+      <FAQ />
 
       {/* Blog Section */}
       <section id="blog" className="py-24 sm:py-32 bg-surface border-y border-line">
