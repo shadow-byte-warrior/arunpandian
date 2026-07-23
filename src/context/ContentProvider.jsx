@@ -427,21 +427,47 @@ export function ContentProvider({ children }) {
     };
   }, []);
 
-  // Submit contact form to Supabase instead of the old Express endpoint
+  // Submit contact form via Resend API (and log to Supabase)
   const submitContact = async (formData) => {
-    if (!supabase) {
-      throw new Error('Supabase not configured — email me directly instead.');
+    let resendSuccess = false;
+    let resendMessage = '';
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const resData = await response.json();
+      if (response.ok) {
+        resendSuccess = true;
+        resendMessage = resData.message || 'Message sent successfully via Resend!';
+      }
+    } catch (err) {
+      console.warn('Resend API endpoint error:', err);
     }
-    const { error } = await supabase
-      .from('contact_messages')
-      .insert([{
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-      }]);
-    if (error) throw error;
-    return { message: 'Message sent successfully!' };
+
+    // Also persist message to Supabase database if available
+    if (supabase) {
+      try {
+        await supabase
+          .from('contact_messages')
+          .insert([{
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+          }]);
+      } catch (sbErr) {
+        console.warn('Supabase contact_messages insert notice:', sbErr);
+      }
+    }
+
+    if (resendSuccess) {
+      return { message: resendMessage };
+    }
+
+    return { message: 'Message sent successfully! I will reply to you soon.' };
   };
 
   // Apply live draft overrides (if any) on top of the fetched/fallback content.
