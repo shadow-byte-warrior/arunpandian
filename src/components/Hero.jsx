@@ -23,8 +23,8 @@ const LinkedinIcon = ({ size = 20 }) => (
 
 const ease = [0.16, 1, 0.3, 1];
 const rise = {
-  hidden: { opacity: 0, y: 28 },
-  show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.9, delay: 0.1 + i * 0.08, ease } }),
+  hidden: { opacity: 1, y: 0 },
+  show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.15, delay: 0, ease } }),
 };
 
 const Hero = () => {
