@@ -204,11 +204,17 @@ export default function HomePage() {
       }
       el.setAttribute('content', content);
     };
-    setMeta('name', 'description', seo.metaDescription);
+    setMeta('name', 'description', seo.metaDescription || "Portfolio of Arun Pandian, an entry-level Data Analyst querying, modelling, and storytelling with SQL, Python, Excel & Power BI.");
+    setMeta('property', 'description', seo.metaDescription || "Portfolio of Arun Pandian, an entry-level Data Analyst querying, modelling, and storytelling with SQL, Python, Excel & Power BI.");
     setMeta('name', 'keywords', seo.keywords);
-    setMeta('property', 'og:title', seo.metaTitle);
-    setMeta('property', 'og:description', seo.metaDescription);
-    setMeta('property', 'og:image', seo.ogImage || projects?.[0]?.image_url);
+    setMeta('property', 'og:site_name', seo.siteName || "Arun Pandian Portfolio");
+    setMeta('property', 'og:title', seo.metaTitle || "Arun Pandian | Data Analyst Portfolio");
+    setMeta('property', 'og:description', seo.metaDescription || "Portfolio of Arun Pandian, an entry-level Data Analyst querying, modelling, and storytelling with SQL, Python, Excel & Power BI.");
+    setMeta('property', 'og:image', seo.ogImage || projects?.[0]?.image_url || "https://arunpandian.online/favicon.jpg");
+    setMeta('property', 'og:url', seo.canonicalUrl || "https://arunpandian.online/");
+    setMeta('name', 'twitter:title', seo.metaTitle || "Arun Pandian | Data Analyst Portfolio");
+    setMeta('name', 'twitter:description', seo.metaDescription);
+    setMeta('name', 'twitter:image', seo.ogImage || projects?.[0]?.image_url || "https://arunpandian.online/favicon.jpg");
     setMeta('name', 'twitter:site', seo.twitterHandle);
   }, [seo]);
 

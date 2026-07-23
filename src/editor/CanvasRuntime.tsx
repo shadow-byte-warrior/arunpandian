@@ -174,10 +174,22 @@ export default function CanvasRuntime() {
       const path = el.getAttribute('data-edit-path');
       const value = (el.textContent || '').trim();
       el.removeAttribute('contenteditable');
+      el.removeAttribute('spellcheck');
       el.style.removeProperty('outline');
+      el.style.removeProperty('outline-offset');
       el.style.removeProperty('cursor');
       editingRef.current = null;
       if (path) window.parent.postMessage({ type: 'EDITOR_CONTENT', path, value }, '*');
+    };
+
+    const onInput = (_e: Event) => {
+      const el = editingRef.current;
+      if (!el) return;
+      const path = el.getAttribute('data-edit-path');
+      const value = (el.textContent || '').trim();
+      if (path) {
+        window.parent.postMessage({ type: 'EDITOR_CONTENT', path, value }, '*');
+      }
     };
 
     const onDblClick = (e: MouseEvent) => {
@@ -187,8 +199,10 @@ export default function CanvasRuntime() {
       e.preventDefault();
       e.stopPropagation();
       editingRef.current = el;
-      el.setAttribute('contenteditable', 'plaintext-only');
+      el.setAttribute('contenteditable', 'true');
+      el.setAttribute('spellcheck', 'false');
       el.style.outline = '2px solid #2563EB';
+      el.style.outlineOffset = '2px';
       el.style.cursor = 'text';
       el.focus();
       // place caret / select all
@@ -258,6 +272,7 @@ export default function CanvasRuntime() {
     document.addEventListener('mousemove', onMove, true);
     document.addEventListener('click', onClickCapture, true);
     document.addEventListener('dblclick', onDblClick, true);
+    document.addEventListener('input', onInput, true);
     document.addEventListener('keydown', onKeyDown, true);
     document.addEventListener('focusout', onFocusOut, true);
     window.addEventListener('message', onMessage);
@@ -269,6 +284,7 @@ export default function CanvasRuntime() {
       document.removeEventListener('mousemove', onMove, true);
       document.removeEventListener('click', onClickCapture, true);
       document.removeEventListener('dblclick', onDblClick, true);
+      document.removeEventListener('input', onInput, true);
       document.removeEventListener('keydown', onKeyDown, true);
       document.removeEventListener('focusout', onFocusOut, true);
       window.removeEventListener('message', onMessage);
