@@ -657,7 +657,7 @@ export default function HomePage() {
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={scrollToTop}
             aria-label="Scroll to top"
-            className="fixed bottom-6 right-6 p-3.5 bg-ink hover:bg-accent text-bg hover:text-ink rounded-full shadow-lg z-50 cursor-pointer focus:outline-none transition-colors"
+            className="fixed bottom-20 right-5 sm:bottom-24 sm:right-6 p-3 bg-ink hover:bg-accent text-bg hover:text-ink rounded-full shadow-lg z-40 cursor-pointer focus:outline-none transition-colors"
           >
             <ArrowUp size={20} />
           </motion.button>

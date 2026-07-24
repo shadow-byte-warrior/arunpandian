@@ -33,6 +33,8 @@ const AdminFallback = () => (
   </div>
 );
 
+import WhatsAppWidget from './components/WhatsAppWidget';
+
 function App() {
   const { settings } = useContent() as any;
   // Favicon uses the uploaded favicon, else the site logo, so the tab icon
@@ -51,38 +53,39 @@ function App() {
       <Toaster position="top-right" />
       <BrowserRouter>
         <Suspense fallback={<AdminFallback />}>
-        <Routes>
-        {/* Public Route */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/project/:id" element={<ProjectDetails />} />
+          <Routes>
+            {/* Public Route */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/project/:id" element={<ProjectDetails />} />
 
-        {/* Admin Login Route */}
-        <Route path="/admin/login" element={<Login />} />
+            {/* Admin Login Route */}
+            <Route path="/admin/login" element={<Login />} />
 
-        {/* Protected Admin Routes */}
-        <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-          <Route index element={<Dashboard />} />
-          <Route path="projects" element={<Projects />} />
-          <Route path="blogs" element={<Blogs />} />
-          <Route path="experiences" element={<Experiences />} />
-          <Route path="inbox" element={<Inbox />} />
-          
-          <Route path="settings" element={<Settings />} />
-          <Route path="settings/hero" element={<HeroSettings />} />
-          <Route path="settings/about" element={<AboutSettings />} />
-          <Route path="settings/skills" element={<SkillsSettings />} />
-          <Route path="settings/certifications" element={<CertificationsSettings />} />
-          <Route path="settings/contact" element={<ContactSettings />} />
-          <Route path="studio" element={<Studio />} />
-          <Route path="canvas" element={<Canvas />} />
-          <Route path="settings/seo" element={<SeoSettings />} />
-        </Route>
-        
-        {/* Catch all redirect to 404 */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      </Suspense>
-    </BrowserRouter>
+            {/* Protected Admin Routes */}
+            <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+              <Route index element={<Dashboard />} />
+              <Route path="projects" element={<Projects />} />
+              <Route path="blogs" element={<Blogs />} />
+              <Route path="experiences" element={<Experiences />} />
+              <Route path="inbox" element={<Inbox />} />
+              
+              <Route path="settings" element={<Settings />} />
+              <Route path="settings/hero" element={<HeroSettings />} />
+              <Route path="settings/about" element={<AboutSettings />} />
+              <Route path="settings/skills" element={<SkillsSettings />} />
+              <Route path="settings/certifications" element={<CertificationsSettings />} />
+              <Route path="settings/contact" element={<ContactSettings />} />
+              <Route path="studio" element={<Studio />} />
+              <Route path="canvas" element={<Canvas />} />
+              <Route path="settings/seo" element={<SeoSettings />} />
+            </Route>
+            
+            {/* Catch all redirect to 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+        <WhatsAppWidget />
+      </BrowserRouter>
     </>
   );
 }
