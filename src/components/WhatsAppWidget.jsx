@@ -177,7 +177,7 @@ export default function WhatsAppWidget() {
                         <div className="text-sm font-semibold text-ink group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                           Discuss a Project
                         </div>
-                        <div className="text-xs text-ink-soft">Web apps, custom code, or design</div>
+                        <div className="text-xs text-ink-soft">Data analysis, dashboards, or insights</div>
                       </div>
                     </div>
                     <span className="text-xs font-semibold px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
@@ -198,7 +198,7 @@ export default function WhatsAppWidget() {
                         <div className="text-sm font-semibold text-ink group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                           Company / Opportunity
                         </div>
-                        <div className="text-xs text-ink-soft">Hiring, role, or collaboration</div>
+                        <div className="text-xs text-ink-soft">Data role, hiring, or collaboration</div>
                       </div>
                     </div>
                     <span className="text-xs font-semibold px-2 py-1 rounded-md bg-teal-500/10 text-teal-600 dark:text-teal-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
